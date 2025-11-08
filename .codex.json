@@ -1,15 +1,10 @@
 {
   "repository": "https://github.com/absulysuly/https-github.com-absulysuly-letsdoittonight",
   "mainBranch": "main",
-  "aiModel": "gemini-1.5-pro",
+  "aiModel": "gpt-5",
   "linkedBackend": "https://hamlet-unified-complete-2027-production.up.railway.app",
-  "environments": {
-    "staging": "https://https-github-com-absulysuly-let-git-e2a509-absulysulys-projects.vercel.app",
-    "production": "https://https-github-com-absulysuly-letsdoi.vercel.app"
-  },
   "validation": {
     "enabled": true,
-    "schedule": "manual",
     "outputPath": "reports/validation/"
   }
 }
