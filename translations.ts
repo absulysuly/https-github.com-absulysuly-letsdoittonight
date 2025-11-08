@@ -122,6 +122,7 @@ type TranslationKeys = {
     hours: string;
     iAmCandidate: string;
     iAmVoter: string;
+    ihecUpdates: string;
     imagePromptPlaceholder: string;
     integrityHubTitle: string;
     integrityHubDesc: string;
@@ -420,6 +421,7 @@ const en: TranslationKeys = {
     hours: 'Hours',
     iAmCandidate: 'I am a Candidate or Campaign Manager',
     iAmVoter: 'I am a Voter',
+    ihecUpdates: 'IHEC Updates',
     imagePromptPlaceholder: 'e.g., "A hyperrealistic photo of a modern Baghdad skyline at sunset"',
     integrityHubTitle: 'Election Integrity Hub',
     integrityHubDesc: 'Report violations and help ensure a fair election process. All submissions are reviewed by IHEC officials.',
@@ -717,6 +719,7 @@ const ar: TranslationKeys = {
     hours: 'ساعات',
     iAmCandidate: 'أنا مرشح أو مدير حملة',
     iAmVoter: 'أنا ناخب',
+    ihecUpdates: 'تحديثات المفوضية',
     imagePromptPlaceholder: 'مثال: "صورة واقعية جدًا لأفق بغداد الحديث عند غروب الشمس"',
     integrityHubTitle: 'مركز نزاهة الانتخابات',
     integrityHubDesc: 'أبلغ عن الانتهاكات وساعد في ضمان عملية انتخابية نزيهة. تتم مراجعة جميع الطلبات من قبل مسؤولي المفوضية العليا المستقلة للانتخابات.',

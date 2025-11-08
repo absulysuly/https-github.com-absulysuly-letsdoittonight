@@ -19,6 +19,7 @@ const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
     'Events': 'events',
     'Articles': 'articles',
     'Ask Neighbor': 'askNeighbor',
+    'IHEC Updates': 'ihecUpdates',
 };
 
 
