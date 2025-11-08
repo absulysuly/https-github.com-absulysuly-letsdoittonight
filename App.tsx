@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { User, UserRole, Governorate, Language, AppTab, Post, HomeViewMode, ThemeName, MainContentTab } from './types.ts';
 import * as api from './services/apiService.ts';
