@@ -41,7 +41,7 @@ interface HomeViewProps {
     onCompose: () => void;
 }
 
-const TABS_WITH_FILTERS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.Debates, AppTab.Events, AppTab.Articles, AppTab.AskNeighbor];
+const TABS_WITH_FILTERS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.Debates, AppTab.Events, AppTab.Articles];
 const TABS_WITH_HERO: MainContentTab[] = [AppTab.Posts];
 const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.AskNeighbor, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
 

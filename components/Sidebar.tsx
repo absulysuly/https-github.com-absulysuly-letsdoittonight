@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppTab, UserRole, User, HomeViewMode, Language } from '../types.ts';
-import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon, SparklesIcon, DocumentIcon } from './icons/Icons.tsx';
+import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon, SparklesIcon } from './icons/Icons.tsx';
 import { UI_TEXT } from '../translations.ts';
 
 interface SidebarProps {
@@ -26,7 +26,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, onNavigate, homeView
 
     const electionNavItems = [
         { label: 'Dashboard', icon: DashboardIcon, path: '/dashboard', enabled: true },
-        { label: texts.elections, icon: DocumentIcon, path: '/elections', enabled: true },
         { label: 'Voter Center', icon: IdentificationIcon, path: '/voter-registration', enabled: true },
         { label: 'Integrity Hub', icon: ScaleIcon, path: '/integrity-hub', enabled: true },
         { label: 'Data & Analytics', icon: ChartIcon, path: '/compare', enabled: true },

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React from 'react';
 import { Language } from '../../types.ts';
 
 // Election portal components
@@ -20,9 +20,6 @@ import DataCollectionPage from '../election/pages/DataCollectionPage.tsx';
 import ContactValidationPage from '../election/pages/ContactValidationPage.tsx';
 import CandidateEnrichmentPage from '../election/pages/CandidateEnrichmentPage.tsx';
 import QualityAnalyticsPage from '../election/pages/QualityAnalyticsPage.tsx';
-import Spinner from '../Spinner.tsx';
-
-const ElectionsPage = lazy(() => import('../election/pages/ElectionsPage.tsx'));
 
 
 interface ElectionManagementViewProps {
@@ -50,8 +47,6 @@ const ElectionManagementView: React.FC<ElectionManagementViewProps> = ({ path, o
                 return <LandingPage {...pageProps} />;
             case '/dashboard':
                 return <DashboardPage {...pageProps} />;
-            case '/elections':
-                return <Suspense fallback={<Spinner />}><ElectionsPage {...pageProps} /></Suspense>;
             case '/integrity-hub':
                 return <IntegrityHubPage {...pageProps} />;
             case '/international-portal':

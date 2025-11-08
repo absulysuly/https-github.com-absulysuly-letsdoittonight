@@ -160,10 +160,9 @@ type Translations = {
         dashboardSubtitle: string;
         iraqiElections: string;
         electionYear: string;
-        totalElections: string;
-        activeElections: string;
-        totalCandidates: string;
-        validatedContacts: string;
+        totalVoters: string;
+        approvedCandidates: string;
+        expectedTurnout: string;
         governorateStats: string;
         electionTimeline: string;
         timeline: {
@@ -179,8 +178,6 @@ type Translations = {
         };
         status: {
             active: string;
-            pending: string;
-            inactive: string;
             medium: string;
         };
         integrityHubTitle: string;
@@ -314,17 +311,6 @@ type Translations = {
         aspectRatio: string;
         generate: string;
         downloadImage: string;
-        
-        // Election Management
-        elections: string;
-        newElection: string;
-        createElection: string;
-        electionName: string;
-        startDate: string;
-        endDate: string;
-        electionStatus: string;
-        noElectionsFound: string;
-        electionCreatedSuccess: string;
     }
 }
 
@@ -486,10 +472,9 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: 'لوحة بيانات الانتخابات',
         iraqiElections: 'Iraqi Parliamentary Elections',
         electionYear: '2025',
-        totalElections: 'Total Elections',
-        activeElections: 'Active Elections',
-        totalCandidates: 'Total Candidates',
-        validatedContacts: 'Validated Contacts',
+        totalVoters: 'Total Registered Voters',
+        approvedCandidates: 'Approved Candidates',
+        expectedTurnout: 'Expected Turnout',
         governorateStats: 'Governorate Statistics',
         electionTimeline: 'Election Timeline',
         timeline: {
@@ -498,17 +483,8 @@ export const UI_TEXT: Translations = {
             campaignPeriod: 'Campaign Period Begins',
             electionDay: 'Election Day',
         },
-        table: {
-            governorate: 'Governorate',
-            turnout: 'Expected Turnout',
-            status: 'Status',
-        },
-        status: {
-            active: 'Active',
-            pending: 'Pending',
-            inactive: 'Inactive',
-            medium: 'Medium'
-        },
+        table: { governorate: 'Governorate', turnout: 'Expected Turnout', status: 'Status' },
+        status: { active: 'Active', medium: 'Medium' },
         integrityHubTitle: 'Election Integrity Hub',
         integrityHubDesc: 'Report electoral violations confidentially and securely. Your voice helps ensure a fair election.',
         reportDetails: 'Report Details',
@@ -638,15 +614,6 @@ export const UI_TEXT: Translations = {
         aspectRatio: 'Aspect Ratio',
         generate: 'Generate',
         downloadImage: 'Download Image',
-        elections: 'Elections',
-        newElection: 'New Election',
-        createElection: 'Create Election',
-        electionName: 'Election Name',
-        startDate: 'Start Date',
-        endDate: 'End Date',
-        electionStatus: 'Status',
-        noElectionsFound: 'No elections have been created yet.',
-        electionCreatedSuccess: 'Election created successfully!',
     },
     ku: {
         appName: 'هەڵمەتی زیرەک',
@@ -805,10 +772,9 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: "داشبۆردی هەڵبژاردن",
         iraqiElections: "هەڵبژاردنەکانی پەرلەمانی عێراق",
         electionYear: "٢٠٢٥",
-        totalElections: 'کۆی هەڵبژاردنەکان',
-        activeElections: 'هەڵبژاردنە چالاکەکان',
-        totalCandidates: 'کۆی کاندیدەکان',
-        validatedContacts: 'پەیوەندییە پشتڕاستکراوەکان',
+        totalVoters: "کۆی دەنگدەرانی تۆمارکراو",
+        approvedCandidates: "کاندیدە پەسەندکراوەکان",
+        expectedTurnout: "ڕێژەی چاوەڕوانکراوی بەشداری",
         governorateStats: "ئاماری پارێزگاکان",
         electionTimeline: "کاتی هەڵبژاردن",
         timeline: {
@@ -818,12 +784,7 @@ export const UI_TEXT: Translations = {
             electionDay: "ڕۆژی هەڵبژاردن",
         },
         table: { governorate: "پارێزگا", turnout: "بەشداری چاوەڕوانکراو", status: "بارودۆخ" },
-        status: { 
-            active: "چالاک",
-            pending: 'چاوەڕوان',
-            inactive: 'ناچالاک',
-            medium: "ناوەند"
-        },
+        status: { active: "چالاک", medium: "ناوەند" },
         integrityHubTitle: "ناوەندی دەستپاکی هەڵبژاردن",
         integrityHubDesc: "ڕاپۆرتی پێشێلکارییەکانی هەڵبژاردن بدە بە نهێنی و سەلامەتی. دەنگی تۆ یارمەتیدەرە بۆ دڵنیابوون لە هەڵبژاردنێکی پاک.",
         reportDetails: "وردەکارییەکانی ڕاپۆرت",
@@ -953,15 +914,6 @@ export const UI_TEXT: Translations = {
         aspectRatio: "ڕێژەی ڕەهەند",
         generate: "دروستکردن",
         downloadImage: "داگرتنی وێنە",
-        elections: 'هەڵبژاردنەکان',
-        newElection: 'هەڵبژاردنی نوێ',
-        createElection: 'دروستکردنی هەڵبژاردن',
-        electionName: 'ناوی هەڵبژاردن',
-        startDate: 'ڕێکەوتی دەستپێک',
-        endDate: 'ڕێکەوتی کۆتایی',
-        electionStatus: 'بارودۆخ',
-        noElectionsFound: 'هیچ هەڵبژاردنێک دروست نەکراوە.',
-        electionCreatedSuccess: 'هەڵبژاردن بە سەرکەوتوویی دروست کرا!',
     },
     ar: {
         appName: 'الحملة الذكية',
@@ -1120,10 +1072,9 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: "Election Dashboard",
         iraqiElections: "انتخابات العراق البرلمانية",
         electionYear: "٢٠٢٥",
-        totalElections: 'إجمالي الانتخابات',
-        activeElections: 'الانتخابات النشطة',
-        totalCandidates: 'إجمالي المرشحين',
-        validatedContacts: 'جهات الاتصال المعتمدة',
+        totalVoters: "إجمالي الناخبين المسجلين",
+        approvedCandidates: "المرشحون المعتمدون",
+        expectedTurnout: "المشاركة المتوقعة",
         governorateStats: "إحصائيات المحافظات",
         electionTimeline: "الجدول الزمني للانتخابات",
         timeline: {
@@ -1133,12 +1084,7 @@ export const UI_TEXT: Translations = {
             electionDay: "يوم الانتخابات",
         },
         table: { governorate: "المحافظة", turnout: "المشاركة المتوقعة", status: "الحالة" },
-        status: { 
-            active: "نشط",
-            pending: 'قيد الانتظار',
-            inactive: 'غير نشط',
-            medium: "متوسط"
-        },
+        status: { active: "نشط", medium: "متوسط" },
         integrityHubTitle: "مركز نزاهة الانتخابات",
         integrityHubDesc: "الإبلاغ عن المخالفات الانتخابية بسرية وأمان. صوتك يساهم في ضمان انتخابات نزيهة.",
         reportDetails: "تفاصيل البلاغ",
@@ -1268,14 +1214,5 @@ export const UI_TEXT: Translations = {
         aspectRatio: "نسبة العرض إلى الارتفاع",
         generate: "إنشاء",
         downloadImage: "تنزيل الصورة",
-        elections: 'الانتخابات',
-        newElection: 'انتخاب جديد',
-        createElection: 'إنشاء انتخاب',
-        electionName: 'اسم الانتخاب',
-        startDate: 'تاريخ البدء',
-        endDate: 'تاريخ الانتهاء',
-        electionStatus: 'الحالة',
-        noElectionsFound: 'لم يتم إنشاء أي انتخابات بعد.',
-        electionCreatedSuccess: 'تم إنشاء الانتخاب بنجاح!',
     }
 };

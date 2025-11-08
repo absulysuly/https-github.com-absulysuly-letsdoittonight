@@ -1,8 +1,9 @@
 import { User, UserRole, Post, Event, Article, Debate, Governorate, TeaHouseTopic, TeaHouseMessage, Language } from '../types.ts';
 import { MOCK_USERS, MOCK_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES, IRAQI_GOVERNORATES_INFO } from '../constants.ts';
-import { Candidate, NewsArticle, PoliticalParty, DashboardStats, ParticipationData, ApiConfig, DataCollectionStats, ContactValidationItem, EnrichmentData, QualityAnalyticsData, Election } from '../components/election/types.ts';
+import { Candidate, NewsArticle, PoliticalParty, DashboardStats, ParticipationData, ApiConfig, DataCollectionStats, ContactValidationItem, EnrichmentData, QualityAnalyticsData } from '../components/election/types.ts';
 
-const API_BASE_URL = '/api'; // Assuming a proxy is set up for development
+// --- MOCK API Service ---
+// This service simulates API calls by returning mock data after a short delay.
 
 const simulateDelay = <T>(data: T): Promise<T> => {
     return new Promise(resolve => {
@@ -212,45 +213,15 @@ export const submitIntegrityReport = async (formData: FormData): Promise<{ succe
     return simulateDelay({ success: true, trackingId: `IQ-REP-${Date.now()}` });
 };
 
-export const getDashboardStats = async (): Promise<{ stats: DashboardStats; participation: ParticipationData[] }> => {
-    const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch dashboard stats from the backend.');
-    }
-    const stats: DashboardStats = await response.json();
-
-    // Keep participation data mocked as it is not included in the backend specification
-    const participation: ParticipationData[] = IRAQI_GOVERNORATES_INFO.map(g => ({
-        governorateId: g.id,
-        governorateName: g.name,
-        estimatedTurnout: parseFloat((40 + Math.random() * 30).toFixed(2))
-    }));
-    
-    return { stats, participation };
-};
-
-export const getElections = async (): Promise<Election[]> => {
-    const response = await fetch(`${API_BASE_URL}/elections`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch elections');
-    }
-    return response.json();
-};
-
-export const createElection = async (electionData: Partial<Election>): Promise<Election> => {
-    const response = await fetch(`${API_BASE_URL}/elections`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(electionData),
+export const getDashboardStats = (): Promise<{ stats: DashboardStats; participation: ParticipationData[] }> => {
+    return simulateDelay({
+        stats: { totalRegisteredVoters: 12500000, approvedCandidatesCount: 7769, expectedTurnoutPercentage: 65 },
+        participation: IRAQI_GOVERNORATES_INFO.map(g => ({
+            governorateId: g.id,
+            governorateName: g.name,
+            estimatedTurnout: parseFloat((40 + Math.random() * 30).toFixed(2))
+        }))
     });
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Error creating election:", errorBody);
-        throw new Error('Failed to create election');
-    }
-    return response.json();
 };
 
 export const getGovernorateDataByName = (name: string): Promise<{ governorate: any; candidates: Candidate[]; news: NewsArticle[] }> => {

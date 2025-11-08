@@ -266,7 +266,6 @@ export async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampl
   return buffer;
 }
 
-// Fix: Export the 'encode' function to make it accessible to other modules.
 export function encode(bytes: Uint8Array) {
   let binary = '';
   const len = bytes.byteLength;
@@ -297,7 +296,12 @@ export const startLiveConversation = (callbacks: {
      const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
      return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
-        callbacks: callbacks,
+        callbacks: {
+          onopen: callbacks.onOpen,
+          onmessage: callbacks.onMessage,
+          onerror: callbacks.onError,
+          onclose: callbacks.onClose,
+        },
         config: {
             responseModalities: [Modality.AUDIO],
             inputAudioTranscription: {},

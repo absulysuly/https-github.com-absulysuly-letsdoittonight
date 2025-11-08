@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Language } from '../../types.ts';
 import { UI_TEXT } from '../../translations.ts';
-import { startLiveConversation, decode, decodeAudioData, encode, createBlob } from '../../services/geminiService.ts';
+import { startLiveConversation, decode, decodeAudioData, createBlob } from '../../services/geminiService.ts';
 import { MicIcon, SparklesIcon } from '../icons/Icons.tsx';
 import { LiveServerMessage, LiveSession } from '@google/genai';
-// Fix: Import the Spinner component to be used during the connecting state.
 import Spinner from '../Spinner.tsx';
 
 interface LiveConversationViewProps {
