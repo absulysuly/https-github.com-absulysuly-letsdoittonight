@@ -15,7 +15,7 @@ export interface TopNavBarProps<T extends string> {
     language: Language;
 }
 
-const TAB_TRANSLATION_KEYS = {
+const TAB_TRANSLATION_KEYS: Partial<Record<string, StringTranslationKey>> = {
     Posts: 'posts',
     Reels: 'reels',
     Candidates: 'candidates',
@@ -25,7 +25,7 @@ const TAB_TRANSLATION_KEYS = {
     Events: 'events',
     Articles: 'articles',
     'Ask Neighbor': 'askNeighbor',
-} satisfies Partial<Record<string, StringTranslationKey>>;
+};
 
 const NAV_BAR_BASE_CLASS = 'border-b border-[var(--color-glass-border)]';
 const TAB_CONTAINER_CLASS =
@@ -34,19 +34,28 @@ const ACTIVE_TAB_CLASS = 'border-primary text-primary glow';
 const INACTIVE_TAB_CLASS =
     'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
 
-type TopNavBarComponentType = <T extends string>(props: TopNavBarProps<T>) => JSX.Element;
-
-const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChange, language }) => {
+function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>): JSX.Element {
     const texts = useMemo<LanguageTexts>(() => UI_TEXT[language], [language]);
 
-    const getTabClasses = (tab: typeof activeTab) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS);
+    const getTabClasses = useCallback(
+        (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS),
+        [activeTab],
+    );
 
-    const handleTabClick = useCallback((tab: T) => () => onTabChange(tab), [onTabChange]);
+    const handleTabClick = useCallback(
+        (tab: T) => () => {
+            onTabChange(tab);
+        },
+        [onTabChange],
+    );
 
-    const getTabLabel = (tab: T) => {
-        const translationKey = TAB_TRANSLATION_KEYS[tab];
-        return translationKey ? texts[translationKey] : tab;
-    };
+    const getTabLabel = useCallback(
+        (tab: T) => {
+            const translationKey = TAB_TRANSLATION_KEYS[tab];
+            return translationKey ? texts[translationKey] : tab;
+        },
+        [texts],
+    );
 
     return (
         <div className={NAV_BAR_BASE_CLASS}>
@@ -56,6 +65,7 @@ const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChan
                         key={tab}
                         onClick={handleTabClick(tab)}
                         className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                        type="button"
                     >
                         {getTabLabel(tab)}
                     </button>
@@ -63,9 +73,10 @@ const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChan
             </nav>
         </div>
     );
-};
+}
 
-const MemoizedTopNavBar = memo(TopNavBarComponent);
-MemoizedTopNavBar.displayName = 'TopNavBar';
+TopNavBarComponent.displayName = 'TopNavBar';
 
-export const TopNavBar = MemoizedTopNavBar as typeof TopNavBarComponent;
+const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+
+export { TopNavBar };
