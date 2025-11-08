@@ -77,6 +77,6 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
 
 TopNavBarComponent.displayName = 'TopNavBar';
 
-export const TopNavBar = memo(
-    TopNavBarComponent,
-) as <T extends string>(props: TopNavBarProps<T>) => JSX.Element;
+const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+
+export { TopNavBar };
