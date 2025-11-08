@@ -1,3 +1,5 @@
+'use client';
+
 import { memo, useCallback, useMemo } from 'react';
 
 import type { Language } from '../types.ts';
@@ -64,7 +66,9 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
                     <button
                         key={tab}
                         onClick={handleTabClick(tab)}
-                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(
+                            tab,
+                        )}`}
                         type="button"
                     >
                         {getTabLabel(tab)}
@@ -75,8 +79,12 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
     );
 }
 
-TopNavBarComponent.displayName = 'TopNavBar';
+type MemoizedTopNavBarType = (<T extends string>(props: TopNavBarProps<T>) => JSX.Element) & {
+    displayName?: string;
+};
 
-const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+const MemoizedTopNavBar = memo(TopNavBarComponent) as MemoizedTopNavBarType;
 
-export { TopNavBar };
+MemoizedTopNavBar.displayName = 'TopNavBar';
+
+export const TopNavBar = MemoizedTopNavBar;
