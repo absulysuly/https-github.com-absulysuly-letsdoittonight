@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
@@ -41,8 +41,10 @@ const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChan
 
     const getTabClasses = (tab: typeof activeTab) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS);
 
-    const getTabLabel = (tab: typeof activeTab) => {
-        const translationKey = TAB_TRANSLATION_KEYS[tab as keyof typeof TAB_TRANSLATION_KEYS];
+    const handleTabClick = useCallback((tab: T) => () => onTabChange(tab), [onTabChange]);
+
+    const getTabLabel = (tab: T) => {
+        const translationKey = TAB_TRANSLATION_KEYS[tab];
         return translationKey ? texts[translationKey] : tab;
     };
 
@@ -52,7 +54,7 @@ const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChan
                 {tabs.map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => onTabChange(tab)}
+                        onClick={handleTabClick(tab)}
                         className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
                     >
                         {getTabLabel(tab)}
@@ -63,4 +65,7 @@ const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChan
     );
 };
 
-export const TopNavBar = memo(TopNavBarComponent) as TopNavBarComponentType;
+const MemoizedTopNavBar = memo(TopNavBarComponent);
+MemoizedTopNavBar.displayName = 'TopNavBar';
+
+export const TopNavBar = MemoizedTopNavBar as typeof TopNavBarComponent;
