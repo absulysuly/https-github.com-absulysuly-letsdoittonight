@@ -1,6 +1,11 @@
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
+type LanguageTexts = (typeof UI_TEXT)['en'];
+type StringTranslationKey = {
+    [K in keyof LanguageTexts]: LanguageTexts[K] extends string ? K : never;
+}[keyof LanguageTexts];
+
 interface TopNavBarProps<T extends string> {
     tabs: T[];
     activeTab: T;
@@ -8,9 +13,7 @@ interface TopNavBarProps<T extends string> {
     language: Language;
 }
 
-type TranslationKey = keyof (typeof UI_TEXT)['en'];
-
-const tabTranslationKeys: Record<string, TranslationKey> = {
+const tabTranslationKeys: Partial<Record<string, StringTranslationKey>> = {
     'Posts': 'posts',
     'Reels': 'reels',
     'Candidates': 'candidates',
@@ -23,7 +26,7 @@ const tabTranslationKeys: Record<string, TranslationKey> = {
 };
 
 function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
-    const texts = UI_TEXT[language];
+    const texts = UI_TEXT[language] as LanguageTexts;
     const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
     const getTabClasses = (tab: T) => {
@@ -38,7 +41,7 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
             <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
                 {tabs.map((tab) => {
                     const translationKey = tabTranslationKeys[tab];
-                    const label = translationKey ? texts[translationKey] : tab;
+                    const label: string = translationKey ? texts[translationKey] : tab;
 
                     return (
                         <button

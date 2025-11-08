@@ -269,10 +269,11 @@ const App: React.FC = () => {
                 language={language}
             />
             
-            <Sidebar 
-                user={user} 
-                activeTab={homeViewMode === 'Social' ? activeTab : electionPath} 
-                onNavigate={homeViewMode === 'Social' ? handleNavigate : setElectionPath}
+            <Sidebar
+                user={user}
+                activeTab={homeViewMode === 'Social' ? activeTab : electionPath}
+                onSocialNavigate={handleNavigate}
+                onElectionNavigate={setElectionPath}
                 homeViewMode={homeViewMode}
                 language={language}
             />
