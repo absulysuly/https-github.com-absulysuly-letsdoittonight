@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export",
+    "validate": "node scripts/validate-api.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
