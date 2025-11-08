@@ -1,5 +1,4 @@
-import React from 'react';
-import { Language } from '../types.ts';
+import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
 interface TopNavBarProps<T extends string> {
@@ -9,7 +8,9 @@ interface TopNavBarProps<T extends string> {
     language: Language;
 }
 
-const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
+type TranslationKey = keyof (typeof UI_TEXT)['en'];
+
+const tabTranslationKeys: Record<string, TranslationKey> = {
     'Posts': 'posts',
     'Reels': 'reels',
     'Candidates': 'candidates',
@@ -20,7 +21,6 @@ const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
     'Articles': 'articles',
     'Ask Neighbor': 'askNeighbor',
 };
-
 
 function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
     const texts = UI_TEXT[language];
@@ -53,6 +53,6 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
             </nav>
         </div>
     );
-};
+}
 
 export default TopNavBar;
