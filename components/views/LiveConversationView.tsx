@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Language } from '../../types.ts';
 import { UI_TEXT } from '../../translations.ts';
-import { startLiveConversation, decode, decodeAudioData, createBlob, type GeminiLiveSession } from '../../services/geminiService.ts';
+import { startLiveConversation, decode, decodeAudioData, createBlob } from '../../services/geminiService.ts';
 import { MicIcon, SparklesIcon } from '../icons/Icons.tsx';
-import { LiveServerMessage } from '@google/genai';
+import { LiveServerMessage, LiveSession } from '@google/genai';
 import Spinner from '../Spinner.tsx';
 
 interface LiveConversationViewProps {
@@ -18,7 +18,7 @@ const LiveConversationView: React.FC<LiveConversationViewProps> = ({ language, o
     const [transcription, setTranscription] = useState<{ user: string, bot: string}[]>([]);
     const [currentTurn, setCurrentTurn] = useState({ user: '', bot: '' });
 
-    const sessionPromiseRef = useRef<Promise<GeminiLiveSession> | null>(null);
+    const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const outputAudioContextRef = useRef<AudioContext | null>(null);
     const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -82,25 +82,20 @@ const LiveConversationView: React.FC<LiveConversationViewProps> = ({ language, o
                     scriptProcessor.connect(inputAudioContext.destination);
                 },
                 onMessage: async (message: LiveServerMessage) => {
-                    const serverContent = message.serverContent;
-
-                    if (serverContent?.inputTranscription?.text) {
-                        const inputText = serverContent.inputTranscription.text;
-                        setCurrentTurn(prev => ({ ...prev, user: prev.user + inputText }));
+                     // Handle transcription
+                    if (message.serverContent?.inputTranscription) {
+                        setCurrentTurn(prev => ({...prev, user: prev.user + message.serverContent.inputTranscription.text}));
                     }
-
-                    if (serverContent?.outputTranscription?.text) {
-                        const outputText = serverContent.outputTranscription.text;
-                        setCurrentTurn(prev => ({ ...prev, bot: prev.bot + outputText }));
+                     if (message.serverContent?.outputTranscription) {
+                        setCurrentTurn(prev => ({...prev, bot: prev.bot + message.serverContent.outputTranscription.text}));
                     }
-
-                    if (serverContent?.turnComplete) {
+                    if (message.serverContent?.turnComplete) {
                         setTranscription(prev => [...prev, currentTurn]);
                         setCurrentTurn({ user: '', bot: ''});
                     }
 
                     // Handle audio output
-                    const base64Audio = serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
+                    const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
                     if (base64Audio && outputAudioContextRef.current) {
                         const outCtx = outputAudioContextRef.current;
                         nextStartTimeRef.current = Math.max(nextStartTimeRef.current, outCtx.currentTime);

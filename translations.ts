@@ -1,1218 +1,903 @@
 import { Language } from './types.ts';
 
-type Translations = {
-    [key in Language]: {
-        appName: string;
-        social: string;
-        serious: string;
-        whoToFollow: string;
-        platformRules: string;
-        rule1: string;
-        rule2: string;
-        rule3: string;
-        rule4: string;
-        welcomeToApp: string;
-        chooseYourRole: string;
-        iAmVoter: string;
-        voterDescription: string;
-        iAmCandidate: string;
-        candidateDescription: string;
-        teaHouse: string;
-        teaHouseFooter: string;
-        register: string;
-        fullName: string;
-        emailAddress: string;
-        createAccount: string;
-        registerAsVoter: string;
-        registerAsCandidate: string;
-        back: string;
-        saveDraft: string;
-        preview: string;
-        privacy: string;
-        public: string;
-        friends: string;
-        private: string;
-        notifications: string;
-        registerAsCandidateButton: string;
-        boostedPost: string;
-        home: string;
-        posts: string;
-        reels: string;
-        candidates: string;
-        womenCandidates: string;
-        debates: string;
-        analytics: string;
-        myProfile: string;
-        events: string;
-        articles: string;
-        search: string;
-        dashboard: string;
-        settings: string;
-        backToSocial: string;
-        electionPortal: string;
+type TranslationKeys = {
+    // A-Z
+    accessibilityDisplay: string;
+    accessDenied: string;
+    aiAssistant: string;
+    all: string;
+    allIraq: string;
+    analyzeImage: string;
+    analyzeImageDesc: string;
+    apiAccess: string;
+    apiAccessDesc: string;
+    apiConfig: string;
+    apiConfigDesc: string;
+    appName: string;
+    approvedCandidates: string;
+    articles: string;
+    ask: string;
+    askAnything: string;
+    askNeighbor: string;
+    askNeighborDesc: string;
+    askNeighborPlaceholder: string;
+    aspectRatio: string;
+    attachEvidence: string;
+    avatarUrl: string;
+    avatarUrlPlaceholder: string;
+    back: string;
+    backToTools: string;
+    biography: string;
+    boostedPost: string;
+    browseReports: string;
+    cancel: string;
+    candidateDescription: string;
+    candidateEnrichment: string;
+    candidateEnrichmentDesc: string;
+    candidateHub: string;
+    candidateHubDesc: string;
+    candidates: string;
+    category: string;
+    checkVerification: string;
+    clearSelection: string;
+    colorTheme: string;
+    comment: string;
+    confidentialNotice: string;
+    confirmationId: string;
+    contactMP: string;
+    contactMPDesc: string;
+    contactMPPlaceholder: string;
+    contactValidation: string;
+    contactValidationDesc: string;
+    create: string;
+    createAccount: string;
+    createNewDiscussion: string;
+    createNewDiscussionTitle: string;
+    dashboard: string;
+    dashboardSubtitle: string;
+    dataCollection: string;
+    dataCollectionDesc: string;
+    dataManagement: string;
+    dataManagementDesc: string;
+    days: string;
+    debates: string;
+    didNotReceiveEmail: string;
+    discoverCandidates: string;
+    discoverCandidatesDesc: string;
+    discussionsInLang: string;
+    dob: string;
+    downloadImage: string;
+    downloadReports: string;
+    downloadReportsDesc: string;
+    downloadQr: string;
+    downloadQrFailed: string;
+    draftSaved: string;
+    editImage: string;
+    editImageDesc: string;
+    editProfile: string;
+    electionCandidates: string;
+    electionCountdownTitle: string;
+    electionDashboard: string;
+    electionData: string;
+    electionDataBig: string;
+    electionDataDesc: string;
+    electionPortal: string;
+    electionTimeline: string;
+    electionYear: string;
+    emailAddress: string;
+    emailNotVerified: string;
+    emailResent: string;
+    empoweringWomenInPolitics: string;
+    endSession: string;
+    enterTopicForAI: string;
+    events: string;
+    expectedTurnout: string;
+    featureComingSoon: string;
+    female: string;
+    filterByCandidate: string;
+    firstMessage: string;
+    firstMessagePlaceholder: string;
+    follow: string;
+    following: string;
+    friends: string;
+    fullName: string;
+    fullNameNationalId: string;
+    gender: string;
+    generate: string;
+    generateImage: string;
+    generateImageDesc: string;
+    generateVideoFromImage: string;
+    generateVideoFromImageDesc: string;
+    generateVideoFromText: string;
+    generateVideoFromTextDesc: string;
+    generating: string;
+    geminiTools: string;
+    geminiToolsDesc: string;
+    getSuggestion: string;
+    governorate: string;
+    governorateStats: string;
+    highContrast: string;
+    highContrastDesc: string;
+    home: string;
+    hours: string;
+    iAmCandidate: string;
+    iAmVoter: string;
+    imagePromptPlaceholder: string;
+    integrityHubTitle: string;
+    integrityHubDesc: string;
+    intlPortalTitle: string;
+    intlPortalDesc: string;
+    iraqiElections: string;
+    joinLiveDebate: string;
+    largeText: string;
+    largeTextDesc: string;
+    lawCompliance: string;
+    lawComplianceDesc: string;
+    like: string;
+    link: string;
+    liveConversation: string;
+    liveConversationDesc: string;
+    loading: string;
+    loadingCandidates: string;
+    loadingPosts: string;
+    loadingStories: string;
+    loginToCandidatePortal: string;
+    loginToVoterPortal: string;
+    mainDashboard: string;
+    mainDashboardDesc: string;
+    mainLanguage: string;
+    male: string;
+    messageSent: string;
+    minutes: string;
+    myPosts: string;
+    myProfile: string;
+    myWall: string;
+    name: string;
+    nationalId: string;
+    nationalIdHint: string;
+    networkError: string;
+    noBio: string;
+    noCandidatesFoundQR: string;
+    noCandidatesToShow: string;
+    noDebatesFound: string;
+    noDiscussionsFound: string;
+    noEventsScheduled: string;
+    noPostsFound: string;
+    noPostsYet: string;
+    noPostsYetCandidate: string;
+    noPostsYetUser: string;
+    noReelsFound: string;
+    noStories: string;
+    notACandidate: string;
+    notifications: string;
+    observerHub: string;
+    observerHubDesc: string;
+    observerResources: string;
+    observerResourcesDesc: string;
+    orContinueWithEmail: string;
+    party: string;
+    platformRules: string;
+    portal: string;
+    post: string;
+    posts: string;
+    postsBy: string; // e.g. "Posts by {name}"
+    preview: string;
+    previewingPost: string;
+    privacy: string;
+    private: string;
+    promoTools: string;
+    promoToolsDesc: string;
+    promptTopic: string;
+    public: string;
+    qualityAnalytics: string;
+    qualityAnalyticsDesc: string;
+    refineWithAI: string;
+    registerAnotherVoter: string;
+    registerAsCandidate: string;
+    registerAsVoter: string;
+    registerButton: string;
+    registerOrg: string;
+    registrationFailed: string;
+    registrationSuccess: string;
+    relevantLocations: string;
+    reportDetails: string;
+    reportPost: string;
+    reportType: string;
+    reportTypes: {
+        buying_votes: string;
+        propaganda_violation: string;
+        voter_intimidation: string;
+        misinformation: string;
+        other: string;
+    };
+    requestApiAccess: string;
+    resendVerificationEmail: string;
+    resources: string;
+    results: string;
+    rsvp: string;
+    rule1: string;
+    rule2: string;
+    rule3: string;
+    rule4: string;
+    saveChanges: string;
+    saveDraft: string;
+    scanToSee: string;
+    search: string;
+    seconds: string;
+    selectGovernorate: string;
+    selectReportType: string;
+    selectYourGovernorate: string;
+    sendMessage: string;
+    serious: string;
+    setReminder: string;
+    settings: string;
+    share: string;
+    shareLinkCopied: string;
+    shareNotSupported: string;
+    showOriginal: string;
+    showTranslation: string;
+    signInWithFacebook: string;
+    signInWithGoogle: string;
+    simulationNotice: string;
+    social: string;
+    socialConnections: string;
+    socialConnectionsDesc: string;
+    socialLoginFailed: string;
+    sources: string;
+    status: {
+        active: string;
+        medium: string;
+    };
+    submissionError: string;
+    submissionSuccess: string;
+    submissionThanks: string;
+    submitNewReport: string;
+    submitReport: string;
+    submitting: string;
+    supportResources: string;
+    supportResourcesDesc: string;
+    table: {
         governorate: string;
-        allIraq: string;
-        party: string;
-        gender: string;
-        male: string;
-        female: string;
-        all: string;
-        whatsOnYourMind: string;
-        post: string;
-        loading: string;
-        noPostsFound: string;
-        translating: string;
-        showOriginal: string;
-        showTranslation: string;
-        reportPost: string;
-        like: string;
-        comment: string;
-        share: string;
-        enterTopicForAI: string;
-        getSuggestion: string;
-        generating: string;
-        portal: string;
-        electionCandidates: string;
-        electionData: string;
-        resources: string;
-        signInWithGoogle: string;
-        signInWithFacebook: string;
-        orContinueWithEmail: string;
-        verifyYourEmail: string;
-        verificationSentMessage: string;
-        didNotReceiveEmail: string;
-        resendVerificationEmail: string;
-        emailResent: string;
-        checkVerification: string;
-        continueToApp: string;
-        electionCountdownTitle: string;
-        days: string;
-        hours: string;
-        minutes: string;
-        seconds: string;
+        turnout: string;
+        status: string;
+    };
+    teaHouse: string;
+    timeline: {
+        voterRegistration: string;
+        candidateDeadline: string;
+        campaignPeriod: string;
+        electionDay: string;
+    };
+    topicTitle: string;
+    topicTitlePlaceholder: string;
+    totalVoters: string;
+    trackingId: string;
+    translating: string;
+    tts: string;
+    ttsDesc: string;
+    typeAMessage: string;
+    underConstruction: string;
+    unlink: string;
+    upcomingEvents: string;
+    verificationSentMessage: string;
+    verifyYourEmail: string;
 
-        // Added for full i18n
-        follow: string;
-        following: string;
-        shareLinkCopied: string;
-        shareNotSupported: string;
-        socialLoginFailed: string;
-        registrationFailed: string;
-        emailNotVerified: string;
-        promptTopic: string;
-        draftSaved: string;
-        previewingPost: string;
-        speechRecognitionNotSupported: string;
-        accessDenied: string;
-        downloadQrFailed: string;
-        unlink: string;
-        link: string;
-        myPosts: string;
-        loadingPosts: string;
-        noPostsYet: string;
-        promoTools: string;
-        promoToolsDesc: string;
-        scanToSee: string;
-        downloadQr: string;
-        socialConnections: string;
-        socialConnectionsDesc: string;
-        notACandidate: string;
-        noBio: string;
-        postsBy: string; // e.g. "Posts by {name}"
-        noPostsYetCandidate: string;
-        loadingReels: string;
-        noReelsFound: string;
-        filterByCandidate: string;
-        clearSelection: string;
-        loadingDebates: string;
-        noDebatesFound: string;
-        joinLiveDebate: string;
-        setReminder: string;
-        upcomingEvents: string;
-        loadingEvents: string;
-        noEventsScheduled: string;
-        rsvp: string;
-        loadingStories: string;
-        noStories: string;
-        discussionsInLang: string;
-        createNewDiscussion: string;
-        noDiscussionsFound: string;
-        typeAMessage: string;
-        createNewDiscussionTitle: string;
-        topicTitle: string;
-        topicTitlePlaceholder: string;
-        category: string;
-        mainLanguage: string;
-        firstMessage: string;
-        firstMessagePlaceholder: string;
-        create: string;
-        editProfile: string;
-        avatarUrl: string;
-        avatarUrlPlaceholder: string;
-        name: string;
-        biography: string;
-        cancel: string;
-        saveChanges: string;
-        myWall: string;
-        noPostsYetUser: string;
-        noCandidatesToShow: string;
-        electionDashboard: string;
-        dashboardSubtitle: string;
-        iraqiElections: string;
-        electionYear: string;
-        totalVoters: string;
-        approvedCandidates: string;
-        expectedTurnout: string;
-        governorateStats: string;
-        electionTimeline: string;
-        timeline: {
-            voterRegistration: string;
-            candidateDeadline: string;
-            campaignPeriod: string;
-            electionDay: string;
-        };
-        table: {
-            governorate: string;
-            turnout: string;
-            status: string;
-        };
-        status: {
-            active: string;
-            medium: string;
-        };
-        integrityHubTitle: string;
-        integrityHubDesc: string;
-        reportDetails: string;
-        reportType: string;
-        selectReportType: string;
-        reportTypes: {
-            buying_votes: string;
-            propaganda_violation: string;
-            voter_intimidation: string;
-            misinformation: string;
-            other: string;
-        };
-        violationDesc: string;
-        violationDescPlaceholder: string;
-        attachEvidence: string;
-        submitReport: string;
-        submitting: string;
-        confidentialNotice: string;
-        submissionSuccess: string;
-        trackingId: string;
-        submissionThanks: string;
-        submitNewReport: string;
-        submissionError: string;
-        networkError: string;
-        intlPortalTitle: string;
-        intlPortalDesc: string;
-        apiAccess: string;
-        apiAccessDesc: string;
-        requestApiAccess: string;
-        downloadReports: string;
-        downloadReportsDesc: string;
-        browseReports: string;
-        observerResources: string;
-        observerResourcesDesc: string;
-        registerOrg: string;
-        voterRegistrationTitle: string;
-        voterRegistrationDesc: string;
-        voterInfo: string;
-        fullNameNationalId: string;
-        nationalId: string;
-        nationalIdHint: string;
-        dob: string;
-        selectGovernorate: string;
-        selectYourGovernorate: string;
-        registerButton: string;
-        registrationSuccess: string;
-        confirmationId: string;
-        registerAnotherVoter: string;
-        simulationNotice: string;
-        discoverCandidates: string;
-        discoverCandidatesDesc: string;
-        loadingCandidates: string;
-        noCandidatesFoundQR: string;
-        viewProfile: string;
-        accessibilityDisplay: string;
-        highContrast: string;
-        highContrastDesc: string;
-        largeText: string;
-        largeTextDesc: string;
-        tts: string;
-        ttsDesc: string;
-        colorTheme: string;
-        underConstruction: string;
-        featureComingSoon: string;
-        contactMP: string;
-        contactMPDesc: string;
-        contactMPPlaceholder: string;
-        sendMessage: string;
-        messageSent: string;
-        dataManagement: string;
-        dataManagementDesc: string;
-        apiConfig: string;
-        apiConfigDesc: string;
-        dataCollection: string;
-        dataCollectionDesc: string;
-        contactValidation: string;
-        contactValidationDesc: string;
-        candidateEnrichment: string;
-        candidateEnrichmentDesc: string;
-        qualityAnalytics: string;
-        qualityAnalyticsDesc: string;
-        mainDashboard: string;
-        mainDashboardDesc: string;
-        voterCenter: string;
-        voterCenterDesc: string;
-        candidateHub: string;
-        candidateHubDesc: string;
-        observerHub: string;
-        observerHubDesc: string;
-        lawCompliance: string;
-        lawComplianceDesc: string;
-        electionDataBig: string;
-        electionDataDesc: string;
-        supportResources: string;
-        supportResourcesDesc: string;
-        loginToVoterPortal: string;
-        loginToCandidatePortal: string;
-        empoweringWomenInPolitics: string;
+    viewProfile: string;
+    violationDesc: string;
+    violationDescPlaceholder: string;
+    voterCenter: string;
+    voterCenterDesc: string;
+    voterDescription: string;
+    voterInfo: string;
+    voterRegistrationTitle: string;
+    voterRegistrationDesc: string;
+    welcomeToApp: string; // e.g. "Welcome to {appName}"
+    whatsOnYourMind: string;
+    whoToFollow: string;
+    womenCandidates: string;
+    you: string;
+    reels: string;
+};
 
-        // Gemini Features
-        geminiTools: string;
-        geminiToolsDesc: string;
-        askNeighbor: string;
-        askNeighborDesc: string;
-        askNeighborPlaceholder: string;
-        ask: string;
-        results: string;
-        relevantLocations: string;
-        aiAssistant: string;
-        askAnything: string;
-        sources: string;
-        refineWithAI: string;
-        generateImage: string;
-        generateImageDesc: string;
-        generateVideoFromText: string;
-        generateVideoFromTextDesc: string;
-        generateVideoFromImage: string;
-        generateVideoFromImageDesc: string;
-        analyzeImage: string;
-        analyzeImageDesc: string;
-        editImage: string;
-        editImageDesc: string;
-        liveConversation: string;
-        liveConversationDesc: string;
-        endSession: string;
-        you: string;
-        backToTools: string;
-        imagePromptPlaceholder: string;
-        aspectRatio: string;
-        generate: string;
-        downloadImage: string;
-    }
-}
-
-export const UI_TEXT: Translations = {
-    en: {
-        appName: 'Smart Campaign',
-        social: 'Social Interaction',
-        serious: 'Election Management',
-        whoToFollow: 'Who to follow',
-        platformRules: 'Platform Rules',
-        rule1: 'Be respectful to others.',
-        rule2: 'No hate speech or harassment.',
-        rule3: 'Verify information before sharing.',
-        rule4: 'Engage in constructive dialogue.',
-        welcomeToApp: 'Welcome to {appName}',
-        chooseYourRole: 'Choose your role to get started.',
-        iAmVoter: 'I am a Voter',
-        voterDescription: 'Follow candidates, join debates, and stay informed.',
-        iAmCandidate: 'I am a Candidate',
-        candidateDescription: 'Create posts, share your message, and engage with voters.',
-        teaHouse: 'Tea House',
-        teaHouseFooter: "People's Diwaniya",
-        register: 'Register',
-        fullName: 'Full Name',
-        emailAddress: 'Email Address',
-        createAccount: 'Create Account',
-        registerAsVoter: 'Register as a Voter',
-        registerAsCandidate: 'Register as a Candidate',
-        back: 'Back',
-        saveDraft: 'Save Draft',
-        preview: 'Preview',
-        privacy: 'Privacy',
-        public: 'Public',
-        friends: 'Friends',
-        private: 'Private',
-        notifications: 'Notifications',
-        registerAsCandidateButton: 'Register as a Candidate',
-        boostedPost: 'Boosted Post',
-        home: 'Home',
-        posts: 'Feed',
-        reels: 'Reels',
-        candidates: 'Candidates',
-        womenCandidates: 'Women',
-        debates: 'Debates',
-        analytics: 'Analytics',
-        myProfile: 'My Profile',
-        events: 'Events',
-        articles: 'Articles',
-        search: 'Search...',
-        dashboard: 'Dashboard',
-        settings: 'Settings',
-        backToSocial: 'Back to Social',
-        electionPortal: 'Election Portal',
+const en: TranslationKeys = {
+    accessibilityDisplay: 'Accessibility & Display',
+    accessDenied: 'Access Denied. You do not have permission to view this page.',
+    aiAssistant: 'AI Assistant',
+    all: 'All',
+    allIraq: 'All of Iraq',
+    analyzeImage: 'Analyze Image',
+    analyzeImageDesc: 'Get AI-powered insights from any image.',
+    apiAccess: 'API Access',
+    apiAccessDesc: 'Access our election data API for research and analysis. Get real-time updates on candidates, parties, and voter sentiment.',
+    apiConfig: 'API Config',
+    apiConfigDesc: 'Manage connections to social media APIs.',
+    appName: 'Smart Campaign',
+    approvedCandidates: 'Approved Candidates',
+    articles: 'Articles',
+    ask: 'Ask',
+    askAnything: 'Ask anything...',
+    askNeighbor: 'Ask Neighbor',
+    askNeighborDesc: 'Get local information and recommendations powered by Google Maps.',
+    askNeighborPlaceholder: 'e.g., "Where can I find the best kunafa near me?"',
+    aspectRatio: 'Aspect Ratio',
+    attachEvidence: 'Attach Evidence (Optional)',
+    avatarUrl: 'Avatar URL',
+    avatarUrlPlaceholder: 'https://...',
+    back: 'Back',
+    backToTools: 'Back to Tools',
+    biography: 'Biography',
+    boostedPost: 'Boosted Post',
+    browseReports: 'Browse Reports',
+    cancel: 'Cancel',
+    candidateDescription: 'Register as a candidate to manage your profile, post updates, and engage with voters.',
+    candidateEnrichment: 'Enrichment',
+    candidateEnrichmentDesc: 'View AI-enriched candidate profiles.',
+    candidateHub: 'Candidate Hub',
+    candidateHubDesc: 'Manage your campaign, analyze data, and connect with supporters. Tools for modern political outreach.',
+    candidates: 'Candidates',
+    category: 'Category',
+    checkVerification: 'I\'ve Verified My Email',
+    clearSelection: 'Clear Selection',
+    colorTheme: 'Color Theme',
+    comment: 'Comment',
+    confidentialNotice: 'Your report is anonymous and confidential. Your identity will not be shared.',
+    confirmationId: 'Your Confirmation ID',
+    contactMP: 'Contact Your Representative',
+    contactMPDesc: 'As an elected official, this candidate is now your representative. Send them a message directly.',
+    contactMPPlaceholder: 'Write your message, question, or concern here...',
+    contactValidation: 'Validation',
+    contactValidationDesc: 'Review and verify collected contact info.',
+    create: 'Create',
+    createAccount: 'Create Account',
+    createNewDiscussion: 'Start a New Discussion',
+    createNewDiscussionTitle: 'Create a New Discussion Topic',
+    dashboard: 'Dashboard',
+    dashboardSubtitle: 'Your central hub for monitoring election integrity and data.',
+    dataCollection: 'Collection',
+    dataCollectionDesc: 'Monitor the automated data scraping process.',
+    dataManagement: 'Data Management Suite',
+    dataManagementDesc: 'Tools for collecting, validating, and analyzing candidate data.',
+    days: 'Days',
+    debates: 'Debates',
+    didNotReceiveEmail: 'Didn\'t receive an email?',
+    discoverCandidates: 'Discover Candidates',
+    discoverCandidatesDesc: 'Below are the candidates matching the QR code you scanned. Tap on a profile to learn more on the official campaign app.',
+    discussionsInLang: 'Join discussions in your preferred language.',
+    dob: 'Date of Birth',
+    downloadImage: 'Download Image',
+    downloadReports: 'Download Reports',
+    downloadReportsDesc: 'Access detailed reports and datasets on election activities, voter turnout, and integrity incidents.',
+    downloadQr: 'Download QR Code',
+    downloadQrFailed: 'Failed to download QR code.',
+    draftSaved: 'Draft saved!',
+    editImage: 'Edit Image',
+    editImageDesc: 'Modify images with simple text prompts.',
+    editProfile: 'Edit Profile',
+    electionCandidates: 'Candidates',
+    electionCountdownTitle: 'Election Countdown',
+    electionDashboard: 'Election Integrity Dashboard',
+    electionData: 'Data',
+    electionDataBig: 'Election Data',
+    electionDataDesc: 'Analyze trends and compare candidates.',
+    electionPortal: 'Election Portal',
+    electionTimeline: 'Key Election Timeline',
+    electionYear: '2025',
+    emailAddress: 'Email Address',
+    emailNotVerified: 'Your email is not yet verified. Please check your inbox.',
+    emailResent: 'Verification email has been resent.',
+    empoweringWomenInPolitics: 'Empowering women in Iraqi politics. Explore the profiles of female candidates running for office.',
+    endSession: 'End Session',
+    enterTopicForAI: 'Enter topic for AI suggestion...',
+    events: 'Events',
+    expectedTurnout: 'Expected Turnout',
+    featureComingSoon: 'This feature is coming soon!',
+    female: 'Female',
+    filterByCandidate: 'Filter by candidate...',
+    firstMessage: 'First Message',
+    firstMessagePlaceholder: 'Start the conversation with your first message...',
+    follow: 'Follow',
+    following: 'Following',
+    friends: 'Friends',
+    fullName: 'Full Name',
+    fullNameNationalId: 'Full Name (as on National ID)',
+    gender: 'Gender',
+    generate: 'Generate',
+    generateImage: 'Generate Image',
+    generateImageDesc: 'Create unique images from text descriptions.',
+    generateVideoFromImage: 'Video from Image',
+    generateVideoFromImageDesc: 'Animate a starting image with a prompt.',
+    generateVideoFromText: 'Video from Text',
+    generateVideoFromTextDesc: 'Generate a short video from a text prompt.',
+    generating: 'Generating...',
+    geminiTools: 'Gemini Tools',
+    geminiToolsDesc: 'Explore powerful AI features powered by Google Gemini.',
+    getSuggestion: 'Get Suggestion',
+    governorate: 'Governorate',
+    governorateStats: 'Governorate Statistics',
+    highContrast: 'High Contrast Mode',
+    highContrastDesc: 'Increase text and UI element contrast.',
+    home: 'Home',
+    hours: 'Hours',
+    iAmCandidate: 'I am a Candidate or Campaign Manager',
+    iAmVoter: 'I am a Voter',
+    imagePromptPlaceholder: 'e.g., "A hyperrealistic photo of a modern Baghdad skyline at sunset"',
+    integrityHubTitle: 'Election Integrity Hub',
+    integrityHubDesc: 'Report violations and help ensure a fair election process. All submissions are reviewed by IHEC officials.',
+    intlPortalTitle: 'International & Observer Portal',
+    intlPortalDesc: 'Resources for international observers, researchers, and media.',
+    iraqiElections: 'Iraqi Elections',
+    joinLiveDebate: 'Join Live Debate',
+    largeText: 'Large Text',
+    largeTextDesc: 'Increase the font size across the app.',
+    lawCompliance: 'Law & Compliance',
+    lawComplianceDesc: 'Access legal frameworks and regulations.',
+    like: 'Like',
+    link: 'Link',
+    liveConversation: 'Live Conversation',
+    liveConversationDesc: 'Have a real-time voice chat with Gemini.',
+    loading: 'Loading...',
+    loadingCandidates: 'Loading Candidates...',
+    loadingPosts: 'Loading posts...',
+    loadingStories: 'Loading stories...',
+    loginToCandidatePortal: 'Login to Candidate Portal',
+    loginToVoterPortal: 'Login to Voter Portal',
+    mainDashboard: 'Main Dashboard',
+    mainDashboardDesc: 'Access key portals and tools for the election process.',
+    mainLanguage: 'Main Language',
+    male: 'Male',
+    messageSent: 'Message sent successfully!',
+    minutes: 'Mins',
+    myPosts: 'My Posts',
+    myProfile: 'My Profile',
+    myWall: 'My Wall',
+    name: 'Name',
+    nationalId: 'National ID Number',
+    nationalIdHint: 'Your 12-digit National ID number.',
+    networkError: 'A network error occurred. Please check your connection and try again.',
+    noBio: 'No biography provided.',
+    noCandidatesFoundQR: 'No candidates found for the specified party and governorate.',
+    noCandidatesToShow: 'No candidates to show.',
+    noDebatesFound: 'No debates found for the selected filters.',
+    noDiscussionsFound: 'No discussions yet. Be the first to start one!',
+    noEventsScheduled: 'No upcoming events scheduled for these filters.',
+    noPostsFound: 'No posts found. Try adjusting your filters.',
+    noPostsYet: 'You have not made any posts yet.',
+    noPostsYetCandidate: 'This candidate has not made any posts yet.',
+    noPostsYetUser: 'You haven\'t posted anything yet.',
+    noReelsFound: 'No reels found for the selected filters.',
+    noStories: 'No stories available for this user.',
+    notACandidate: 'This profile does not belong to a candidate.',
+    notifications: 'Notifications',
+    observerHub: 'Observer Hub',
+    observerHubDesc: 'Resources for international observers.',
+    observerResources: 'Observer Resources',
+    observerResourcesDesc: 'Access accreditation forms, guidelines, and contact information for election observation missions.',
+    orContinueWithEmail: 'or continue with email',
+    party: 'Party',
+    platformRules: 'Platform Rules',
+    portal: 'Portal',
+    post: 'Post',
+    posts: 'Posts',
+    postsBy: 'Posts by {name}',
+    preview: 'Preview',
+    previewingPost: 'Previewing Post',
+    privacy: 'Privacy',
+    private: 'Private',
+    promoTools: 'Promotional Tools',
+    promoToolsDesc: 'Share this QR code to let voters in your governorate discover your party\'s candidates.',
+    promptTopic: 'Please enter a topic to get a suggestion.',
+    public: 'Public',
+    qualityAnalytics: 'Analytics',
+    qualityAnalyticsDesc: 'Visualize data quality and completeness.',
+    refineWithAI: 'Refine with AI',
+    registerAnotherVoter: 'Register Another Voter',
+    registerAsCandidate: 'Register as a Candidate',
+    registerAsVoter: 'Register as a Voter',
+    registerButton: 'Register to Vote',
+    registerOrg: 'Register Your Organization',
+    registrationFailed: 'Registration failed. Please try again.',
+    registrationSuccess: 'Registration Successful!',
+    relevantLocations: 'Relevant Locations',
+    reportDetails: 'Report Details',
+    reportPost: 'Report Post',
+    reportType: 'Type of Violation',
+    reportTypes: {
+        buying_votes: 'Vote Buying or Bribery',
+        propaganda_violation: 'Campaign Propaganda Violation',
+        voter_intimidation: 'Voter Intimidation or Coercion',
+        misinformation: 'Spreading Misinformation/Disinformation',
+        other: 'Other',
+    },
+    requestApiAccess: 'Request API Access',
+    resendVerificationEmail: 'Resend',
+    resources: 'Resources',
+    results: 'Results',
+    rsvp: 'RSVP',
+    rule1: 'Be respectful.',
+    rule2: 'No hate speech.',
+    rule3: 'Stay on topic.',
+    rule4: 'Verify information.',
+    saveChanges: 'Save Changes',
+    saveDraft: 'Save Draft',
+    scanToSee: 'Scan to see our candidates!',
+    search: 'Search',
+    seconds: 'Secs',
+    selectGovernorate: 'Select Governorate',
+    selectReportType: 'Select report type...',
+    selectYourGovernorate: 'Select your governorate...',
+    sendMessage: 'Send Message',
+    serious: 'Election',
+    setReminder: 'Set Reminder',
+    settings: 'Settings',
+    share: 'Share',
+    shareLinkCopied: 'Link copied to clipboard!',
+    shareNotSupported: 'Web Share API not supported in your browser.',
+    showOriginal: 'Show Original',
+    showTranslation: 'Show Translation',
+    signInWithFacebook: 'Sign in with Facebook',
+    signInWithGoogle: 'Sign in with Google',
+    simulationNotice: 'This is a simulation. Your data will not be stored or used for official registration.',
+    social: 'Social',
+    socialConnections: 'Social Media Connections',
+    socialConnectionsDesc: 'Link your social media accounts to enable cross-platform posting and analytics.',
+    socialLoginFailed: 'Social login failed. Please try again.',
+    sources: 'Sources',
+    status: {
+        active: 'Active',
+        medium: 'Medium',
+    },
+    submissionError: 'Submission failed. Please try again.',
+    submissionSuccess: 'Report Submitted Successfully!',
+    submissionThanks: 'Thank you for your contribution to election integrity.',
+    submitNewReport: 'Submit Another Report',
+    submitReport: 'Submit Report',
+    submitting: 'Submitting...',
+    supportResources: 'Support & Resources',
+    supportResourcesDesc: 'Find help and important information.',
+    table: {
         governorate: 'Governorate',
-        allIraq: 'All of Iraq',
-        party: 'Party',
-        gender: 'Gender',
-        male: 'Male',
-        female: 'Female',
-        all: 'All',
-        whatsOnYourMind: "What's on your mind?",
-        post: 'Post',
-        loading: 'Loading...',
-        noPostsFound: 'No posts found for the selected filters.',
-        translating: 'Translating...',
-        showOriginal: 'Show original',
-        showTranslation: 'Show translation',
-        reportPost: 'Report Post',
-        like: 'Like',
-        comment: 'Comment',
-        share: 'Share',
-        enterTopicForAI: 'Or enter a topic for AI...',
-        getSuggestion: 'Get Suggestion',
-        generating: 'Generating...',
-        portal: 'Portal',
-        electionCandidates: 'Candidates',
-        electionData: 'Data',
-        resources: 'Resources',
-        signInWithGoogle: 'Sign in with Google',
-        signInWithFacebook: 'Sign in with Facebook',
-        orContinueWithEmail: 'Or continue with email',
-        verifyYourEmail: 'Verify Your Email',
-        verificationSentMessage: 'A verification link has been sent to your email address. Please click the link to activate your account.',
-        didNotReceiveEmail: "Didn't receive the email?",
-        resendVerificationEmail: 'Resend verification email',
-        emailResent: 'A new verification email has been sent!',
-        checkVerification: "I've verified my email",
-        continueToApp: 'Continue to App',
-        electionCountdownTitle: 'Time until Election',
-        days: 'Days',
-        hours: 'Hrs',
-        minutes: 'Mins',
-        seconds: 'Secs',
-        follow: 'Follow',
-        following: 'Following',
-        shareLinkCopied: 'Link to post copied to clipboard!',
-        shareNotSupported: 'Sharing is not supported on this browser.',
-        socialLoginFailed: 'Social login failed. Please try again.',
-        registrationFailed: 'Registration failed. Please try again.',
-        emailNotVerified: 'Email not verified yet. Please check your inbox for the verification link.',
-        promptTopic: 'Please enter a topic for the post suggestion.',
-        draftSaved: 'Draft saved (simulation)!',
-        previewingPost: 'Previewing post',
-        speechRecognitionNotSupported: 'Speech recognition is not supported in this browser.',
-        accessDenied: 'Access Denied. This page is for candidates only.',
-        downloadQrFailed: 'Could not download QR code. Please try again.',
-        unlink: 'Unlink',
-        link: 'Link',
-        myPosts: 'My Posts',
-        loadingPosts: 'Loading posts...',
-        noPostsYet: 'You have not posted yet.',
-        promoTools: 'Promotional Tools',
-        promoToolsDesc: 'Use this QR code on posters and flyers to direct voters to a page with all your party’s candidates in this governorate.',
-        scanToSee: 'Scan to see your party candidates!',
-        downloadQr: 'Download QR Code',
-        socialConnections: 'Social Connections',
-        socialConnectionsDesc: 'Link your social accounts to auto-share posts when you create content.',
-        notACandidate: 'This profile is not a candidate.',
-        noBio: 'This candidate has not provided a biography.',
-        postsBy: 'Posts by {name}',
-        noPostsYetCandidate: 'This candidate has not posted yet.',
-        loadingReels: 'Loading Reels...',
-        noReelsFound: 'No Reels available for the selected filters.',
-        filterByCandidate: 'Filter by specific candidate...',
-        clearSelection: 'Clear Selection',
-        loadingDebates: 'Loading debates...',
-        noDebatesFound: 'No debates found for the selected filters.',
-        joinLiveDebate: 'Join Live Debate',
-        setReminder: 'Set Reminder',
-        upcomingEvents: 'Upcoming Events',
-        loadingEvents: 'Loading events...',
-        noEventsScheduled: 'No events scheduled for the selected filters.',
-        rsvp: 'RSVP',
-        loadingStories: 'Loading stories...',
-        noStories: 'No stories for this user.',
-        discussionsInLang: 'Discussions in your selected language.',
-        createNewDiscussion: 'Create New Discussion',
-        noDiscussionsFound: 'No discussions found for this language. Why not start one?',
-        typeAMessage: 'Type a message...',
-        createNewDiscussionTitle: 'Create New Discussion',
-        topicTitle: 'Discussion Title',
-        topicTitlePlaceholder: 'Example: The electricity crisis in Baghdad',
-        category: 'Category',
-        mainLanguage: 'Primary Language',
-        firstMessage: 'First Message',
-        firstMessagePlaceholder: 'Start the conversation here...',
-        create: 'Create',
-        editProfile: 'Edit Profile',
-        avatarUrl: 'Avatar Image URL',
-        avatarUrlPlaceholder: 'https://example.com/image.jpg',
-        name: 'Name',
-        biography: 'Biography',
-        cancel: 'Cancel',
-        saveChanges: 'Save Changes',
-        myWall: 'My Wall',
-        noPostsYetUser: "You haven't posted anything yet.",
-        noCandidatesToShow: 'No candidates to show.',
-        electionDashboard: 'Election Dashboard',
-        dashboardSubtitle: 'لوحة بيانات الانتخابات',
-        iraqiElections: 'Iraqi Parliamentary Elections',
-        electionYear: '2025',
-        totalVoters: 'Total Registered Voters',
-        approvedCandidates: 'Approved Candidates',
-        expectedTurnout: 'Expected Turnout',
-        governorateStats: 'Governorate Statistics',
-        electionTimeline: 'Election Timeline',
-        timeline: {
-            voterRegistration: 'Voter Registration Opens',
-            candidateDeadline: 'Candidate Filing Deadline',
-            campaignPeriod: 'Campaign Period Begins',
-            electionDay: 'Election Day',
-        },
-        table: { governorate: 'Governorate', turnout: 'Expected Turnout', status: 'Status' },
-        status: { active: 'Active', medium: 'Medium' },
-        integrityHubTitle: 'Election Integrity Hub',
-        integrityHubDesc: 'Report electoral violations confidentially and securely. Your voice helps ensure a fair election.',
-        reportDetails: 'Report Details',
-        reportType: 'Violation Type',
-        selectReportType: 'Select violation type...',
-        reportTypes: {
-            buying_votes: 'Vote Buying',
-            propaganda_violation: 'Campaign Propaganda Violation',
-            voter_intimidation: 'Voter Intimidation',
-            misinformation: 'Dissemination of Misinformation',
-            other: 'Other',
-        },
-        violationDesc: 'Description of Violation',
-        violationDescPlaceholder: 'Please provide a detailed description of the violation, including time, place, and people involved if possible.',
-        attachEvidence: 'Attach Evidence (Image, Video, Document) - Optional',
-        submitReport: 'Submit Report',
-        submitting: 'Submitting...',
-        confidentialNotice: 'All reports are confidential. Your personal information will not be shared.',
-        submissionSuccess: 'Your report has been received successfully!',
-        trackingId: 'Your report tracking ID is:',
-        submissionThanks: 'Thank you for your contribution to maintaining the integrity of the electoral process. Our team will review the report.',
-        submitNewReport: 'Submit a New Report',
-        submissionError: 'An error occurred while submitting the report.',
-        networkError: 'A network error occurred. Please try again.',
-        intlPortalTitle: 'International Observer Portal',
-        intlPortalDesc: 'Access real-time data, comprehensive reports, and resources to support electoral transparency and monitoring.',
-        apiAccess: 'Real-time Data API',
-        apiAccessDesc: 'Access structured, real-time election data including voter turnout, incident reports, and preliminary results.',
-        requestApiAccess: 'Request API Access',
-        downloadReports: 'Downloadable Reports',
-        downloadReportsDesc: 'Download multilingual reports on candidate registration, electoral integrity, and media monitoring.',
-        browseReports: 'Browse Reports',
-        observerResources: 'Observer Resources & Briefings',
-        observerResourcesDesc: 'Access legal frameworks, logistical information, and schedules for observer briefings. Register your organization to receive updates.',
-        registerOrg: 'Register Organization',
-        voterRegistrationTitle: 'Voter Registration',
-        voterRegistrationDesc: 'Your vote matters. Make sure you are registered to participate in the upcoming elections.',
-        voterInfo: 'Voter Information',
-        fullNameNationalId: 'Full Name (as on National ID)',
-        nationalId: 'National ID Number',
-        nationalIdHint: 'Must be 12 digits',
-        dob: 'Date of Birth',
-        selectGovernorate: 'Governorate',
-        selectYourGovernorate: 'Select your governorate...',
-        registerButton: 'Register',
-        registrationSuccess: 'You have been successfully registered!',
-        confirmationId: 'Your registration confirmation ID is:',
-        registerAnotherVoter: 'Register Another Voter',
-        simulationNotice: 'This is a simulation process for demonstration purposes. No real data is stored.',
-        discoverCandidates: 'Discover Candidates',
-        discoverCandidatesDesc: "Scan a candidate's QR code to see all of their party's candidates running in the same governorate.",
-        loadingCandidates: 'Loading candidates...',
-        noCandidatesFoundQR: 'No candidates found for this party and governorate combination.',
-        viewProfile: 'View Profile',
-        accessibilityDisplay: 'Accessibility & Display',
-        highContrast: 'High Contrast Mode',
-        highContrastDesc: 'Increases text contrast for better readability.',
-        largeText: 'Large Text',
-        largeTextDesc: 'Increases the font size across the app.',
-        tts: 'Text-to-Speech (TTS)',
-        ttsDesc: "Enable 'Read Content' button on long posts.",
-        colorTheme: 'Color Theme',
-        underConstruction: 'Under Construction',
-        featureComingSoon: 'This feature will be available here soon!',
-        contactMP: 'This is your MP! Send them a question directly.',
-        contactMPDesc: 'Ask a question about an issue that matters to you, like the electricity crisis.',
-        contactMPPlaceholder: 'Example: What is your plan to solve the electricity crisis in our area?',
-        sendMessage: 'Send Message',
-        messageSent: 'Thank you! Your message has been sent (simulation).',
-        dataManagement: 'Data Management & Collection',
-        dataManagementDesc: 'Tools for platform administrators to manage the data collection process and verify its quality.',
-        apiConfig: 'API Settings',
-        apiConfigDesc: 'Manage and test API connections to social media.',
-        dataCollection: 'Data Collection Dashboard',
-        dataCollectionDesc: 'Monitor and control the collection of candidate data.',
-        contactValidation: 'Contact Validation',
-        contactValidationDesc: 'Review the quality of collected contact data.',
-        candidateEnrichment: 'Candidate Enrichment',
-        candidateEnrichmentDesc: 'View enriched data and analytics for profiles.',
-        qualityAnalytics: 'Quality Analytics',
-        qualityAnalyticsDesc: 'Visualize data quality metrics across governorates.',
-        mainDashboard: 'Main Dashboard',
-        mainDashboardDesc: 'Click on any section to explore the available tools and resources.',
-        voterCenter: 'Voter Center',
-        voterCenterDesc: 'All resources for citizens to participate effectively.',
-        candidateHub: 'Candidate Hub',
-        candidateHubDesc: 'Tools to manage your digital campaign and submit documents.',
-        observerHub: 'Observer Hub',
-        observerHubDesc: 'Resources for local and international observers.',
-        lawCompliance: 'Law & Compliance',
-        lawComplianceDesc: 'Access laws, regulations, and reporting processes.',
-        electionDataBig: 'Election Data',
-        electionDataDesc: 'Explore live statistics and historical election data.',
-        supportResources: 'Support & Resources',
-        supportResourcesDesc: 'Find help guides and downloadable materials.',
-        loginToVoterPortal: 'Login / Sign Up for Voters',
-        loginToCandidatePortal: 'Login / Sign Up for Candidates',
-        empoweringWomenInPolitics: 'A dedicated space to discover and support women candidates.',
-        geminiTools: 'Gemini Tools',
-        geminiToolsDesc: 'Explore powerful AI tools for content creation and analysis.',
-        askNeighbor: 'Ask Neighbor',
-        askNeighborDesc: 'Ask questions about your local area, powered by Google Maps.',
-        askNeighborPlaceholder: 'e.g., "Find me public libraries nearby"',
-        ask: 'Ask',
-        results: 'Results',
-        relevantLocations: 'Relevant Locations',
-        aiAssistant: 'AI Assistant',
-        askAnything: 'Ask anything...',
-        sources: 'Sources',
-        refineWithAI: 'Refine with AI',
-        generateImage: 'Generate Image',
-        generateImageDesc: 'Create unique images from text descriptions.',
-        generateVideoFromText: 'Video from Text',
-        generateVideoFromTextDesc: 'Generate a video from a descriptive prompt.',
-        generateVideoFromImage: 'Video from Image',
-        generateVideoFromImageDesc: 'Animate a static image with an optional prompt.',
-        analyzeImage: 'Analyze Image',
-        analyzeImageDesc: 'Understand the contents of an image.',
-        editImage: 'Edit Image',
-        editImageDesc: 'Make changes to an image using text commands.',
-        liveConversation: 'Live Conversation',
-        liveConversationDesc: 'Have a real-time voice chat with an AI assistant.',
-        endSession: 'End Session',
-        you: 'You',
-        backToTools: 'Back to all tools',
-        imagePromptPlaceholder: 'A photorealistic image of...',
-        aspectRatio: 'Aspect Ratio',
-        generate: 'Generate',
-        downloadImage: 'Download Image',
+        turnout: 'Est. Turnout',
+        status: 'Status',
     },
-    ku: {
-        appName: 'هەڵمەتی زیرەک',
-        social: 'کارلێکی کۆمەڵایەتی',
-        serious: 'بەڕێوەبردنی هەڵبژاردن',
-        whoToFollow: 'کێ فۆڵۆ بکەیت',
-        platformRules: 'ڕێنماییەکان',
-        rule1: 'ڕێز لە کەسانی تر بگرە.',
-        rule2: 'دووربە لە وتاری ڕق و گێچەڵی ئەلکترۆni.',
-        rule3: 'پێش بڵاوکردنەوە، لە ڕاستی زانیارییەکان دڵنیابە.',
-        rule4: 'بەشداری بکە لە گفتوگۆی بنیاتنەرانە.',
-        welcomeToApp: 'بەخێربێن بۆ {appName}',
-        chooseYourRole: 'ڕۆڵی خۆت هەڵبژێرە بۆ دەستپێکردن.',
-        iAmVoter: 'من دەنگدەرم',
-        voterDescription: 'فۆڵۆی کاندیدەکان بکە، بەشداری لە دیبەیتەکان بکە و ئاگادار بە.',
-        iAmCandidate: 'من کاندیدم',
-        candidateDescription: 'پۆست دروست بکە، پەیامەکەت بڵاوبکەرەوە و لەگەڵ دەنگدەران بەردەوام بە.',
-        teaHouse: 'چایخانە',
-        teaHouseFooter: 'دیوەخانی گەل',
-        register: 'تۆمارکردن',
-        fullName: 'ناوی تەواو',
-        emailAddress: 'ئیمەیڵ',
-        createAccount: 'هەژمار دروست بکە',
-        registerAsVoter: 'تۆمارکردن وەک دەنگدەر',
-        registerAsCandidate: 'تۆمارکردن وەک کاندید',
-        back: 'گەڕانەوە',
-        saveDraft: 'پاشەکەوتکردن وەک ڕەشنووس',
-        preview: 'پێشبینین',
-        privacy: 'تایبەتمەندی',
-        public: 'گشتی',
-        friends: 'هاوڕێیان',
-        private: 'تایبەت',
-        notifications: 'ئاگادارییەکان',
-        registerAsCandidateButton: 'تۆمارکردن وەک کاندید',
-        boostedPost: 'پۆستی سپۆنسەر',
-        home: 'سەرەکی',
-        posts: 'پۆستەکان',
-        reels: 'ڕیلەکان',
-        candidates: 'کاندیدەکان',
-        womenCandidates: 'ژنان',
-        debates: 'گفتوگۆکان',
-        analytics: 'شیکاری',
-        myProfile: 'پرۆفایلی من',
-        events: 'ڕووداوەکان',
-        articles: 'وتارەکان',
-        search: 'بگەڕێ...',
-        dashboard: 'داشبۆرد',
-        settings: 'ڕێکخستنەکان',
-        backToSocial: 'گەڕانەوە بۆ کۆمەڵایەتی',
-        electionPortal: 'پۆرتاڵی هەڵبژاردن',
-        governorate: 'پارێزگا',
-        allIraq: 'هەموو عێراق',
-        party: 'پارت',
-        gender: 'ڕەگەز',
-        male: 'نێر',
-        female: 'مێ',
-        all: 'هەموو',
-        whatsOnYourMind: 'بیر لە چی دەکەیتەوە؟',
-        post: 'پۆست',
-        loading: 'بارکردن...',
-        noPostsFound: 'هیچ پۆستێک بۆ ئەم فلتەرانە نەدۆزرایەوە.',
-        translating: 'وەرگێڕان...',
-        showOriginal: 'پیشاندانی ڕەسەن',
-        showTranslation: 'پیشاندانی وەرگێڕان',
-        reportPost: 'ڕاپۆرتکردنی پۆست',
-        like: 'لایك',
-        comment: 'کۆمێنت',
-        share: 'شەیر',
-        enterTopicForAI: 'یان بابەتێک بۆ AI بنووسە...',
-        getSuggestion: 'پێشنیار وەربگرە',
-        generating: 'دروست دەکرێت...',
-        portal: 'پۆرتاڵ',
-        electionCandidates: 'پاڵێوراوەکان',
-        electionData: 'داتا',
-        resources: 'سەرچاوەکان',
-        signInWithGoogle: 'چوونەژوورەوە لەگەڵ گوگڵ',
-        signInWithFacebook: 'چوونەژوورەوە لەگەڵ فەیسبووک',
-        orContinueWithEmail: 'یان لەگەڵ ئیمەیڵ بەردەوام بە',
-        verifyYourEmail: 'ئیمەیڵەکەت پشتڕاست بکەرەوە',
-        verificationSentMessage: 'لینکێکی پشتڕاستکردنەوە بۆ ئیمەیڵەکەت نێردراوە. تکایە کلیک لە لینکەکە بکە بۆ چالاککردنی هەژمارەکەت.',
-        didNotReceiveEmail: 'ئیمەیڵەکەت پێنەگەیشت؟',
-        resendVerificationEmail: 'دووبارە ناردنەوەی ئیمەیڵی پشتڕاستکردنەوە',
-        emailResent: 'ئیمەیڵێکی نوێی پشتڕاستکردنەوە نێردرا!',
-        checkVerification: 'پشتڕاستم کردەوە',
-        continueToApp: 'بەردەوام بە بۆ ئەپ',
-        electionCountdownTitle: 'کاتی ماوە بۆ هەڵبژاردن',
-        days: 'ڕۆژ',
-        hours: 'کاتژمێر',
-        minutes: 'خولەک',
-        seconds: 'چرکە',
-        follow: "فۆڵۆ بکە",
-        following: "فۆڵۆ کراوە",
-        shareLinkCopied: "لینکی پۆستەکە کۆپی کرا!",
-        shareNotSupported: "شەیرکردن لەم وێبگەڕەدا پشتگیری نەکراوە.",
-        socialLoginFailed: "چوونەژوورەوە سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەرەوە.",
-        registrationFailed: "تۆمارکردن سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەرەوە.",
-        emailNotVerified: "ئیمەیڵ پشتڕاست نەکراوەتەوە. تکایە سندوقی نامەکانت بپشکنە.",
-        promptTopic: "تکایە بابەتێک بنووسە بۆ پێشنیاری پۆست.",
-        draftSaved: "ڕەشنووس پاشەکەوت کرا (نموونە)!",
-        previewingPost: "پێشبینینی پۆست",
-        speechRecognitionNotSupported: "ناساندنی دەنگ لەم وێبگەڕەدا پشتگیری نەکراوە.",
-        accessDenied: "ڕێگەپێنەدراوە. ئەم لاپەڕەیە تەنها بۆ کاندیدەکانە.",
-        downloadQrFailed: "داگرتنی کۆدی QR سەرکەوتوو نەبوو. تکایە دووبارە هەوڵبدەرەوە.",
-        unlink: "لابردنی بەستن",
-        link: "بەستن",
-        myPosts: "پۆستەکانی من",
-        loadingPosts: "بارکردنی پۆستەکان...",
-        noPostsYet: "تۆ هێشتا هیچ پۆستێکت نەکردووە.",
-        promoTools: "ئامرازەکانی بانگەشە",
-        promoToolsDesc: "ئەم کۆدی QR بەکاربێنە لەسەر پۆستەر و بڵاوکراوەکان بۆ ئاڕاستەکردنی دەنگدەران.",
-        scanToSee: "سکانی بکە بۆ بینینی کاندیدەکانی پارتەکەت!",
-        downloadQr: "داگرتنی کۆدی QR",
-        socialConnections: "پەیوەندییە کۆمەڵایەتییەکان",
-        socialConnectionsDesc: "هەژمارە کۆمەڵایەتییەکانت ببەستەرەوە بۆ شەیرکردنی پۆستەکان بە شێوەیەکی ئۆتۆماتیکی.",
-        notACandidate: "ئەم پرۆفایلە کاندید نییە.",
-        noBio: "ئەم کاندیدە ژیاننامەی نەنووسیوە.",
-        postsBy: "پۆستەکانی {name}",
-        noPostsYetCandidate: "ئەم کاندیدە هێشتا هیچ پۆستێکی نەکردووە.",
-        loadingReels: "بارکردنی ڕیلەکان...",
-        noReelsFound: "هیچ ڕیلێک بۆ فلتەرەکان نەدۆزرایەوە.",
-        filterByCandidate: "فلتەرکردن بەپێی کاندید...",
-        clearSelection: "سڕینەوەی هەڵبژاردن",
-        loadingDebates: "بارکردنی گفتوگۆکان...",
-        noDebatesFound: "هیچ گفتوگۆیەک بۆ فلتەرەکان نەدۆزرایەوە.",
-        joinLiveDebate: "بەشداری گفتوگۆی ڕاستەوخۆ بکە",
-        setReminder: "یادخەرەوە دابنێ",
-        upcomingEvents: "ڕووداوەکانی داهاتوو",
-        loadingEvents: "بارکردنی ڕووداوەکان...",
-        noEventsScheduled: "هیچ ڕووداوێک بۆ فلتەرەکان دانەنراوە.",
-        rsvp: "RSVP",
-        loadingStories: "بارکردنی ستۆرییەکان...",
-        noStories: "هیچ ستۆرییەک بۆ ئەم بەکارهێنەرە نییە.",
-        discussionsInLang: "گفتوگۆکان بە زمانی هەڵبژێردراوی تۆ.",
-        createNewDiscussion: "گفتوگۆیەکی نوێ دروست بکە",
-        noDiscussionsFound: "هیچ گفتوگۆیەک بۆ ئەم زمانە نەدۆزرایەوە. بۆ یەکێک دروست ناکەیت؟",
-        typeAMessage: "نامەیەک بنووسە...",
-        createNewDiscussionTitle: "دروستکردنی گفتوگۆی نوێ",
-        topicTitle: "ناونیشانی گفتوگۆ",
-        topicTitlePlaceholder: "نموونە: قەیرانی کارەبا لە هەولێر",
-        category: "پۆل",
-        mainLanguage: "زمانی سەرەکی",
-        firstMessage: "یەکەم نامە",
-        firstMessagePlaceholder: "لێرەوە دەست بە گفتوگۆ بکە...",
-        create: "دروستکردن",
-        editProfile: "دەستکاریکردنی پرۆفایل",
-        avatarUrl: "URLی وێنەی پرۆفایل",
-        avatarUrlPlaceholder: "https://example.com/image.jpg",
-        name: "ناو",
-        biography: "ژیاننامە",
-        cancel: "هەڵوەشاندنەوە",
-        saveChanges: "پاشەکەوتکردنی گۆڕانکارییەکان",
-        myWall: "دیواری من",
-        noPostsYetUser: "تۆ هێشتا هیچت بڵاونەکردۆتەوە.",
-        noCandidatesToShow: "هیچ کاندیدێک بۆ پیشاندان نییە.",
-        electionDashboard: "داشبۆردی هەڵبژاردن",
-        dashboardSubtitle: "داشبۆردی هەڵبژاردن",
-        iraqiElections: "هەڵبژاردنەکانی پەرلەمانی عێراق",
-        electionYear: "٢٠٢٥",
-        totalVoters: "کۆی دەنگدەرانی تۆمارکراو",
-        approvedCandidates: "کاندیدە پەسەندکراوەکان",
-        expectedTurnout: "ڕێژەی چاوەڕوانکراوی بەشداری",
-        governorateStats: "ئاماری پارێزگاکان",
-        electionTimeline: "کاتی هەڵبژاردن",
-        timeline: {
-            voterRegistration: "دەستپێکردنی تۆمارکردنی دەنگدەران",
-            candidateDeadline: "کۆتا وادە بۆ پێشکەشکردنی کاندید",
-            campaignPeriod: "دەستپێکردنی بانگەشەی هەڵبژاردن",
-            electionDay: "ڕۆژی هەڵبژاردن",
-        },
-        table: { governorate: "پارێزگا", turnout: "بەشداری چاوەڕوانکراو", status: "بارودۆخ" },
-        status: { active: "چالاک", medium: "ناوەند" },
-        integrityHubTitle: "ناوەندی دەستپاکی هەڵبژاردن",
-        integrityHubDesc: "ڕاپۆرتی پێشێلکارییەکانی هەڵبژاردن بدە بە نهێنی و سەلامەتی. دەنگی تۆ یارمەتیدەرە بۆ دڵنیابوون لە هەڵبژاردنێکی پاک.",
-        reportDetails: "وردەکارییەکانی ڕاپۆرت",
-        reportType: "جۆری پێشێلکاری",
-        selectReportType: "جۆری پێشێلکاری هەڵبژێرە...",
-        reportTypes: {
-            buying_votes: "کڕینی دەنگ",
-            propaganda_violation: "پێشێلکاری بانگەشەی هەڵبژاردن",
-            voter_intimidation: "ترساندنی دەنگدەران",
-            misinformation: "بڵاوکردنەوەی زانیاری هەڵە",
-            other: "هیتر",
-        },
-        violationDesc: "وەسفی پێشێلکاری",
-        violationDescPlaceholder: "تکایە وەسفێکی وردی پێشێلکارییەکە بنووسە، لەوانە کات، شوێن، و کەسانی تێوەگلاو ئەگەر بکرێت.",
-        attachEvidence: "بەڵگە هاوپێچ بکە (وێنە، ڤیدیۆ، دۆکیومێnt) - هەڵبژاردەیی",
-        submitReport: "ناردنی ڕاپۆرت",
-        submitting: "ناردن...",
-        confidentialNotice: "هەموو ڕاپۆرتەکان نهێنین. زانیارییە کەسییەکانت بڵاوناکرێنەوە.",
-        submissionSuccess: "ڕاپۆرتەکەت بە سەرکەوتوویی وەرگیرا!",
-        trackingId: "کۆدی بەدواداچوونی ڕاپۆرتەکەت:",
-        submissionThanks: "سوپاس بۆ بەشداریت لە پاراستنی دەستپاکی پرۆسەی هەڵبژاردن. تیمەکەمان پێداچوونەوەی بۆ دەکات.",
-        submitNewReport: "ڕاپۆرتێکی نوێ پێشکەش بکە",
-        submissionError: "هەڵەیەک ڕوویدا لە کاتی ناردنی ڕاپۆرتەکە.",
-        networkError: "هەڵەیەکی تۆڕ ڕوویدا. تکایە دووبارە هەوڵبدەرەوە.",
-        intlPortalTitle: "پۆرتاڵی چاودێرانی نێودەوڵەتی",
-        intlPortalDesc: "دەستت بگات بە داتای ڕاستەوخۆ، ڕاپۆرتی گشتگیر، و سەرچاوەکان بۆ پشتگیریکردنی شەفافیەت و چاودێری هەڵبژاردن.",
-        apiAccess: "APIی داتای ڕاستەوخۆ",
-        apiAccessDesc: "دەستت بگات بە داتای هەڵبژاردنی ڕێکخراو و ڕاستەوخۆ، لەوانە ئامادەبوونی دەنگدەران و ڕاپۆرتی ڕووداوەکان.",
-        requestApiAccess: "داواکردنی دەستگەیشتن بە API",
-        downloadReports: "ڕاپۆرتەکان دابگرە",
-        downloadReportsDesc: "ڕاپۆرتی فرەزمان دابگرە لەسەر تۆمارکردنی کاندیدەکان، دەستپاکی هەڵبژاردن، و چاودێری میدیا.",
-        browseReports: "گەڕان بەدوای ڕاپۆرتەکاندا",
-        observerResources: "سەرچاوە و زانیاری بۆ چاودێران",
-        observerResourcesDesc: "دەستت بگات بە چوارچێوە یاساییەکان، زانیاری لۆجستی، و خشتەی کاتی کۆبوونەوەکان. ڕێکخراوەکەت تۆمار بکە.",
-        registerOrg: "تۆمارکردنی ڕێکخراو",
-        voterRegistrationTitle: "تۆمارکردنی دەنگدەران",
-        voterRegistrationDesc: "دەنگی تۆ گرنگە. دڵنیابە کە تۆمارکراویت بۆ بەشداریکردن لە هەڵبژاردنەکانی داهاتوو.",
-        voterInfo: "زانیاری دەنگدەر",
-        fullNameNationalId: "ناوی سیانی (وەک لە کارتی نیشتمانی)",
-        nationalId: "ژمارەی کارتی نیشتمانی",
-        nationalIdHint: "پێویستە ١٢ ژمارە بێت",
-        dob: "ڕێکەوتی لەدایکبوون",
-        selectGovernorate: "پارێزگا",
-        selectYourGovernorate: "پارێزگاکەت هەڵبژێرە...",
-        registerButton: "تۆمارکردن",
-        registrationSuccess: "تۆ بە سەرکەوتوویی تۆمار کرایت!",
-        confirmationId: "کۆدی پشتڕاستکردنەوەی تۆمارکردنەکەت:",
-        registerAnotherVoter: "تۆمارکردنی دەنگدەرێکی تر",
-        simulationNotice: "ئەمە پرۆسەیەکی نموونەییە بۆ مەبەستی پیشاندان. هیچ داتایەکی ڕاستەقینە پاشەکەوت ناکرێت.",
-        discoverCandidates: "کاندیدەکان بدۆزەرەوە",
-        discoverCandidatesDesc: "کۆدی QRی کاندیدێک سکان بکە بۆ بینینی هەموو کاندیدەکانی پارتەکەی لە هەمان پارێزگادا.",
-        loadingCandidates: "بارکردنی کاندیدەکان...",
-        noCandidatesFoundQR: "هیچ کاندیدێک بۆ ئەم پارت و پارێزگایە نەدۆزرایەوە.",
-        viewProfile: "پیشاندانی پرۆفایل",
-        accessibilityDisplay: "دەستگەیشتن و پیشاندان",
-        highContrast: "دۆخی کۆنتراستی بەرز",
-        highContrastDesc: "کۆنتراستی دەق زیاد دەکات بۆ خوێندنەوەی باشتر.",
-        largeText: "دەقی گەورە",
-        largeTextDesc: "قەبارەی فۆنتی ئەپەکە گەورە دەکات.",
-        tts: "دەق-بۆ-قسەکردن",
-        ttsDesc: "چالاککردنی دوگمەی 'خوێندنەوەی ناوەڕۆک' لەسەر پۆستە درێژەکان.",
-        colorTheme: "ڕەنگی تێما",
-        underConstruction: "لەژێر دروستکردندایە",
-        featureComingSoon: "ئەم تایبەتمەندییە بەم زووانە لێرە بەردەست دەبێت!",
-        contactMP: "ئەمە نوێنەری تۆیە! ڕاستەوخۆ پرسیارێکی لێ بکە.",
-        contactMPDesc: "پرسیارێک بکە دەربارەی کێشەیەک کە بۆت گرنگە، وەک قەیرانی کارەبا.",
-        contactMPPlaceholder: "نموونە: پلانتان چییە بۆ چارەسەرکردنی قەیرانی کارەبا لە ناوچەکەماندا؟",
-        sendMessage: "ناردنی نامە",
-        messageSent: "سوپاس! نامەکەت نێردرا (نموونە).",
-        dataManagement: "بەڕێوەبردنی داتا و کۆکردنەوە",
-        dataManagementDesc: "ئامرازەکان بۆ بەڕێوەبەرانی پلاتفۆرم بۆ بەڕێوەبردنی پرۆسەی کۆکردنەوەی داتا و پشتڕاستکردنەوەی کوالێتییەکەی.",
-        apiConfig: "ڕێکخستنەکانی API",
-        apiConfigDesc: "بەڕێوەبردن و تاقیکردنەوەی پەیوەندییەکانی API بۆ سۆشیال میدیا.",
-        dataCollection: "داشبۆردی کۆکردنەوەی داتا",
-        dataCollectionDesc: "چاودێری و کۆنترۆڵکردنی کۆکردنەوەی داتای کاندیدەکان.",
-        contactValidation: "پشتڕاستکردنەوەی پەیوەندی",
-        contactValidationDesc: "پێداچوونەوەی کوالێتی داتای پەیوەندی کۆکراوە.",
-        candidateEnrichment: "دەوڵەمەندکردنی کاندید",
-        candidateEnrichmentDesc: "بینینی داتای دەوڵەمەندکراو و شیکاری بۆ پرۆفایلەکان.",
-        qualityAnalytics: "شیکاری کوالێتی",
-        qualityAnalyticsDesc: "بینینی پێوەرەکانی کوالێتی داتا لەسەر پارێزگاکان.",
-        mainDashboard: "داشبۆردی سەرەکی",
-        mainDashboardDesc: "کلیک لە هەر بەشێک بکە بۆ گەڕان بەدوای ئامراز و سەرچاوە بەردەستەکاندا.",
-        voterCenter: "ناوەندی دەنگدەران",
-        voterCenterDesc: "هەموو سەرچاوەکان بۆ هاوڵاتیان بۆ بەشداریکردنی کاریگەر.",
-        candidateHub: "ناوەندی کاندید",
-        candidateHubDesc: "ئامرازەکان بۆ بەڕێوەبردنی هەڵمەتی دیجیتاڵیت و پێشکەشکردنی دۆکیومێنتەکان.",
-        observerHub: "ناوەندی چاودێران",
-        observerHubDesc: "سەرچاوەکان بۆ چاودێرانی ناوخۆیی و نێودەوڵەتی.",
-        lawCompliance: "یاسا و پابەندبوون",
-        lawComplianceDesc: "دەستت بگات بە یاسا و ڕێنماییەکان و پرۆسەکانی ڕاپۆرتکردن.",
-        electionDataBig: "داتای هەڵبژاردن",
-        electionDataDesc: "گەڕان بەدوای ئاماری ڕاستەوخۆ و داتای هەڵبژاردنی مێژووییدا.",
-        supportResources: "پشتگیری و سەرچاوەکان",
-        supportResourcesDesc: "ڕێنمایی یارمەتی و کەرەستەی دابەزێنراو بدۆزەرەوە.",
-        loginToVoterPortal: "چوونەژوورەوە / تۆمارکردن بۆ دەنگدەران",
-        loginToCandidatePortal: "چوونەژوورەوە / تۆمارکردن بۆ کاندیدان",
-        empoweringWomenInPolitics: "شوێنێکی تایبەت بۆ دۆزینەوە و پشتگیریکردنی کاندیدە ژنەکان.",
-        geminiTools: "ئامرازەکانی Gemini",
-        geminiToolsDesc: "ئامرازە بەهێزەکانی AI بۆ دروستکردن و شیکردنەوەی ناوەڕۆک بگەڕێ.",
-        askNeighbor: "پرسیار لە دراوسێ بکە",
-        askNeighborDesc: "پرسیار بکە دەربارەی ناوچەکەت، بەهێزکراوە بە نەخشەی گوگڵ.",
-        askNeighborPlaceholder: "بۆ نموونە، 'نزیکترین کتێبخانەی گشتی بدۆزەرەوە'",
-        ask: "پرسیار بکە",
-        results: "ئەنجامەکان",
-        relevantLocations: "شوێنە پەیوەندیدارەکان",
-        aiAssistant: "یاریدەدەری زیرەک",
-        askAnything: "هەر پرسیارێک بکە...",
-        sources: "سەرچاوەکان",
-        refineWithAI: "باشترکردن بە AI",
-        generateImage: "دروستکردنی وێنە",
-        generateImageDesc: "وێنەی ناوازە لە وەسفی دەقی دروست بکە.",
-        generateVideoFromText: "ڤیدیۆ لە دەق",
-        generateVideoFromTextDesc: "ڤیدیۆ لە وەسفێکی ورد دروست بکە.",
-        generateVideoFromImage: "ڤیدیۆ لە وێنە",
-        generateVideoFromImageDesc: "وێنەیەکی وەستاو بجوڵێنە لەگەڵ وەسفێکی هەڵبژاردەیی.",
-        analyzeImage: "شیکردنەوەی وێنە",
-        analyzeImageDesc: "لێکدانەوەی ناوەڕۆکی وێنەیەک.",
-        editImage: "دەستکاریکردنی وێنە",
-        editImageDesc: "گۆڕانکاری لە وێنەدا بکە بە بەکارهێنانی فەرمانی دەقی.",
-        liveConversation: "گفتوگۆی ڕاستەوخۆ",
-        liveConversationDesc: "گفتوگۆیەکی دەنگی ڕاستەوخۆ لەگەڵ یاریدەدەری زیرەک ئەنجام بدە.",
-        endSession: "کۆتایی هێنان بە دانیشتن",
-        you: "تۆ",
-        backToTools: "گەڕانەوە بۆ هەموو ئامرازەکان",
-        imagePromptPlaceholder: "وێنەیەکی ڕاستەقینە لە...",
-        aspectRatio: "ڕێژەی ڕەهەند",
-        generate: "دروستکردن",
-        downloadImage: "داگرتنی وێنە",
+    teaHouse: 'Tea House',
+    timeline: {
+        voterRegistration: 'Voter Registration Opens',
+        candidateDeadline: 'Candidate Application Deadline',
+        campaignPeriod: 'Official Campaign Period Begins',
+        electionDay: 'Election Day',
     },
-    ar: {
-        appName: 'الحملة الذكية',
-        social: 'التفاعل الاجتماعي',
-        serious: 'إدارة الانتخابات',
-        whoToFollow: 'من تتابعه',
-        platformRules: 'قواعد المنصة',
-        rule1: 'كن محترما للآخرين.',
-        rule2: 'لا لخطاب الكراهية أو التحرش.',
-        rule3: 'تحقق من المعلومات قبل مشاركتها.',
-        rule4: 'انخرط في حوار بناء.',
-        welcomeToApp: 'أهلاً بك في {appName}',
-        chooseYourRole: 'اختر دورك للبدء.',
-        iAmVoter: 'أنا ناخب',
-        voterDescription: 'تابع المرشحين، شارك في المناقشات، وابق على اطلاع.',
-        iAmCandidate: 'أنا مرشح',
-        candidateDescription: 'أنشئ منشورات، شارك رسالتك، وتفاعل مع الناخبين.',
-        teaHouse: 'المقهى',
-        teaHouseFooter: 'ديوانية الشعب',
-        register: 'تسجيل',
-        fullName: 'الاسم الكامل',
-        emailAddress: 'البريد الإلكتروني',
-        createAccount: 'إنشاء حساب',
-        registerAsVoter: 'التسجيل كناخب',
-        registerAsCandidate: 'التسجيل كمرشح',
-        back: 'رجوع',
-        saveDraft: 'حفظ كمسودة',
-        preview: 'معاينة',
-        privacy: 'الخصوصية',
-        public: 'عام',
-        friends: 'الأصدقاء',
-        private: 'خاص',
-        notifications: 'الإشعارات',
-        registerAsCandidateButton: 'التسجيل كمرشح',
-        boostedPost: 'منشور ممول',
-        home: 'الرئيسية',
-        posts: 'المنشورات',
-        reels: 'مقاطع',
-        candidates: 'المرشحون',
-        womenCandidates: 'المرشحات',
-        debates: 'المناقشات',
-        analytics: 'التحليلات',
-        myProfile: 'ملفي الشخصي',
-        events: 'الفعاليات',
-        articles: 'مقالات',
-        search: 'ابحث...',
-        dashboard: 'لوحة التحكم',
-        settings: 'الإعدادات',
-        backToSocial: 'العودة للتواصل الاجتماعي',
-        electionPortal: 'بوابة الانتخابات',
+    topicTitle: 'Topic Title',
+    topicTitlePlaceholder: 'What is the main subject of your discussion?',
+    totalVoters: 'Total Registered Voters',
+    trackingId: 'Your Tracking ID',
+    translating: 'Translating...',
+    tts: 'Text-to-Speech',
+    ttsDesc: 'Enable audio narration for posts and articles.',
+    typeAMessage: 'Type a message...',
+    underConstruction: 'Under Construction',
+    unlink: 'Unlink',
+    upcomingEvents: 'Upcoming Events',
+    verificationSentMessage: 'We\'ve sent a verification link to your email. Please click the link to continue.',
+    verifyYourEmail: 'Verify Your Email',
+    viewProfile: 'View Profile',
+    violationDesc: 'Description of Violation',
+    violationDescPlaceholder: 'Please provide as much detail as possible, including date, time, location, and individuals involved.',
+    voterCenter: 'Voter Center',
+    voterCenterDesc: 'Register to vote, check your status, and find your polling station. Your voice matters.',
+    voterDescription: 'Join the conversation, follow candidates, and stay informed about the election.',
+    voterInfo: 'Voter Information',
+    voterRegistrationTitle: 'Voter Registration',
+    voterRegistrationDesc: 'Ensure your voice is heard. Register to vote in the upcoming election.',
+    welcomeToApp: 'Welcome to {appName}',
+    whatsOnYourMind: 'What\'s on your mind?',
+    whoToFollow: 'Who to Follow',
+    womenCandidates: 'Women Candidates',
+    you: 'You',
+    reels: 'Reels',
+};
+
+const ar: TranslationKeys = {
+    accessibilityDisplay: 'الوصول والعرض',
+    accessDenied: 'تم رفض الوصول. ليس لديك إذن لعرض هذه الصفحة.',
+    aiAssistant: 'المساعد الذكي',
+    all: 'الكل',
+    allIraq: 'كل العراق',
+    analyzeImage: 'تحليل صورة',
+    analyzeImageDesc: 'احصل على رؤى مدعومة بالذكاء الاصطناعي من أي صورة.',
+    apiAccess: 'الوصول إلى API',
+    apiAccessDesc: 'الوصول إلى واجهة برمجة تطبيقات بيانات الانتخابات الخاصة بنا للبحث والتحليل. احصل على تحديثات في الوقت الفعلي عن المرشحين والأحزاب ومشاعر الناخبين.',
+    apiConfig: 'إعدادات API',
+    apiConfigDesc: 'إدارة الاتصالات بواجهات برمجة تطبيقات الوسائط الاجتماعية.',
+    appName: 'الحملة الذكية',
+    approvedCandidates: 'المرشحون المعتمدون',
+    articles: 'مقالات',
+    ask: 'اسأل',
+    askAnything: 'اسأل أي شيء...',
+    askNeighbor: 'اسأل جارك',
+    askNeighborDesc: 'احصل على معلومات وتوصيات محلية مدعومة بخرائط جوجل.',
+    askNeighborPlaceholder: 'مثال: "أين أجد أفضل كنافة بالقرب مني؟"',
+    aspectRatio: 'نسبة العرض إلى الارتفاع',
+    attachEvidence: 'إرفاق دليل (اختياري)',
+    avatarUrl: 'رابط الصورة الرمزية',
+    avatarUrlPlaceholder: 'https://...',
+    back: 'رجوع',
+    backToTools: 'العودة إلى الأدوات',
+    biography: 'السيرة الذاتية',
+    boostedPost: 'منشور مموّل',
+    browseReports: 'تصفح التقارير',
+    cancel: 'إلغاء',
+    candidateDescription: 'سجل كمرشح لإدارة ملفك الشخصي ونشر التحديثات والتفاعل مع الناخبين.',
+    candidateEnrichment: 'إثراء البيانات',
+    candidateEnrichmentDesc: 'عرض ملفات المرشحين المثرية بالذكاء الاصطناعي.',
+    candidateHub: 'مركز المرشح',
+    candidateHubDesc: 'أدر حملتك، وحلل البيانات، وتواصل مع المؤيدين. أدوات للتواصل السياسي الحديث.',
+    candidates: 'المرشحون',
+    category: 'الفئة',
+    checkVerification: 'لقد قمت بتأكيد بريدي الإلكتروني',
+    clearSelection: 'مسح الاختيار',
+    colorTheme: 'سمة اللون',
+    comment: 'تعليق',
+    confidentialNotice: 'بلاغك مجهول وسري. لن يتم مشاركة هويتك.',
+    confirmationId: 'معرف التأكيد الخاص بك',
+    contactMP: 'تواصل مع نائك',
+    contactMPDesc: 'بصفته مسؤولاً منتخبًا، أصبح هذا المرشح الآن ممثلك. أرسل له رسالة مباشرة.',
+    contactMPPlaceholder: 'اكتب رسالتك أو سؤالك أو استفسارك هنا...',
+    contactValidation: 'التحقق',
+    contactValidationDesc: 'مراجعة والتحقق من معلومات الاتصال التي تم جمعها.',
+    create: 'إنشاء',
+    createAccount: 'إنشاء حساب',
+    createNewDiscussion: 'ابدأ نقاشًا جديدًا',
+    createNewDiscussionTitle: 'إنشاء موضوع نقاش جديد',
+    dashboard: 'لوحة التحكم',
+    dashboardSubtitle: 'مركزك الرئيسي لمراقبة نزاهة الانتخابات والبيانات.',
+    dataCollection: 'الجمع',
+    dataCollectionDesc: 'مراقبة عملية جمع البيانات الآلية.',
+    dataManagement: 'مجموعة إدارة البيانات',
+    dataManagementDesc: 'أدوات لجمع بيانات المرشحين والتحقق منها وتحليلها.',
+    days: 'أيام',
+    debates: 'مناظرات',
+    didNotReceiveEmail: 'لم تستلم البريد الإلكتروني؟',
+    discoverCandidates: 'اكتشف المرشحين',
+    discoverCandidatesDesc: 'فيما يلي المرشحون المطابقون لرمز الاستجابة السريعة الذي قمت بمسحه. اضغط على الملف الشخصي لمعرفة المزيد على تطبيق الحملة الرسمي.',
+    discussionsInLang: 'انضم إلى النقاشات بلغتك المفضلة.',
+    dob: 'تاريخ الميلاد',
+    downloadImage: 'تنزيل الصورة',
+    downloadReports: 'تنزيل التقارير',
+    downloadReportsDesc: 'الوصول إلى تقارير ومجموعات بيانات مفصلة عن الأنشطة الانتخابية ومشاركة الناخبين وحوادث النزاهة.',
+    downloadQr: 'تنزيل رمز QR',
+    downloadQrFailed: 'فشل تنزيل رمز الاستجابة السريعة.',
+    draftSaved: 'تم حفظ المسودة!',
+    editImage: 'تعديل صورة',
+    editImageDesc: 'تعديل الصور باستخدام أوامر نصية بسيطة.',
+    editProfile: 'تعديل الملف الشخصي',
+    electionCandidates: 'المرشحون',
+    electionCountdownTitle: 'العد التنازلي للانتخابات',
+    electionDashboard: 'لوحة معلومات نزاهة الانتخابات',
+    electionData: 'بيانات',
+    electionDataBig: 'بيانات الانتخابات',
+    electionDataDesc: 'حلل الاتجاهات وقارن بين المرشحين.',
+    electionPortal: 'بوابة الانتخابات',
+    electionTimeline: 'الجدول الزمني الرئيسي للانتخابات',
+    electionYear: '٢٠٢٥',
+    emailAddress: 'البريد الإلكتروني',
+    emailNotVerified: 'لم يتم التحقق من بريدك الإلكتروني بعد. يرجى مراجعة بريدك الوارد.',
+    emailResent: 'تم إعادة إرسال بريد التحقق.',
+    empoweringWomenInPolitics: 'تمكين المرأة في السياسة العراقية. استكشف ملفات المرشحات للانتخابات.',
+    endSession: 'إنهاء الجلسة',
+    enterTopicForAI: 'أدخل موضوعًا لاقتراح الذكاء الاصطناعي...',
+    events: 'فعاليات',
+    expectedTurnout: 'المشاركة المتوقعة',
+    featureComingSoon: 'هذه الميزة ستتوفر قريباً!',
+    female: 'أنثى',
+    filterByCandidate: 'تصفية حسب المرشح...',
+    firstMessage: 'الرسالة الأولى',
+    firstMessagePlaceholder: 'ابدأ المحادثة برسالتك الأولى...',
+    follow: 'متابعة',
+    following: 'تتابع',
+    friends: 'الأصدقاء',
+    fullName: 'الاسم الكامل',
+    fullNameNationalId: 'الاسم الكامل (كما في البطاقة الوطنية)',
+    gender: 'الجنس',
+    generate: 'إنشاء',
+    generateImage: 'إنشاء صورة',
+    generateImageDesc: 'أنشئ صورًا فريدة من الأوصاف النصية.',
+    generateVideoFromImage: 'فيديو من صورة',
+    generateVideoFromImageDesc: 'تحريك صورة بداية باستخدام موجه.',
+    generateVideoFromText: 'فيديو من نص',
+    generateVideoFromTextDesc: 'أنشئ مقطع فيديو قصيرًا من موجه نصي.',
+    generating: 'جاري الإنشاء...',
+    geminiTools: 'أدوات Gemini',
+    geminiToolsDesc: 'استكشف ميزات الذكاء الاصطناعي القوية المدعومة من Google Gemini.',
+    getSuggestion: 'احصل على اقتراح',
+    governorate: 'المحافظة',
+    governorateStats: 'إحصائيات المحافظات',
+    highContrast: 'وضع التباين العالي',
+    highContrastDesc: 'زيادة تباين النصوص وعناصر الواجهة.',
+    home: 'الرئيسية',
+    hours: 'ساعات',
+    iAmCandidate: 'أنا مرشح أو مدير حملة',
+    iAmVoter: 'أنا ناخب',
+    imagePromptPlaceholder: 'مثال: "صورة واقعية جدًا لأفق بغداد الحديث عند غروب الشمس"',
+    integrityHubTitle: 'مركز نزاهة الانتخابات',
+    integrityHubDesc: 'أبلغ عن الانتهاكات وساعد في ضمان عملية انتخابية نزيهة. تتم مراجعة جميع الطلبات من قبل مسؤولي المفوضية العليا المستقلة للانتخابات.',
+    intlPortalTitle: 'البوابة الدولية والمراقبين',
+    intlPortalDesc: 'موارد للمراقبين الدوليين والباحثين ووسائل الإعلام.',
+    iraqiElections: 'الانتخابات العراقية',
+    joinLiveDebate: 'انضم إلى المناظرة المباشرة',
+    largeText: 'نص كبير',
+    largeTextDesc: 'زيادة حجم الخط في التطبيق.',
+    lawCompliance: 'القانون والامتثال',
+    lawComplianceDesc: 'الوصول إلى الأطر واللوائح القانونية.',
+    like: 'إعجاب',
+    link: 'ربط',
+    liveConversation: 'محادثة مباشرة',
+    liveConversationDesc: 'أجرِ محادثة صوتية في الوقت الفعلي مع Gemini.',
+    loading: 'جاري التحميل...',
+    loadingCandidates: 'جاري تحميل المرشحين...',
+    loadingPosts: 'جاري تحميل المنشورات...',
+    loadingStories: 'جاري تحميل القصص...',
+    loginToCandidatePortal: 'تسجيل الدخول إلى بوابة المرشح',
+    loginToVoterPortal: 'تسجيل الدخول إلى بوابة الناخب',
+    mainDashboard: 'لوحة التحكم الرئيسية',
+    mainDashboardDesc: 'الوصول إلى البوابات والأدوات الرئيسية للعملية الانتخابية.',
+    mainLanguage: 'اللغة الرئيسية',
+    male: 'ذكر',
+    messageSent: 'تم إرسال الرسالة بنجاح!',
+    minutes: 'دقائق',
+    myPosts: 'منشوراتي',
+    myProfile: 'ملفي الشخصي',
+    myWall: 'حائطي',
+    name: 'الاسم',
+    nationalId: 'رقم الهوية الوطنية',
+    nationalIdHint: 'رقم هويتك الوطنية المكون من 12 رقمًا.',
+    networkError: 'حدث خطأ في الشبكة. يرجى التحقق من اتصالك والمحاولة مرة أخرى.',
+    noBio: 'لا توجد سيرة ذاتية.',
+    noCandidatesFoundQR: 'لم يتم العثور على مرشحين للحزب والمحافظة المحددين.',
+    noCandidatesToShow: 'لا يوجد مرشحون لعرضهم.',
+    noDebatesFound: 'لم يتم العثور على مناظرات للمرشحات المحددة.',
+    noDiscussionsFound: 'لا توجد نقاشات بعد. كن أول من يبدأ واحدة!',
+    noEventsScheduled: 'لا توجد فعاليات قادمة مجدولة لهذه المرشحات.',
+    noPostsFound: 'لم يتم العثور على منشورات. حاول تعديل مرشحاتك.',
+    noPostsYet: 'لم تقم بأي منشورات بعد.',
+    noPostsYetCandidate: 'لم يقم هذا المرشح بأي منشورات بعد.',
+    noPostsYetUser: 'لم تنشر أي شيء بعد.',
+    noReelsFound: 'لم يتم العثور على مقاطع ريلز للمرشحات المحددة.',
+    noStories: 'لا توجد قصص متاحة لهذا المستخدم.',
+    notACandidate: 'هذا الملف الشخصي لا ينتمي إلى مرشح.',
+    notifications: 'الإشعارات',
+    observerHub: 'مركز المراقبين',
+    observerHubDesc: 'موارد للمراقبين الدوليين.',
+    observerResources: 'موارد المراقبين',
+    observerResourcesDesc: 'الوصول إلى استمارات الاعتماد والمبادئ التوجيهية ومعلومات الاتصال لبعثات مراقبة الانتخابات.',
+    orContinueWithEmail: 'أو المتابعة بالبريد الإلكتروني',
+    party: 'الحزب',
+    platformRules: 'قواعد المنصة',
+    portal: 'البوابة',
+    post: 'نشر',
+    posts: 'المنشورات',
+    postsBy: 'منشورات {name}',
+    preview: 'معاينة',
+    previewingPost: 'معاينة المنشور',
+    privacy: 'الخصوصية',
+    private: 'خاص',
+    promoTools: 'أدوات ترويجية',
+    promoToolsDesc: 'شارك رمز الاستجابة السريعة هذا لتمكين الناخبين في محافظتك من اكتشاف مرشحي حزبك.',
+    promptTopic: 'الرجاء إدخال موضوع للحصول على اقتراح.',
+    public: 'عام',
+    qualityAnalytics: 'تحليلات',
+    qualityAnalyticsDesc: 'تصور جودة البيانات واكتمالها.',
+    refineWithAI: 'تحسين بـ AI',
+    registerAnotherVoter: 'تسجيل ناخب آخر',
+    registerAsCandidate: 'التسجيل كمرشح',
+    registerAsVoter: 'التسجيل كناخب',
+    registerButton: 'سجل للتصويت',
+    registerOrg: 'سجل منظمتك',
+    registrationFailed: 'فشل التسجيل. حاول مرة اخرى.',
+    registrationSuccess: 'تم التسجيل بنجاح!',
+    relevantLocations: 'المواقع ذات الصلة',
+    reportDetails: 'تفاصيل البلاغ',
+    reportPost: 'الإبلاغ عن المنشور',
+    reportType: 'نوع المخالفة',
+    reportTypes: {
+        buying_votes: 'شراء أصوات أو رشوة',
+        propaganda_violation: 'مخالفة الدعاية الانتخابية',
+        voter_intimidation: 'تخويف الناخبين أو إكراههم',
+        misinformation: 'نشر معلومات مضللة / كاذبة',
+        other: 'أخرى',
+    },
+    requestApiAccess: 'طلب الوصول إلى API',
+    resendVerificationEmail: 'إعادة الإرسال',
+    resources: 'موارد',
+    results: 'النتائج',
+    rsvp: 'تسجيل الحضور',
+    rule1: 'كن محترماً.',
+    rule2: 'لا لخطاب الكراهية.',
+    rule3: 'التزم بالموضوع.',
+    rule4: 'تحقق من المعلومات.',
+    saveChanges: 'حفظ التغييرات',
+    saveDraft: 'حفظ كمسودة',
+    scanToSee: 'امسح الرمز لرؤية مرشحينا!',
+    search: 'بحث',
+    seconds: 'ثواني',
+    selectGovernorate: 'اختر المحافظة',
+    selectReportType: 'اختر نوع البلاغ...',
+    selectYourGovernorate: 'اختر محافظتك...',
+    sendMessage: 'إرسال رسالة',
+    serious: 'انتخابات',
+    setReminder: 'ضبط تذكير',
+    settings: 'الإعدادات',
+    share: 'مشاركة',
+    shareLinkCopied: 'تم نسخ الرابط إلى الحافظة!',
+    shareNotSupported: 'واجهة برمجة تطبيقات المشاركة عبر الويب غير مدعومة في متصفحك.',
+    showOriginal: 'إظهار الأصل',
+    showTranslation: 'إظهار الترجمة',
+    signInWithFacebook: 'تسجيل الدخول باستخدام فيسبوك',
+    signInWithGoogle: 'تسجيل الدخول باستخدام جوجل',
+    simulationNotice: 'هذه محاكاة. لن يتم تخزين بياناتك أو استخدامها للتسجيل الرسمي.',
+    social: 'تواصل اجتماعي',
+    socialConnections: 'اتصالات وسائل التواصل الاجتماعي',
+    socialConnectionsDesc: 'اربط حسابات وسائل التواصل الاجتماعي الخاصة بك لتمكين النشر عبر المنصات والتحليلات.',
+    socialLoginFailed: 'فشل تسجيل الدخول الاجتماعي. يرجى المحاولة مرة أخرى.',
+    sources: 'المصادر',
+    status: {
+        active: 'نشط',
+        medium: 'متوسط',
+    },
+    submissionError: 'فشل الإرسال. يرجى المحاولة مرة أخرى.',
+    submissionSuccess: 'تم تقديم البلاغ بنجاح!',
+    submissionThanks: 'شكرًا لمساهمتك في نزاهة الانتخابات.',
+    submitNewReport: 'تقديم بلاغ آخر',
+    submitReport: 'إرسال البلاغ',
+    submitting: 'جاري الإرسال...',
+    supportResources: 'الدعم والموارد',
+    supportResourcesDesc: 'ابحث عن المساعدة والمعلومات المهمة.',
+    table: {
         governorate: 'المحافظة',
-        allIraq: 'كل العراق',
-        party: 'الحزب',
-        gender: 'الجنس',
-        male: 'ذكر',
-        female: 'أنثى',
-        all: 'الكل',
-        whatsOnYourMind: 'بماذا تفكر؟',
-        post: 'انشر',
-        loading: 'جاري التحميل...',
-        noPostsFound: 'لم يتم العثور على منشورات للفلاتر المحددة.',
-        translating: 'جاري الترجمة...',
-        showOriginal: 'عرض الأصل',
-        showTranslation: 'عرض الترجمة',
-        reportPost: 'الإبلاغ عن المنشور',
-        like: 'إعجاب',
-        comment: 'تعليق',
-        share: 'مشاركة',
-        enterTopicForAI: 'أو أدخل موضوعًا للذكاء الاصطناعي...',
-        getSuggestion: 'احصل على اقتراح',
-        generating: 'جاري الإنشاء...',
-        portal: 'البوابة',
-        electionCandidates: 'المرشحون',
-        electionData: 'البيانات',
-        resources: 'الموارد',
-        signInWithGoogle: 'تسجيل الدخول باستخدام جوجل',
-        signInWithFacebook: 'تسجيل الدخول باستخدام فيسبوك',
-        orContinueWithEmail: 'أو المتابعة بالبريد الإلكتروني',
-        verifyYourEmail: 'تحقق من بريدك الإلكتروني',
-        verificationSentMessage: 'تم إرسال رابط التحقق إلى عنوان بريدك الإلكتروني. الرجاء النقر على الرابط لتفعيل حسابك.',
-        didNotReceiveEmail: 'لم تستلم البريد الإلكتروني؟',
-        resendVerificationEmail: 'إعادة إرسال بريد التحقق',
-        emailResent: 'تم إرسال بريد تحقق جديد!',
-        checkVerification: 'لقد تحققت من بريدي',
-        continueToApp: 'متابعة إلى التطبيق',
-        electionCountdownTitle: 'الوقت المتبقي للانتخابات',
-        days: 'أيام',
-        hours: 'ساعات',
-        minutes: 'دقائق',
-        seconds: 'ثواني',
-        follow: "متابعة",
-        following: "تتابعه",
-        shareLinkCopied: "تم نسخ رابط المنشور!",
-        shareNotSupported: "المشاركة غير مدعومة في هذا المتصفح.",
-        socialLoginFailed: "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
-        registrationFailed: "فشل التسجيل. يرجى المحاولة مرة أخرى.",
-        emailNotVerified: "البريد الإلكتروني لم يتم التحقق منه بعد. يرجى مراجعة بريدك الوارد.",
-        promptTopic: "الرجاء إدخال موضوع لاقتراح المنشور.",
-        draftSaved: "تم حفظ المسودة (محاكاة)!",
-        previewingPost: "معاينة المنشور",
-        speechRecognitionNotSupported: "التعرف على الكلام غير مدعوم في هذا المتصفح.",
-        accessDenied: "الوصول مرفوض. هذه الصفحة للمرشحين فقط.",
-        downloadQrFailed: "لا يمكن تحميل رمز الاستجابة السريعة. يرجى المحاولة مرة أخرى.",
-        unlink: "إلغاء الربط",
-        link: "ربط",
-        myPosts: "منشوراتي",
-        loadingPosts: "جاري تحميل المنشورات...",
-        noPostsYet: "لم تقم بالنشر بعد.",
-        promoTools: "أدوات ترويجية",
-        promoToolsDesc: "استخدم رمز الاستجابة السريعة هذا على الملصقات والنشرات لتوجيه الناخبين إلى صفحة بها جميع مرشحي حزبك في هذه المحافظة.",
-        scanToSee: "امسح الكود لرؤية مرشحي حزبك!",
-        downloadQr: "تحميل رمز QR",
-        socialConnections: "ربط الشبكات الاجتماعية",
-        socialConnectionsDesc: "اربط حساباتك الاجتماعية لمشاركة منشوراتك تلقائيًا عند إنشائها.",
-        notACandidate: "هذا الملف الشخصي ليس لمرشح.",
-        noBio: "لم يقدم هذا المرشح سيرة ذاتية.",
-        postsBy: "منشورات {name}",
-        noPostsYetCandidate: "لم يقم هذا المرشح بالنشر بعد.",
-        loadingReels: "جاري تحميل المقاطع...",
-        noReelsFound: "لا توجد مقاطع متاحة للفلاتر المحددة.",
-        filterByCandidate: "فلترة حسب مرشح معين...",
-        clearSelection: "مسح الاختيار",
-        loadingDebates: "جاري تحميل المناقشات...",
-        noDebatesFound: "لم يتم العثور على مناقشات للفلاتر المحددة.",
-        joinLiveDebate: "انضم إلى المناقشة المباشرة",
-        setReminder: "ضبط تذكير",
-        upcomingEvents: "الفعاليات القادمة",
-        loadingEvents: "جاري تحميل الفعاليات...",
-        noEventsScheduled: "لا توجد فعاليات مجدولة للفلاتر المحددة.",
-        rsvp: "تسجيل حضور",
-        loadingStories: "جاري تحميل القصص...",
-        noStories: "لا توجد قصص لهذا المستخدم.",
-        discussionsInLang: "مناقشات بلغتك المحددة.",
-        createNewDiscussion: "إنشاء نقاش جديد",
-        noDiscussionsFound: "لم يتم العثور على مناقشات لهذه اللغة. لم لا تبدأ واحدة؟",
-        typeAMessage: "اكتب رسالة...",
-        createNewDiscussionTitle: "إنشاء نقاش جديد",
-        topicTitle: "عنوان النقاش",
-        topicTitlePlaceholder: "مثال: أزمة الكهرباء في بغداد",
-        category: "الفئة",
-        mainLanguage: "اللغة الأساسية",
-        firstMessage: "الرسالة الأولى",
-        firstMessagePlaceholder: "ابدأ الحوار هنا...",
-        create: "إنشاء",
-        editProfile: "تعديل الملف الشخصي",
-        avatarUrl: "رابط صورة الملف الشخصي",
-        avatarUrlPlaceholder: "https://example.com/image.jpg",
-        name: "الاسم",
-        biography: "السيرة الذاتية",
-        cancel: "إلغاء",
-        saveChanges: "حفظ التغييرات",
-        myWall: "حائطي",
-        noPostsYetUser: "لم تنشر أي شيء بعد.",
-        noCandidatesToShow: "لا يوجد مرشحون لعرضهم.",
-        electionDashboard: "لوحة بيانات الانتخابات",
-        dashboardSubtitle: "Election Dashboard",
-        iraqiElections: "انتخابات العراق البرلمانية",
-        electionYear: "٢٠٢٥",
-        totalVoters: "إجمالي الناخبين المسجلين",
-        approvedCandidates: "المرشحون المعتمدون",
-        expectedTurnout: "المشاركة المتوقعة",
-        governorateStats: "إحصائيات المحافظات",
-        electionTimeline: "الجدول الزمني للانتخابات",
-        timeline: {
-            voterRegistration: "بدء تسجيل الناخبين",
-            candidateDeadline: "الموعد النهائي لتقديم المرشحين",
-            campaignPeriod: "بدء فترة الحملة الانتخابية",
-            electionDay: "يوم الانتخابات",
-        },
-        table: { governorate: "المحافظة", turnout: "المشاركة المتوقعة", status: "الحالة" },
-        status: { active: "نشط", medium: "متوسط" },
-        integrityHubTitle: "مركز نزاهة الانتخابات",
-        integrityHubDesc: "الإبلاغ عن المخالفات الانتخابية بسرية وأمان. صوتك يساهم في ضمان انتخابات نزيهة.",
-        reportDetails: "تفاصيل البلاغ",
-        reportType: "نوع المخالفة",
-        selectReportType: "اختر نوع المخالفة...",
-        reportTypes: {
-            buying_votes: "شراء أصوات",
-            propaganda_violation: "مخالفة دعاية انتخابية",
-            voter_intimidation: "ترهيب ناخبين",
-            misinformation: "نشر معلومات مضللة",
-            other: "أخرى",
-        },
-        violationDesc: "وصف المخالفة",
-        violationDescPlaceholder: "يرجى تقديم وصف تفصيلي للمخالفة، بما في ذلك الزمان والمكان والأشخاص المعنيين إن أمكن.",
-        attachEvidence: "إرفاق دليل (صورة، فيديو، مستند) - اختياري",
-        submitReport: "إرسال البلاغ",
-        submitting: "جاري الإرسال...",
-        confidentialNotice: "جميع البلاغات سرية. لن تتم مشاركة معلوماتك الشخصية.",
-        submissionSuccess: "تم استلام بلاغك بنجاح!",
-        trackingId: "رقم تتبع البلاغ الخاص بك هو:",
-        submissionThanks: "شكرًا لمساهمتك في الحفاظ على نزاهة العملية الانتخابية. سيقوم فريقنا بمراجعة البلاغ.",
-        submitNewReport: "تقديم بلاغ جديد",
-        submissionError: "حدث خطأ أثناء إرسال البلاغ.",
-        networkError: "حدث خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
-        intlPortalTitle: "بوابة المراقبين الدوليين",
-        intlPortalDesc: "الوصول إلى البيانات الفورية والتقارير الشاملة والموارد لدعم شفافية الانتخابات ومراقبتها.",
-        apiAccess: "واجهة برمجة تطبيقات البيانات الفورية",
-        apiAccessDesc: "الوصول إلى بيانات الانتخابات المنظمة والفورية بما في ذلك نسبة إقبال الناخبين وتقارير الحوادث والنتائج الأولية.",
-        requestApiAccess: "طلب الوصول إلى الواجهة",
-        downloadReports: "تقارير قابلة للتنزيل",
-        downloadReportsDesc: "تنزيل تقارير متعددة اللغات حول تسجيل المرشحين ونزاهة الانتخابات ومراقبة وسائل الإعلام.",
-        browseReports: "تصفح التقارير",
-        observerResources: "موارد وإحاطات المراقبين",
-        observerResourcesDesc: "الوصول إلى الأطر القانونية والمعلومات اللوجستية وجداول إحاطات المراقبين. سجل منظمتك لتلقي التحديثات.",
-        registerOrg: "تسجيل المنظمة",
-        voterRegistrationTitle: "تسجيل الناخبين",
-        voterRegistrationDesc: "صوتك مهم. تأكد من أنك مسجل للمشاركة في الانتخابات القادمة.",
-        voterInfo: "معلومات الناخب",
-        fullNameNationalId: "الاسم الكامل (حسب البطاقة الوطنية)",
-        nationalId: "رقم البطاقة الوطنية",
-        nationalIdHint: "يجب أن يتكون من 12 رقماً",
-        dob: "تاريخ الميلاد",
-        selectGovernorate: "المحافظة",
-        selectYourGovernorate: "اختر محافظتك...",
-        registerButton: "تسجيل",
-        registrationSuccess: "تم تسجيلك بنجاح!",
-        confirmationId: "رقم تأكيد التسجيل الخاص بك هو:",
-        registerAnotherVoter: "تسجيل ناخب آخر",
-        simulationNotice: "هذه عملية محاكاة لأغراض العرض التوضيحي. لا يتم تخزين أي بيانات حقيقية.",
-        discoverCandidates: "اكتشف المرشحين",
-        discoverCandidatesDesc: "امسح رمز الاستجابة السريعة للمرشح لرؤية جميع مرشحي حزبه الذين يترشحون في نفس المحافظة.",
-        loadingCandidates: "جاري تحميل المرشحين...",
-        noCandidatesFoundQR: "لم يتم العثور على مرشحين لهذا الحزب وهذه المحافظة.",
-        viewProfile: "عرض الملف الشخصي",
-        accessibilityDisplay: "الوصول والعرض",
-        highContrast: "وضع التباين العالي",
-        highContrastDesc: "يزيد من تباين النص لتحسين القراءة.",
-        largeText: "نص كبير",
-        largeTextDesc: "يزيد من حجم الخط في التطبيق.",
-        tts: "تحويل النص إلى كلام",
-        ttsDesc: "تمكين زر 'قراءة المحتوى' على المشاركات الطويلة.",
-        colorTheme: "سمة اللون",
-        underConstruction: "تحت الإنشاء",
-        featureComingSoon: "ستكون هذه الميزة متاحة هنا قريبًا!",
-        contactMP: "هذا نائبك! أرسل له سؤالك مباشرة",
-        contactMPDesc: "اطرح سؤالاً حول قضية تهمك, مثل أزمة الكهرباء.",
-        contactMPPlaceholder: "مثال: ما هي خطتكم لحل أزمة الكهرباء في منطقتنا؟",
-        sendMessage: "إرسال الرسالة",
-        messageSent: "شكراً لك! تم إرسال رسالتك (محاكاة).",
-        dataManagement: "إدارة وجمع البيانات",
-        dataManagementDesc: "أدوات لمشرفي المنصة لإدارة عملية جمع البيانات والتحقق من جودتها.",
-        apiConfig: "إعدادات API",
-        apiConfigDesc: "إدارة واختبار اتصالات API لوسائل التواصل الاجتماعي.",
-        dataCollection: "لوحة جمع البيانات",
-        dataCollectionDesc: "مراقبة والتحكم في جمع بيانات المرشحين.",
-        contactValidation: "التحقق من جهات الاتصال",
-        contactValidationDesc: "مراجعة جودة بيانات الاتصال التي تم جمعها.",
-        candidateEnrichment: "إثراء بيانات المرشحين",
-        candidateEnrichmentDesc: "عرض البيانات المثرية والتحليلات للملفات الشخصية.",
-        qualityAnalytics: "تحليلات الجودة",
-        qualityAnalyticsDesc: "تصور مقاييس جودة البيانات عبر المحافظات.",
-        mainDashboard: "لوحة التحكم الرئيسية",
-        mainDashboardDesc: "انقر على أي قسم لاستكشاف الأدوات والموارد المتاحة.",
-        voterCenter: "مركز الناخبين",
-        voterCenterDesc: "جميع الموارد للمواطنين للمشاركة بفعالية.",
-        candidateHub: "بوابة المرشح",
-        candidateHubDesc: "أدوات لإدارة حملتك الرقمية وتقديم المستندات.",
-        observerHub: "محور المراقبين",
-        observerHubDesc: "موارد للمراقبين المحليين والدوليين.",
-        lawCompliance: "القانون والامتثال",
-        lawComplianceDesc: "الوصول إلى القوانين واللوائح وعمليات الإبلاغ.",
-        electionDataBig: "بيانات الانتخابات",
-        electionDataDesc: "استكشف الإحصاءات الحية وبيانات الانتخابات التاريخية.",
-        supportResources: "الدعم والموارد",
-        supportResourcesDesc: "ابحث عن المساعدة ومعلومات الاتصال والمواد القابلة للتنزيل.",
-        loginToVoterPortal: "تسجيل الدخول / إنشاء حساب للناخبين",
-        loginToCandidatePortal: "تسجيل الدخول / إنشاء حساب للمرشحين",
-        empoweringWomenInPolitics: "مساحة مخصصة لاكتشاف ودعم المرشحات.",
-        geminiTools: "أدوات Gemini",
-        geminiToolsDesc: "استكشف أدوات الذكاء الاصطناعي القوية لإنشاء المحتوى وتحليله.",
-        askNeighbor: "اسأل جارك",
-        askNeighborDesc: "اطرح أسئلة حول منطقتك المحلية، مدعومة بخرائط جوجل.",
-        askNeighborPlaceholder: "مثال: 'ابحث عن مكتبات عامة قريبة'",
-        ask: "اسأل",
-        results: "النتائج",
-        relevantLocations: "المواقع ذات الصلة",
-        aiAssistant: "المساعد الذكي",
-        askAnything: "اسأل أي شيء...",
-        sources: "المصادر",
-        refineWithAI: "تحسين بالنص",
-        generateImage: "إنشاء صورة",
-        generateImageDesc: "أنشئ صورًا فريدة من الأوصاف النصية.",
-        generateVideoFromText: "فيديو من نص",
-        generateVideoFromTextDesc: "أنشئ مقطع فيديو من مطالبة وصفية.",
-        generateVideoFromImage: "فيديو من صورة",
-        generateVideoFromImageDesc: "تحريك صورة ثابتة بمطالبة اختيارية.",
-        analyzeImage: "تحليل صورة",
-        analyzeImageDesc: "فهم محتويات الصورة.",
-        editImage: "تعديل صورة",
-        editImageDesc: "قم بإجراء تغييرات على صورة باستخدام أوامر نصية.",
-        liveConversation: "محادثة مباشرة",
-        liveConversationDesc: "أجرِ محادثة صوتية في الوقت الفعلي مع مساعد ذكي.",
-        endSession: "إنهاء الجلسة",
-        you: "أنت",
-        backToTools: "العودة إلى جميع الأدوات",
-        imagePromptPlaceholder: "صورة واقعية لـ...",
-        aspectRatio: "نسبة العرض إلى الارتفاع",
-        generate: "إنشاء",
-        downloadImage: "تنزيل الصورة",
-    }
+        turnout: 'المشاركة المقدرة',
+        status: 'الحالة',
+    },
+    teaHouse: 'المقهى',
+    timeline: {
+        voterRegistration: 'فتح باب تسجيل الناخبين',
+        candidateDeadline: 'الموعد النهائي لتقديم طلبات المرشحين',
+        campaignPeriod: 'بدء فترة الدعاية الانتخابية الرسمية',
+        electionDay: 'يوم الانتخابات',
+    },
+    topicTitle: 'عنوان الموضوع',
+    topicTitlePlaceholder: 'ما هو الموضوع الرئيسي لنقاشك؟',
+    totalVoters: 'إجمالي الناخبين المسجلين',
+    trackingId: 'معرف التتبع الخاص بك',
+    translating: 'جاري الترجمة...',
+    tts: 'تحويل النص إلى كلام',
+    ttsDesc: 'تمكين السرد الصوتي للمنشورات والمقالات.',
+    typeAMessage: 'اكتب رسالة...',
+    underConstruction: 'تحت الإنشاء',
+    unlink: 'إلغاء الربط',
+    upcomingEvents: 'الفعاليات القادمة',
+    verificationSentMessage: 'لقد أرسلنا رابط تحقق إلى بريدك الإلكتروني. يرجى النقر على الرابط للمتابعة.',
+    verifyYourEmail: 'تحقق من بريدك الإلكتروني',
+    viewProfile: 'عرض الملف الشخصي',
+    violationDesc: 'وصف المخالفة',
+    violationDescPlaceholder: 'يرجى تقديم أكبر قدر ممكن من التفاصيل، بما في ذلك التاريخ والوقت والموقع والأفراد المتورطين.',
+    voterCenter: 'مركز الناخبين',
+    voterCenterDesc: 'سجل للتصويت، تحقق من حالتك، وابحث عن مركز الاقتراع الخاص بك. صوتك مهم.',
+    voterDescription: 'انضم إلى المحادثة، تابع المرشحين، وابق على اطلاع على الانتخابات.',
+    voterInfo: 'معلومات الناخب',
+    voterRegistrationTitle: 'تسجيل الناخبين',
+    voterRegistrationDesc: 'تأكد من سماع صوتك. سجل للتصويت في الانتخابات القادمة.',
+    welcomeToApp: 'أهلاً بك في {appName}',
+    whatsOnYourMind: 'بماذا تفكر؟',
+    whoToFollow: 'من تتابع',
+    womenCandidates: 'المرشحات',
+    you: 'أنت',
+    reels: 'ريلز',
+};
+
+// For simplicity, Kurdish translations will be the same as English for now.
+const ku: TranslationKeys = en;
+
+export const UI_TEXT: Record<Language, TranslationKeys> = {
+    en,
+    ar,
+    ku,
 };

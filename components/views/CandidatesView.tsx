@@ -37,7 +37,7 @@ const CandidatesView: React.FC<CandidatesViewProps> = ({ selectedGovernorate, se
                     role: UserRole.Candidate,
                     governorate: localGovernorate,
                     party: localParty,
-                    gender: localGender === 'All' ? undefined : localGender,
+                    gender: localGender,
                 });
                 setCandidates(users);
             } catch (error) {

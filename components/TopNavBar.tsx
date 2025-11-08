@@ -1,82 +1,58 @@
-import { memo, useCallback, useMemo } from 'react';
-
-import type { Language } from '../types.ts';
+import React from 'react';
+import { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
-type LanguageTexts = (typeof UI_TEXT)[Language];
-type StringTranslationKey = {
-    [K in keyof LanguageTexts]: LanguageTexts[K] extends string ? K : never;
-}[keyof LanguageTexts];
-
-export interface TopNavBarProps<T extends string> {
+interface TopNavBarProps<T extends string> {
     tabs: T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
     language: Language;
 }
 
-const TAB_TRANSLATION_KEYS: Partial<Record<string, StringTranslationKey>> = {
-    Posts: 'posts',
-    Reels: 'reels',
-    Candidates: 'candidates',
+const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
+    'Posts': 'posts',
+    'Reels': 'reels',
+    'Candidates': 'candidates',
     'Women Candidates': 'womenCandidates',
-    Debates: 'debates',
+    'Debates': 'debates',
     'Tea House': 'teaHouse',
-    Events: 'events',
-    Articles: 'articles',
+    'Events': 'events',
+    'Articles': 'articles',
     'Ask Neighbor': 'askNeighbor',
 };
 
-const NAV_BAR_BASE_CLASS = 'border-b border-[var(--color-glass-border)]';
-const TAB_CONTAINER_CLASS =
-    '-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar';
-const ACTIVE_TAB_CLASS = 'border-primary text-primary glow';
-const INACTIVE_TAB_CLASS =
-    'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
 
-function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>): JSX.Element {
-    const texts = useMemo<LanguageTexts>(() => UI_TEXT[language], [language]);
+function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+    const texts = UI_TEXT[language];
+    const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
-    const getTabClasses = useCallback(
-        (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS),
-        [activeTab],
-    );
-
-    const handleTabClick = useCallback(
-        (tab: T) => () => {
-            onTabChange(tab);
-        },
-        [onTabChange],
-    );
-
-    const getTabLabel = useCallback(
-        (tab: T) => {
-            const translationKey = TAB_TRANSLATION_KEYS[tab];
-            return translationKey ? texts[translationKey] : tab;
-        },
-        [texts],
-    );
+    const getTabClasses = (tab: T) => {
+        const isActive = activeTab === tab;
+        return isActive
+            ? 'border-primary text-primary glow'
+            : 'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
+    };
 
     return (
-        <div className={NAV_BAR_BASE_CLASS}>
-            <nav className={TAB_CONTAINER_CLASS} aria-label="Tabs">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={handleTabClick(tab)}
-                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
-                        type="button"
-                    >
-                        {getTabLabel(tab)}
-                    </button>
-                ))}
+        <div className={navBarClasses}>
+            <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
+                {tabs.map((tab) => {
+                    const translationKey = tabTranslationKeys[tab];
+                    const label = translationKey ? texts[translationKey] : tab;
+
+                    return (
+                        <button
+                            key={tab}
+                            onClick={() => onTabChange(tab)}
+                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                        >
+                            {label}
+                        </button>
+                    );
+                })}
             </nav>
         </div>
     );
-}
+};
 
-TopNavBarComponent.displayName = 'TopNavBar';
-
-const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
-
-export { TopNavBar };
+export default TopNavBar;
