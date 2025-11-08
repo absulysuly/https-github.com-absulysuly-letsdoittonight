@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
@@ -26,7 +26,7 @@ const tabTranslationKeys: Partial<Record<string, StringTranslationKey>> = {
     'Ask Neighbor': 'askNeighbor',
 };
 
-export function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
     const texts = useMemo(() => UI_TEXT[language] as LanguageTexts, [language]);
     const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
@@ -58,3 +58,5 @@ export function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, lang
         </div>
     );
 }
+
+export const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
