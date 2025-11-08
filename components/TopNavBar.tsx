@@ -15,7 +15,7 @@ export interface TopNavBarProps<T extends string> {
     language: Language;
 }
 
-const TAB_TRANSLATION_KEYS: Partial<Record<string, StringTranslationKey>> = {
+const TAB_TRANSLATION_KEYS = {
     Posts: 'posts',
     Reels: 'reels',
     Candidates: 'candidates',
@@ -25,7 +25,7 @@ const TAB_TRANSLATION_KEYS: Partial<Record<string, StringTranslationKey>> = {
     Events: 'events',
     Articles: 'articles',
     'Ask Neighbor': 'askNeighbor',
-} as const;
+} satisfies Partial<Record<string, StringTranslationKey>>;
 
 const NAV_BAR_BASE_CLASS = 'border-b border-[var(--color-glass-border)]';
 const TAB_CONTAINER_CLASS =
@@ -34,33 +34,33 @@ const ACTIVE_TAB_CLASS = 'border-primary text-primary glow';
 const INACTIVE_TAB_CLASS =
     'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
 
-function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+type TopNavBarComponentType = <T extends string>(props: TopNavBarProps<T>) => JSX.Element;
+
+const TopNavBarComponent: TopNavBarComponentType = ({ tabs, activeTab, onTabChange, language }) => {
     const texts = useMemo<LanguageTexts>(() => UI_TEXT[language], [language]);
 
-    const getTabClasses = (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS);
+    const getTabClasses = (tab: typeof activeTab) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS);
 
-    const getTabLabel = (tab: T) => {
-        const translationKey = TAB_TRANSLATION_KEYS[tab];
+    const getTabLabel = (tab: typeof activeTab) => {
+        const translationKey = TAB_TRANSLATION_KEYS[tab as keyof typeof TAB_TRANSLATION_KEYS];
         return translationKey ? texts[translationKey] : tab;
     };
 
     return (
         <div className={NAV_BAR_BASE_CLASS}>
             <nav className={TAB_CONTAINER_CLASS} aria-label="Tabs">
-                {tabs.map((tab) => {
-                    return (
-                        <button
-                            key={tab}
-                            onClick={() => onTabChange(tab)}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
-                        >
-                            {getTabLabel(tab)}
-                        </button>
-                    );
-                })}
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => onTabChange(tab)}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                    >
+                        {getTabLabel(tab)}
+                    </button>
+                ))}
             </nav>
         </div>
     );
-}
+};
 
-export const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+export const TopNavBar = memo(TopNavBarComponent) as TopNavBarComponentType;
