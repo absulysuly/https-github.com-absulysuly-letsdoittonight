@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
-type LanguageTexts = (typeof UI_TEXT)['en'];
+type LanguageTexts = (typeof UI_TEXT)[Language];
 type StringTranslationKey = {
     [K in keyof LanguageTexts]: LanguageTexts[K] extends string ? K : never;
 }[keyof LanguageTexts];
@@ -14,7 +14,7 @@ export interface TopNavBarProps<T extends string> {
     language: Language;
 }
 
-const tabTranslationKeys: Partial<Record<string, StringTranslationKey>> = {
+const TAB_TRANSLATION_KEYS: Partial<Record<string, StringTranslationKey>> = {
     Posts: 'posts',
     Reels: 'reels',
     Candidates: 'candidates',
@@ -24,10 +24,10 @@ const tabTranslationKeys: Partial<Record<string, StringTranslationKey>> = {
     Events: 'events',
     Articles: 'articles',
     'Ask Neighbor': 'askNeighbor',
-};
+} as const;
 
 function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
-    const texts = useMemo(() => UI_TEXT[language] as LanguageTexts, [language]);
+    const texts = useMemo<LanguageTexts>(() => UI_TEXT[language], [language]);
     const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
     const getTabClasses = (tab: T) => {
@@ -41,7 +41,7 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
         <div className={navBarClasses}>
             <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
                 {tabs.map((tab) => {
-                    const translationKey = tabTranslationKeys[tab];
+                    const translationKey = TAB_TRANSLATION_KEYS[tab];
                     const label: string = translationKey ? texts[translationKey] : tab;
 
                     return (
