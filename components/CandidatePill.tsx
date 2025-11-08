@@ -27,10 +27,13 @@ const CandidatePill: React.FC<CandidatePillProps> = ({ candidate, onSelect, user
         if (isFollowing) return;
 
         setIsSubmitting(true);
-        api.followCandidate(candidate.id).then(response => {
-            if (response.success) {
+        api.followCandidate(candidate.id).then(success => {
+            if (success) {
                 console.log(`Followed ${candidate.name}`);
                 setIsFollowing(true);
+            } else {
+                console.error(`Failed to follow ${candidate.name}.`);
+                alert('Unable to follow candidate. Please try again.');
             }
         }).finally(() => {
             setIsSubmitting(false);

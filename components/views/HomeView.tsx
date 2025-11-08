@@ -81,25 +81,39 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
     const handlePost = (postDetails: Partial<Post>) => {
         if (!user) return;
         api.createPost(postDetails, user).then(newPost => {
+            if (!newPost) {
+                console.error('Failed to create post via API.');
+                alert('Failed to create post. Please try again.');
+                return;
+            }
             setSocialPosts(prevPosts => [newPost, ...prevPosts]);
-             alert("Post created successfully (simulation).");
+            alert('Post created successfully.');
         });
     };
     
     const handleCreateReel = (reelDetails: { caption: string; videoFile?: File }) => {
         if (!user) return;
         api.createReel(reelDetails, user).then(newReel => {
-            // In a real app, you might want a separate state for reels
-            console.log("New reel created (simulation):", newReel);
-            alert("Reel created successfully (simulation).");
+            if (!newReel) {
+                console.error('Failed to create reel via API.');
+                alert('Failed to create reel. Please try again.');
+                return;
+            }
+            console.log('New reel created:', newReel);
+            alert('Reel created successfully.');
         });
     };
     
     const handleCreateEvent = (eventDetails: { title: string; date: string; location: string; }) => {
         if (!user) return;
         api.createEvent(eventDetails, user).then(newEvent => {
-            console.log("New event created (simulation):", newEvent);
-            alert("Event created successfully (simulation).");
+            if (!newEvent) {
+                console.error('Failed to create event via API.');
+                alert('Failed to create event. Please try again.');
+                return;
+            }
+            console.log('New event created:', newEvent);
+            alert('Event created successfully.');
         });
     };
 

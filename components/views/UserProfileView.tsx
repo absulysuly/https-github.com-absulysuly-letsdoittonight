@@ -39,6 +39,11 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ user, onUpdateUser, l
 
     const handlePost = (postDetails: Partial<Post>) => {
         api.createPost(postDetails, user).then(newPost => {
+            if (!newPost) {
+                console.error('Failed to create post for user profile.');
+                alert('Unable to create post. Please try again.');
+                return;
+            }
             setUserPosts(prevPosts => [newPost, ...prevPosts]);
         });
     };

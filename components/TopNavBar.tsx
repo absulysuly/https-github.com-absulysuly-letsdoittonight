@@ -1,15 +1,16 @@
-import React from 'react';
-import { Language } from '../types.ts';
+import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
-interface TopNavBarProps<T extends string> {
+type TranslationKeys = keyof (typeof UI_TEXT)['en'];
+
+type TopNavBarProps<T extends string> = {
     tabs: T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
     language: Language;
-}
+};
 
-const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
+const TAB_TRANSLATION_KEYS: Record<string, TranslationKeys> = {
     'Posts': 'posts',
     'Reels': 'reels',
     'Candidates': 'candidates',
@@ -21,10 +22,10 @@ const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
     'Ask Neighbor': 'askNeighbor',
 };
 
+const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+const TopNavBar = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
     const texts = UI_TEXT[language];
-    const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
     const getTabClasses = (tab: T) => {
         const isActive = activeTab === tab;
@@ -35,14 +36,18 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
 
     return (
         <div className={navBarClasses}>
-            <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
+            <nav
+                className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar"
+                aria-label="Tabs"
+            >
                 {tabs.map((tab) => {
-                    const translationKey = tabTranslationKeys[tab];
+                    const translationKey = TAB_TRANSLATION_KEYS[tab];
                     const label = translationKey ? texts[translationKey] : tab;
 
                     return (
                         <button
                             key={tab}
+                            type="button"
                             onClick={() => onTabChange(tab)}
                             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
                         >
