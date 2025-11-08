@@ -51,6 +51,8 @@ type UserFilters = Partial<{
   governorate: Governorate | "All";
   party: string | "All";
   gender: "Male" | "Female";
+  partySlug: string;
+  governorateSlug: string;
   search: string;
 }>;
 
@@ -76,11 +78,11 @@ type DebateFilters = Partial<{
 const DEFAULT_API_BASE_URL =
   "https://hamlet-unified-complete-2027-production.up.railway.app";
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ??
-  import.meta.env.API_BASE_URL ??
-  import.meta.env.VITE_API_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.API_BASE_URL ??
+  process.env.NEXT_PUBLIC_API_URL ??
   DEFAULT_API_BASE_URL;
-const USE_MOCKS = `${import.meta.env.VITE_USE_MOCKS ?? ""}`.toLowerCase() === "true";
+const USE_MOCKS = `${process.env.NEXT_PUBLIC_USE_MOCKS ?? process.env.USE_MOCKS ?? ""}`.toLowerCase() === "true";
 
 const resolveFallback = <T>(fallback: Fallback<T>): T =>
   typeof fallback === "function" ? (fallback as () => T)() : fallback;
@@ -159,6 +161,22 @@ const filterUsers = (filters: UserFilters = {}): User[] => {
     if (filters.role && user.role !== filters.role) return false;
     if (filters.governorate && filters.governorate !== "All" && user.governorate !== filters.governorate) return false;
     if (filters.party && filters.party !== "All" && user.party !== filters.party) return false;
+    if (filters.partySlug) {
+      if (user.partySlug) {
+        if (filters.partySlug !== user.partySlug) return false;
+      } else {
+        const expectedParty = SLUG_PARTY_MAP[filters.partySlug] ?? filters.partySlug;
+        if (expectedParty && user.party !== expectedParty) return false;
+      }
+    }
+    if (filters.governorateSlug) {
+      if (user.governorateSlug) {
+        if (filters.governorateSlug !== user.governorateSlug) return false;
+      } else {
+        const expectedGovernorate = IRAQI_GOVERNORATES_INFO.find((info) => info.slug === filters.governorateSlug)?.enName;
+        if (expectedGovernorate && user.governorate !== expectedGovernorate) return false;
+      }
+    }
     if (filters.gender && user.gender && user.gender !== filters.gender) return false;
     if (query && !user.name.toLowerCase().includes(query)) return false;
     return true;
@@ -466,6 +484,8 @@ export const getUsers = async (filters: UserFilters = {}): Promise<User[]> => {
     governorate: filters.governorate && filters.governorate !== "All" ? filters.governorate : undefined,
     party: filters.party && filters.party !== "All" ? filters.party : undefined,
     gender: filters.gender,
+    partySlug: filters.partySlug,
+    governorateSlug: filters.governorateSlug,
     search: filters.search?.trim() || undefined,
   });
 
@@ -622,7 +642,7 @@ export const getAllElectionCandidates = async (): Promise<ElectionCandidate[]> =
 
 export const getApiConfig = async (): Promise<ApiConfig[]> => {
   const timestamp = new Date().toISOString();
-  const mock = () => [
+  const mock = (): ApiConfig[] => [
     { id: "core", name: "Core API", status: "Connected", lastChecked: timestamp },
     { id: "analytics", name: "Analytics Service", status: "Connected", lastChecked: timestamp },
     { id: "notifications", name: "Notification Queue", status: "Disconnected", lastChecked: timestamp },
@@ -638,7 +658,7 @@ export const getApiConfig = async (): Promise<ApiConfig[]> => {
 };
 
 export const getDataCollectionStats = async (): Promise<DataCollectionStats> => {
-  const mock = () => {
+  const mock = (): DataCollectionStats => {
     const totalCandidates = filterUsers({ role: UserRole.Candidate }).length;
     const safeTotal = Math.max(totalCandidates, 1);
     const profilesScraped = Math.round(safeTotal * 0.65);

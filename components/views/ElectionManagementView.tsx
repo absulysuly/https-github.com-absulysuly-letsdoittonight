@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { Language } from '../../types.ts';
 
 // Election portal components
@@ -21,65 +21,61 @@ import ContactValidationPage from '../election/pages/ContactValidationPage.tsx';
 import CandidateEnrichmentPage from '../election/pages/CandidateEnrichmentPage.tsx';
 import QualityAnalyticsPage from '../election/pages/QualityAnalyticsPage.tsx';
 
-
 interface ElectionManagementViewProps {
     path: string;
     onNavigate: (path: string) => void;
     language: Language;
 }
 
-const ElectionManagementView: React.FC<ElectionManagementViewProps> = ({ path, onNavigate, language }) => {
-
+const ElectionManagementView: FC<ElectionManagementViewProps> = ({ path, onNavigate, language }) => {
     const renderPage = () => {
-        const pageProps = { onNavigate, language };
-        // A simple router based on the path prop
         if (path.startsWith('/governorate/')) {
             const name = path.split('/')[2];
-            return <GovernoratePage name={name} {...pageProps} />;
+            return <GovernoratePage name={name} onNavigate={onNavigate} />;
         }
-         if (path.startsWith('/party/')) {
+
+        if (path.startsWith('/party/')) {
             const id = path.split('/')[2];
-            return <PoliticalPartyPage id={id} {...pageProps} />;
+            return <PoliticalPartyPage id={id} onNavigate={onNavigate} />;
         }
-        
+
         switch (path) {
             case '/':
-                return <LandingPage {...pageProps} />;
+                return <LandingPage onNavigate={onNavigate} language={language} />;
             case '/dashboard':
-                return <DashboardPage {...pageProps} />;
+                return <DashboardPage language={language} />;
             case '/integrity-hub':
-                return <IntegrityHubPage {...pageProps} />;
+                return <IntegrityHubPage language={language} />;
             case '/international-portal':
-                return <InternationalPortalPage {...pageProps} />;
+                return <InternationalPortalPage language={language} />;
             case '/parties':
-                return <PartiesPage {...pageProps} />;
+                return <PartiesPage onNavigate={onNavigate} />;
             case '/election-hub':
-                return <ElectionHubPage {...pageProps} />;
-             case '/privacy-policy':
-                return <PrivacyPolicyPage {...pageProps} />;
+                return <ElectionHubPage />;
+            case '/privacy-policy':
+                return <PrivacyPolicyPage />;
             case '/terms-of-service':
-                return <TermsOfServicePage {...pageProps} />;
+                return <TermsOfServicePage />;
             case '/pricing':
-                return <PricingPage {...pageProps} />;
+                return <PricingPage />;
             case '/compare':
-                return <CandidateComparisonPage {...pageProps} />;
-             case '/voter-registration':
-                return <VoterRegistrationPage {...pageProps} />;
-            // New Data Management Routes
+                return <CandidateComparisonPage />;
+            case '/voter-registration':
+                return <VoterRegistrationPage language={language} />;
             case '/api-config':
-                return <ApiConfigPage {...pageProps} />;
+                return <ApiConfigPage onNavigate={onNavigate} />;
             case '/data-collection':
-                return <DataCollectionPage {...pageProps} />;
+                return <DataCollectionPage onNavigate={onNavigate} />;
             case '/contact-validation':
-                return <ContactValidationPage {...pageProps} />;
+                return <ContactValidationPage onNavigate={onNavigate} />;
             case '/candidate-enrichment':
-                return <CandidateEnrichmentPage {...pageProps} />;
+                return <CandidateEnrichmentPage onNavigate={onNavigate} />;
             case '/quality-analytics':
-                return <QualityAnalyticsPage {...pageProps} />;
+                return <QualityAnalyticsPage onNavigate={onNavigate} />;
             default:
-                return <LandingPage {...pageProps} />;
+                return <LandingPage onNavigate={onNavigate} language={language} />;
         }
-    }
+    };
 
     return (
         <div className="font-arabic">

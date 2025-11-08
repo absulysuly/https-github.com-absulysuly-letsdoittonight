@@ -1,4 +1,8 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "https://hamlet-unified-complete-2027-production.up.railway.app";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.API_BASE_URL ??
+  "https://hamlet-unified-complete-2027-production.up.railway.app";
 
 export async function fetchFromAPI(endpoint: string, options: RequestInit = {}) {
   try {
