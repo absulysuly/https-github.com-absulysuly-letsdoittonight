@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Campaign</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // Theme Colors (controlled by CSS variables)
+              'primary': 'var(--color-primary)',
+              'secondary': 'var(--color-secondary)',
+              'accent': 'var(--color-accent)',
+              'theme-bg': 'var(--color-background)',
+              'theme-text-base': 'var(--color-text-base)',
+              'theme-text-muted': 'var(--color-text-muted)',
+              'on-primary': 'var(--color-text-on-primary)',
+              'brand-hot-pink': 'var(--color-accent)',
+              'brand-teal': '#0D9488',
+
+              // Election Portal Colors (static fallbacks, but controlled by vars)
+              'formal-primary': {
+                100: 'var(--color-primary-100, #EBF8FF)',
+                500: 'var(--color-primary, #4299E1)',
+                600: 'var(--color-primary-dark, #3182CE)',
+                700: 'var(--color-primary-darker, #2B6CB0)',
+              },
+              'official': {
+                100: 'var(--color-background-soft, #F7FAFC)',
+                200: 'var(--color-border, #EDF2F7)',
+                300: 'var(--color-border-dark, #E2E8F0)',
+                700: 'var(--color-text-muted, #4A5568)',
+                800: 'var(--color-text-base, #2D3748)',
+                900: 'var(--color-text-deep, #1A202C)',
+              },
+
+              // Static Colors
+              'flag-red': '#C8102E',
+              'flag-green': '#008A44',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              arabic: ['Noto Sans Arabic', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        /* Default Theme: Euphrates Teal */
+        --color-primary: #0D9488;
+        --color-primary-rgb: 13, 148, 136;
+        --color-primary-dark: #096B61;
+        --color-primary-darker: #07524B;
+        --color-primary-100: #CCFBF1;
+        --color-secondary: #2DD4BF;
+        --color-accent: #F000B8;
+        --color-background: #100C1C;
+        --color-background-soft: #1A1625;
+        --color-background-image: radial-gradient(circle at 15% 50%, rgba(240, 0, 184, 0.6), transparent 35%),
+            radial-gradient(circle at 85% 30%, rgba(45, 212, 191, 0.4), transparent 40%),
+            radial-gradient(circle at 50% 90%, rgba(91, 33, 182, 0.5), transparent 45%);
+        --color-glass-bg: rgba(26, 22, 37, 0.6);
+        --color-glass-border: rgba(255, 255, 255, 0.1);
+        --color-card-bg: rgba(26, 22, 37, 0.7);
+        --color-card-text: #F1F5F9;
+        --color-text-base: #F1F5F9;
+        --color-text-muted: #CBD5E1;
+        --color-text-deep: #F1F5F9;
+        --color-text-on-primary: #FFFFFF;
+        --color-primary-glow: rgba(13, 148, 136, 0.6);
+        --color-border: rgba(255, 255, 255, 0.1);
+        --color-border-dark: rgba(255, 255, 255, 0.15);
+      }
+
+      body {
+        background-color: var(--color-background);
+        background-image: var(--color-background-image);
+        background-attachment: fixed;
+        color: var(--color-text-base);
+        transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .glass-card {
+        background: var(--color-glass-bg);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid var(--color-glass-border);
+        color: var(--color-card-text);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+      }
+      
+      .social-mode .glass-card {
+        text-shadow: none;
+      }
+      
+      .hero-election-bg {
+        background-color: var(--color-primary-darker);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M50 0 L61.2 34.5 H100 L70 55.9 L79.4 90.5 L50 69.1 L20.6 90.5 L30 55.9 L0 34.5 H38.8 z' /%3E%3C/g%3E%3C/svg%3E");
+        background-size: 50px 50px;
+      }
+
+      /* Formal/Light theme styles that adapt via CSS variables */
+      .formal-header, .election-mode .glass-nav {
+        background: var(--color-glass-bg);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--color-glass-border);
+      }
+      .formal-card, .election-mode .glass-card {
+        background-color: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+        box-shadow: 0 4px 8px -1px rgba(0,0,0,0.06), 0 2px 5px -1px rgba(0,0,0,0.04);
+        color: var(--color-card-text);
+        text-shadow: none;
+      }
+       .election-mode .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.07);
+        border-color: var(--color-primary);
+       }
+      
+      .formal-button {
+        background-color: var(--color-primary);
+        color: var(--color-text-on-primary);
+        font-weight: bold;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        transition: background-color 0.2s;
+      }
+      .formal-button:hover {
+        filter: brightness(1.1);
+      }
+
+      /* PostCard specific adjustments for election-mode */
+      .election-mode .post-card-author-img {
+        --tw-ring-color: var(--color-border-dark);
+      }
+      .election-mode .post-content-wrapper {
+        background-color: var(--color-background);
+        border: 1px solid var(--color-border);
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      
+      @keyframes progress-bar {
+        0% { width: 0%; }
+      }
+      .progress-bar-animated {
+        animation: progress-bar 1.5s ease-out forwards;
+      }
+      
+      @keyframes chart-draw {
+        to { stroke-dashoffset: 0; }
+      }
+      .chart-animated {
+        animation: chart-draw 2s ease-out forwards;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 15px -5px var(--color-primary-glow);
+          border-color: var(--color-primary);
+        }
+        to {
+          box-shadow: 0 0 25px 5px var(--color-primary-glow);
+          border-color: var(--color-primary);
+        }
+      }
+
+      .glow {
+          animation: glow 1.5s ease-in-out infinite alternate;
+      }
+
+      .glass-nav {
+        background: var(--color-glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--color-glass-border);
+      }
+      
+      @keyframes scroll-x {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+
+      .filter-dropdown {
+        background: var(--color-glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--color-glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+      }
+
+      /* Elected MP Tag style */
+      .elected-tag {
+        background-color: var(--color-primary);
+        color: var(--color-text-on-primary);
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: bold;
+        text-shadow: none;
+      }
+
+      .send-btn {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: 'Noto Sans Arabic', sans-serif;
+        color: var(--color-text-on-primary);
+        background-color: var(--color-secondary);
+        border: none;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .send-btn:hover:not(:disabled) {
+          filter: brightness(1.1);
+          box-shadow: 0 0 10px var(--color-secondary);
+      }
+      .send-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          background-color: var(--color-text-muted);
+      }
+
+      /* Tea House Styles */
+      .message-bubble {
+        background-color: var(--color-background-soft);
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        max-width: 80%;
+      }
+      .message-bubble.is-user {
+        background-color: var(--color-primary);
+        color: var(--color-text-on-primary);
+        border-bottom-right-radius: 0.25rem;
+      }
+       .message-bubble.is-other {
+        border-bottom-left-radius: 0.25rem;
+       }
+      
+      .teahouse-composer {
+        background: var(--color-glass-bg);
+        backdrop-filter: blur(15px);
+        border-top: 1px solid var(--color-glass-border);
+      }
+      
+      .status-active {
+        background-color: var(--color-primary-100);
+        color: var(--color-primary-darker, #2A4365);
+      }
+      .status-pending {
+        background-color: #FEF3C7; /* Fallback: yellow-100 */
+        color: #92400E; /* Fallback: yellow-800 */
+      }
+      .status-inactive {
+        background-color: #FEE2E2; /* Fallback: red-100 */
+        color: #991B1B; /* Fallback: red-800 */
+      }
+
+      /* --- TEA HOUSE FOOTER CONCEPTS --- */
+      @keyframes steam-float {
+        0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+        50% { transform: translateY(-10px) scale(1.1); opacity: 0.4; }
+      }
+      .steam-1 { animation: steam-float 4s ease-in-out infinite; }
+      .steam-2 { animation: steam-float 4s 1s ease-in-out infinite; }
+      .steam-3 { animation: steam-float 4s 2s ease-in-out infinite; }
+      
+      @keyframes pulse-gentle {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .cultural-pattern-bg {
+        background-color: #2C3E50;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23f39c12' fill-opacity='0.1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      
+      @keyframes story-progress {
+        from { width: 0%; }
+        to { width: 100%; }
+      }
+      .story-progress-bar {
+        animation: story-progress 5s linear forwards;
+      }
+
+      /* Reduced Motion Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        body, .glow, .glass-card, .record-btn.recording, * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
