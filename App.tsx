@@ -12,6 +12,7 @@ import PostDetailModal from './components/PostDetailModal.tsx';
 import Countdown from './components/Countdown.tsx';
 import { UI_TEXT } from './translations.ts';
 import Spinner from './components/Spinner.tsx';
+import { SparklesIcon } from './components/icons/Icons.tsx';
 
 // --- Lazy-loaded Components ---
 const HomeView = lazy(() => import('./components/views/HomeView.tsx'));
@@ -26,6 +27,8 @@ const FullScreenReelView = lazy(() => import('./components/views/FullScreenReelV
 const ElectionManagementView = lazy(() => import('./components/views/ElectionManagementView.tsx'));
 const StoryViewModal = lazy(() => import('./components/views/StoryViewModal.tsx'));
 const ElectionHero = lazy(() => import('./components/ElectionHero.tsx'));
+const GeminiToolsView = lazy(() => import('./components/views/GeminiToolsView.tsx'));
+const Chatbot = lazy(() => import('./components/Chatbot.tsx'));
 
 
 const ModeSwitcher: React.FC<{
@@ -67,6 +70,7 @@ const App: React.FC = () => {
     const [isHighContrast, setHighContrast] = useState(false);
     const [language, setLanguage] = useState<Language>('ar');
     const [activeTheme, setActiveTheme] = useState<ThemeName>('euphratesTeal');
+    const [isChatOpen, setChatOpen] = useState(false);
 
     // Filters
     const [selectedGovernorate, setSelectedGovernorate] = useState<Governorate | 'All'>('All');
@@ -158,7 +162,9 @@ const App: React.FC = () => {
         setSelectedProfile(null);
         setActiveTab(tab);
         // Always switch to social mode when a social tab is clicked
-        setHomeViewMode('Social');
+        if (homeViewMode === 'Election' && tab !== AppTab.Home) {
+           setHomeViewMode('Social');
+        }
     };
 
     const handleSelectProfile = (profile: User) => {
@@ -246,6 +252,8 @@ const App: React.FC = () => {
                  return selectedProfile ? <CandidateProfileView candidate={selectedProfile} user={user} requestLogin={() => setLoginModalOpen(true)} language={language} onSelectProfile={handleSelectProfile} onSelectPost={handleSelectPost} /> : <HomeView {...homeViewProps} />;
             case AppTab.Dashboard:
                 return user?.role === UserRole.Candidate ? <CandidateDashboardView user={user} language={language} onSelectProfile={handleSelectProfile} onSelectPost={handleSelectPost} /> : <HomeView {...homeViewProps} />;
+            case AppTab.GeminiTools:
+                return <GeminiToolsView language={language} />;
             default:
                 return <HomeView {...homeViewProps} />;
         }
@@ -306,6 +314,26 @@ const App: React.FC = () => {
                 onElectionNavigate={setElectionPath}
                 language={language}
             />
+
+            {homeViewMode === 'Social' && (
+                <>
+                    <button
+                        onClick={() => setChatOpen(p => !p)}
+                        className="fixed bottom-20 right-5 z-40 w-14 h-14 rounded-full bg-primary text-on-primary shadow-lg flex items-center justify-center glow transition-transform hover:scale-110"
+                        aria-label="Open AI Chat"
+                    >
+                        <SparklesIcon className="w-8 h-8"/>
+                    </button>
+                    {isChatOpen && (
+                        <Suspense fallback={null}>
+                            <Chatbot
+                                language={language}
+                                onClose={() => setChatOpen(false)}
+                            />
+                        </Suspense>
+                    )}
+                </>
+            )}
 
             {isLoginModalOpen && <LoginModal onLogin={handleLogin} onClose={() => setLoginModalOpen(false)} language={language} onLanguageChange={setLanguage} />}
             {isComposeModalOpen && user && <ComposeModal user={user} onClose={() => setComposeModalOpen(false)} language={language} />}

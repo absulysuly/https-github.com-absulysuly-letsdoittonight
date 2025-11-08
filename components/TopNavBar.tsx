@@ -18,6 +18,7 @@ const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
     'Tea House': 'teaHouse',
     'Events': 'events',
     'Articles': 'articles',
+    'Ask Neighbor': 'askNeighbor',
 };
 
 
@@ -34,7 +35,7 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
 
     return (
         <div className={navBarClasses}>
-            <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6" aria-label="Tabs">
+            <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
                 {tabs.map((tab) => {
                     const translationKey = tabTranslationKeys[tab];
                     const label = translationKey ? texts[translationKey] : tab;
@@ -43,7 +44,7 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
                         <button
                             key={tab}
                             onClick={() => onTabChange(tab)}
-                            className={`whitespace-nowac py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
                         >
                             {label}
                         </button>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Post, Language } from '../../types.ts';
-import { VerifiedIcon, WhatsAppIcon, PhoneIcon, EmailIcon, MessageIcon, TikTokIcon, InstagramIcon, FacebookIcon, XIcon, YouTubeIcon, LinkIcon, DownloadIcon } from '../icons/Icons.tsx';
+import { VerifiedIcon, WhatsAppIcon, PhoneIcon, EmailIcon, MessageIcon, TikTokIcon, InstagramIcon, FacebookIcon, XIcon, YouTubeIcon, LinkIcon, DownloadIcon, VideoIcon, SparklesIcon } from '../icons/Icons.tsx';
 import PostCard from '../PostCard.tsx';
 import * as api from '../../services/apiService.ts';
+import { analyzeVideo } from '../../services/geminiService.ts';
 import QRCodeDisplay from '../QRCodeDisplay.tsx';
 import { UI_TEXT } from '../../translations.ts';
 import Spinner from '../Spinner.tsx';
@@ -13,6 +14,70 @@ interface CandidateDashboardViewProps {
     onSelectProfile: (profile: User) => void;
     onSelectPost: (post: Post) => void;
 }
+
+const AIVideoAnalysis: React.FC = () => {
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [prompt, setPrompt] = useState('Summarize the key points of this speech.');
+    const [isLoading, setIsLoading] = useState(false);
+    const [result, setResult] = useState('');
+    const [error, setError] = useState('');
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.[0]) {
+            setVideoFile(e.target.files[0]);
+            setResult('');
+            setError('');
+        }
+    };
+
+    const handleAnalyze = async () => {
+        if (!videoFile) return;
+        setIsLoading(true);
+        setError('');
+        setResult('');
+        try {
+            const analysis = await analyzeVideo(videoFile, prompt);
+            setResult(analysis);
+        } catch (e: any) {
+            setError(e.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="glass-card rounded-lg shadow-lg overflow-hidden mb-6 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">AI Video Analysis (gemini-2.5-pro)</h3>
+            <p className="text-sm text-slate-400 mb-4">Upload a video of a speech or debate to get AI-powered insights. (Note: This is a simulation and does not process the full video).</p>
+            <div className="space-y-4">
+                <label className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-primary bg-primary/10 rounded-md hover:bg-primary/20 cursor-pointer">
+                    <VideoIcon className="w-5 h-5"/>
+                    <span className="truncate">{videoFile?.name || 'Upload Video'}</span>
+                    <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
+                </label>
+                 <textarea
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    rows={2}
+                    className="w-full p-2 border border-white/20 rounded-md bg-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="e.g., Summarize the key points, Identify moments of strong audience reaction..."
+                />
+                 <button onClick={handleAnalyze} disabled={!videoFile || isLoading} className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm font-semibold bg-primary text-on-primary rounded-full transition-all hover:brightness-110 disabled:opacity-50">
+                    <SparklesIcon className="w-4 h-4" />
+                    <span>{isLoading ? 'Analyzing...' : 'Analyze Video'}</span>
+                </button>
+                {isLoading && <Spinner />}
+                {error && <p className="text-red-400 text-sm">{error}</p>}
+                {result && (
+                    <div className="p-4 bg-black/20 rounded-lg">
+                        <h4 className="font-bold mb-2">Analysis Result:</h4>
+                        <p className="text-sm whitespace-pre-wrap">{result}</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
 
 const CandidateDashboardView: React.FC<CandidateDashboardViewProps> = ({ user, language, onSelectProfile, onSelectPost }) => {
     const [candidatePosts, setCandidatePosts] = useState<Post[]>([]);
@@ -143,6 +208,8 @@ const CandidateDashboardView: React.FC<CandidateDashboardViewProps> = ({ user, l
                     </div>
                 </div>
             </div>
+            
+            <AIVideoAnalysis />
 
             <div>
                 <h3 className="text-xl font-bold mb-4 text-white">{texts.myPosts}</h3>

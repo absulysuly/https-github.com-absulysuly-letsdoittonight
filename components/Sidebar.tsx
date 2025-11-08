@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppTab, UserRole, User, HomeViewMode, Language } from '../types.ts';
-import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon } from './icons/Icons.tsx';
+import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon, SparklesIcon, DocumentIcon } from './icons/Icons.tsx';
 import { UI_TEXT } from '../translations.ts';
 
 interface SidebarProps {
@@ -18,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, onNavigate, homeView
         { label: texts.home, icon: HomeIcon, tab: AppTab.Home, enabled: true },
         { label: texts.teaHouse, icon: TeaHouseIcon, tab: AppTab.TeaHouse, enabled: true },
         { label: texts.debates, icon: DebateIcon, tab: AppTab.DebateRoom, enabled: true },
+        { label: texts.geminiTools, icon: SparklesIcon, tab: AppTab.GeminiTools, enabled: true },
         { label: texts.dashboard, icon: DashboardIcon, tab: AppTab.Dashboard, enabled: user?.role === UserRole.Candidate },
         { label: texts.myProfile, icon: UsersIcon, tab: AppTab.UserProfile, enabled: user != null },
         { label: texts.settings, icon: SettingsIcon, tab: AppTab.Settings, enabled: true },
@@ -25,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, onNavigate, homeView
 
     const electionNavItems = [
         { label: 'Dashboard', icon: DashboardIcon, path: '/dashboard', enabled: true },
+        { label: texts.elections, icon: DocumentIcon, path: '/elections', enabled: true },
         { label: 'Voter Center', icon: IdentificationIcon, path: '/voter-registration', enabled: true },
         { label: 'Integrity Hub', icon: ScaleIcon, path: '/integrity-hub', enabled: true },
         { label: 'Data & Analytics', icon: ChartIcon, path: '/compare', enabled: true },

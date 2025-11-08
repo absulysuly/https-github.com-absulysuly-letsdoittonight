@@ -1,9 +1,10 @@
 import React from 'react';
 import { useDashboardData } from '../hooks/useDashboardData.ts';
-import { UsersGroupIcon, ClipboardCheckIcon, ClockIcon, ChevronUpIcon, ChevronDownIcon, ChevronUpDownIcon } from '../../icons/Icons.tsx';
+import { UsersGroupIcon, ClipboardCheckIcon, DocumentIcon, IdentificationIcon } from '../../icons/Icons.tsx';
 import { Language } from '../../../types.ts';
 import { UI_TEXT } from '../../../translations.ts';
 import { ParticipationData } from '../types.ts';
+import { ChevronDownIcon, ChevronUpIcon, ChevronUpDownIcon } from '../../icons/Icons.tsx';
 
 
 interface DashboardPageProps {
@@ -94,7 +95,8 @@ const TimelineItem: React.FC<{ date: string; title: string; isComplete: boolean 
 );
 
 const GovernorateTable: React.FC<{ data: ParticipationData[], language: Language }> = ({ data, language }) => {
-    const { items, requestSort, sortConfig } = useSortableData(data);
+    // Fix: Explicitly provide the generic type to useSortableData to fix type inference issue.
+    const { items, requestSort, sortConfig } = useSortableData<ParticipationData>(data);
     const texts = UI_TEXT[language];
 
     const getSortIcon = (name: keyof ParticipationData) => {
@@ -145,7 +147,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ language }) => {
     return <div className="p-8 text-center">{texts.loading}</div>;
   }
   if (error || !data) {
-    return <div className="p-8 text-center text-red-600">Error: {error?.message}</div>;
+    return <div className="p-8 text-center text-red-600">Error fetching data: {error?.message}</div>;
   }
 
   const { stats, participation } = data;
@@ -154,10 +156,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ language }) => {
     <div className="p-4 sm:p-6 lg:p-8">
       <FormalHeader language={language} />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StatCard title={texts.totalVoters} value={stats.totalRegisteredVoters.toLocaleString()} icon={<UsersGroupIcon className="w-6 h-6"/>} />
-        <StatCard title={texts.approvedCandidates} value={stats.approvedCandidatesCount.toLocaleString()} icon={<ClipboardCheckIcon className="w-6 h-6"/>} />
-        <StatCard title={texts.expectedTurnout} value={`${stats.expectedTurnoutPercentage}%`} icon={<ClockIcon className="w-6 h-6"/>} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard title={texts.totalElections} value={stats.totalElections.toLocaleString()} icon={<DocumentIcon className="w-6 h-6"/>} />
+        <StatCard title={texts.activeElections} value={stats.activeElections.toLocaleString()} icon={<ClipboardCheckIcon className="w-6 h-6"/>} />
+        <StatCard title={texts.totalCandidates} value={stats.totalCandidates.toLocaleString()} icon={<UsersGroupIcon className="w-6 h-6"/>} />
+        <StatCard title={texts.validatedContacts} value={stats.validatedContacts.toLocaleString()} icon={<IdentificationIcon className="w-6 h-6"/>} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { User, Governorate, Language, MainContentTab, AppTab, Post, UserRole } from '../../types.ts';
 import { GOVERNORATES, GOVERNORATE_AR_MAP } from '../../constants.ts';
 import { UI_TEXT } from '../../translations.ts';
@@ -20,6 +20,8 @@ import EventComposer from './compose/EventComposer.tsx';
 import SeriousnessView from './SeriousnessView.tsx';
 import WomenCandidatesView from './WomenCandidatesView.tsx';
 
+const AskNeighborView = lazy(() => import('./AskNeighborView.tsx'));
+
 
 interface HomeViewProps {
     user: User | null;
@@ -39,9 +41,9 @@ interface HomeViewProps {
     onCompose: () => void;
 }
 
-const TABS_WITH_FILTERS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.Debates, AppTab.Events, AppTab.Articles];
+const TABS_WITH_FILTERS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.Debates, AppTab.Events, AppTab.Articles, AppTab.AskNeighbor];
 const TABS_WITH_HERO: MainContentTab[] = [AppTab.Posts];
-const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
+const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.AskNeighbor, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
 
 
 const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGovernorate, onGovernorateChange, selectedParty, onPartyChange, parties, onSelectProfile, onSelectReel, onSelectPost, onSelectStory, language, activeTab, onTabChange, onCompose }) => {
@@ -239,6 +241,12 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
                 return <SeriousnessView selectedGovernorate={selectedGovernorate} language={language} />;
             case AppTab.TeaHouse:
                 return <TeaHouseView user={user} requestLogin={requestLogin} language={language} />;
+            case AppTab.AskNeighbor:
+                return (
+                    <Suspense fallback={<Spinner />}>
+                        <AskNeighborView language={language} />
+                    </Suspense>
+                );
             default:
                 return null;
         }

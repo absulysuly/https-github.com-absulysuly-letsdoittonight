@@ -25,6 +25,9 @@ export enum AppTab {
     Events = 'Events',
     Articles = 'Articles',
     WomenCandidates = 'Women Candidates',
+    // New Gemini Features
+    GeminiTools = 'Gemini Tools',
+    AskNeighbor = 'Ask Neighbor',
 }
 
 export interface GovernorateInfo {
@@ -41,7 +44,7 @@ export type Language = 'en' | 'ar' | 'ku';
 export type Governorate = 'Baghdad' | 'Basra' | 'Nineveh' | 'Erbil' | 'Anbar' | 'Dhi Qar' | 'Salah al-Din' | 'Diyala' | 'Kirkuk' | 'Sulaymaniyah' | 'Babil' | 'Wasit' | 'Maysan' | 'Muthanna' | 'Qadisiyyah' | 'Najaf' | 'Karbala' | 'Dohuk';
 
 
-export type MainContentTab = AppTab.Posts | AppTab.Reels | AppTab.Candidates | AppTab.Debates | AppTab.TeaHouse | AppTab.Events | AppTab.Articles | AppTab.WomenCandidates;
+export type MainContentTab = AppTab.Posts | AppTab.Reels | AppTab.Candidates | AppTab.Debates | AppTab.TeaHouse | AppTab.Events | AppTab.Articles | AppTab.WomenCandidates | AppTab.AskNeighbor;
 
 export type HomeViewMode = 'Social' | 'Election';
 

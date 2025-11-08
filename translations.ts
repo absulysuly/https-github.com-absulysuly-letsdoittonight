@@ -160,9 +160,10 @@ type Translations = {
         dashboardSubtitle: string;
         iraqiElections: string;
         electionYear: string;
-        totalVoters: string;
-        approvedCandidates: string;
-        expectedTurnout: string;
+        totalElections: string;
+        activeElections: string;
+        totalCandidates: string;
+        validatedContacts: string;
         governorateStats: string;
         electionTimeline: string;
         timeline: {
@@ -178,6 +179,8 @@ type Translations = {
         };
         status: {
             active: string;
+            pending: string;
+            inactive: string;
             medium: string;
         };
         integrityHubTitle: string;
@@ -278,6 +281,50 @@ type Translations = {
         loginToVoterPortal: string;
         loginToCandidatePortal: string;
         empoweringWomenInPolitics: string;
+
+        // Gemini Features
+        geminiTools: string;
+        geminiToolsDesc: string;
+        askNeighbor: string;
+        askNeighborDesc: string;
+        askNeighborPlaceholder: string;
+        ask: string;
+        results: string;
+        relevantLocations: string;
+        aiAssistant: string;
+        askAnything: string;
+        sources: string;
+        refineWithAI: string;
+        generateImage: string;
+        generateImageDesc: string;
+        generateVideoFromText: string;
+        generateVideoFromTextDesc: string;
+        generateVideoFromImage: string;
+        generateVideoFromImageDesc: string;
+        analyzeImage: string;
+        analyzeImageDesc: string;
+        editImage: string;
+        editImageDesc: string;
+        liveConversation: string;
+        liveConversationDesc: string;
+        endSession: string;
+        you: string;
+        backToTools: string;
+        imagePromptPlaceholder: string;
+        aspectRatio: string;
+        generate: string;
+        downloadImage: string;
+        
+        // Election Management
+        elections: string;
+        newElection: string;
+        createElection: string;
+        electionName: string;
+        startDate: string;
+        endDate: string;
+        electionStatus: string;
+        noElectionsFound: string;
+        electionCreatedSuccess: string;
     }
 }
 
@@ -439,9 +486,10 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: 'لوحة بيانات الانتخابات',
         iraqiElections: 'Iraqi Parliamentary Elections',
         electionYear: '2025',
-        totalVoters: 'Total Registered Voters',
-        approvedCandidates: 'Approved Candidates',
-        expectedTurnout: 'Expected Turnout',
+        totalElections: 'Total Elections',
+        activeElections: 'Active Elections',
+        totalCandidates: 'Total Candidates',
+        validatedContacts: 'Validated Contacts',
         governorateStats: 'Governorate Statistics',
         electionTimeline: 'Election Timeline',
         timeline: {
@@ -450,8 +498,17 @@ export const UI_TEXT: Translations = {
             campaignPeriod: 'Campaign Period Begins',
             electionDay: 'Election Day',
         },
-        table: { governorate: 'Governorate', turnout: 'Expected Turnout', status: 'Status' },
-        status: { active: 'Active', medium: 'Medium' },
+        table: {
+            governorate: 'Governorate',
+            turnout: 'Expected Turnout',
+            status: 'Status',
+        },
+        status: {
+            active: 'Active',
+            pending: 'Pending',
+            inactive: 'Inactive',
+            medium: 'Medium'
+        },
         integrityHubTitle: 'Election Integrity Hub',
         integrityHubDesc: 'Report electoral violations confidentially and securely. Your voice helps ensure a fair election.',
         reportDetails: 'Report Details',
@@ -550,6 +607,46 @@ export const UI_TEXT: Translations = {
         loginToVoterPortal: 'Login / Sign Up for Voters',
         loginToCandidatePortal: 'Login / Sign Up for Candidates',
         empoweringWomenInPolitics: 'A dedicated space to discover and support women candidates.',
+        geminiTools: 'Gemini Tools',
+        geminiToolsDesc: 'Explore powerful AI tools for content creation and analysis.',
+        askNeighbor: 'Ask Neighbor',
+        askNeighborDesc: 'Ask questions about your local area, powered by Google Maps.',
+        askNeighborPlaceholder: 'e.g., "Find me public libraries nearby"',
+        ask: 'Ask',
+        results: 'Results',
+        relevantLocations: 'Relevant Locations',
+        aiAssistant: 'AI Assistant',
+        askAnything: 'Ask anything...',
+        sources: 'Sources',
+        refineWithAI: 'Refine with AI',
+        generateImage: 'Generate Image',
+        generateImageDesc: 'Create unique images from text descriptions.',
+        generateVideoFromText: 'Video from Text',
+        generateVideoFromTextDesc: 'Generate a video from a descriptive prompt.',
+        generateVideoFromImage: 'Video from Image',
+        generateVideoFromImageDesc: 'Animate a static image with an optional prompt.',
+        analyzeImage: 'Analyze Image',
+        analyzeImageDesc: 'Understand the contents of an image.',
+        editImage: 'Edit Image',
+        editImageDesc: 'Make changes to an image using text commands.',
+        liveConversation: 'Live Conversation',
+        liveConversationDesc: 'Have a real-time voice chat with an AI assistant.',
+        endSession: 'End Session',
+        you: 'You',
+        backToTools: 'Back to all tools',
+        imagePromptPlaceholder: 'A photorealistic image of...',
+        aspectRatio: 'Aspect Ratio',
+        generate: 'Generate',
+        downloadImage: 'Download Image',
+        elections: 'Elections',
+        newElection: 'New Election',
+        createElection: 'Create Election',
+        electionName: 'Election Name',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        electionStatus: 'Status',
+        noElectionsFound: 'No elections have been created yet.',
+        electionCreatedSuccess: 'Election created successfully!',
     },
     ku: {
         appName: 'هەڵمەتی زیرەک',
@@ -708,9 +805,10 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: "داشبۆردی هەڵبژاردن",
         iraqiElections: "هەڵبژاردنەکانی پەرلەمانی عێراق",
         electionYear: "٢٠٢٥",
-        totalVoters: "کۆی دەنگدەرانی تۆمارکراو",
-        approvedCandidates: "کاندیدە پەسەندکراوەکان",
-        expectedTurnout: "ڕێژەی چاوەڕوانکراوی بەشداری",
+        totalElections: 'کۆی هەڵبژاردنەکان',
+        activeElections: 'هەڵبژاردنە چالاکەکان',
+        totalCandidates: 'کۆی کاندیدەکان',
+        validatedContacts: 'پەیوەندییە پشتڕاستکراوەکان',
         governorateStats: "ئاماری پارێزگاکان",
         electionTimeline: "کاتی هەڵبژاردن",
         timeline: {
@@ -720,7 +818,12 @@ export const UI_TEXT: Translations = {
             electionDay: "ڕۆژی هەڵبژاردن",
         },
         table: { governorate: "پارێزگا", turnout: "بەشداری چاوەڕوانکراو", status: "بارودۆخ" },
-        status: { active: "چالاک", medium: "ناوەند" },
+        status: { 
+            active: "چالاک",
+            pending: 'چاوەڕوان',
+            inactive: 'ناچالاک',
+            medium: "ناوەند"
+        },
         integrityHubTitle: "ناوەندی دەستپاکی هەڵبژاردن",
         integrityHubDesc: "ڕاپۆرتی پێشێلکارییەکانی هەڵبژاردن بدە بە نهێنی و سەلامەتی. دەنگی تۆ یارمەتیدەرە بۆ دڵنیابوون لە هەڵبژاردنێکی پاک.",
         reportDetails: "وردەکارییەکانی ڕاپۆرت",
@@ -819,6 +922,46 @@ export const UI_TEXT: Translations = {
         loginToVoterPortal: "چوونەژوورەوە / تۆمارکردن بۆ دەنگدەران",
         loginToCandidatePortal: "چوونەژوورەوە / تۆمارکردن بۆ کاندیدان",
         empoweringWomenInPolitics: "شوێنێکی تایبەت بۆ دۆزینەوە و پشتگیریکردنی کاندیدە ژنەکان.",
+        geminiTools: "ئامرازەکانی Gemini",
+        geminiToolsDesc: "ئامرازە بەهێزەکانی AI بۆ دروستکردن و شیکردنەوەی ناوەڕۆک بگەڕێ.",
+        askNeighbor: "پرسیار لە دراوسێ بکە",
+        askNeighborDesc: "پرسیار بکە دەربارەی ناوچەکەت، بەهێزکراوە بە نەخشەی گوگڵ.",
+        askNeighborPlaceholder: "بۆ نموونە، 'نزیکترین کتێبخانەی گشتی بدۆزەرەوە'",
+        ask: "پرسیار بکە",
+        results: "ئەنجامەکان",
+        relevantLocations: "شوێنە پەیوەندیدارەکان",
+        aiAssistant: "یاریدەدەری زیرەک",
+        askAnything: "هەر پرسیارێک بکە...",
+        sources: "سەرچاوەکان",
+        refineWithAI: "باشترکردن بە AI",
+        generateImage: "دروستکردنی وێنە",
+        generateImageDesc: "وێنەی ناوازە لە وەسفی دەقی دروست بکە.",
+        generateVideoFromText: "ڤیدیۆ لە دەق",
+        generateVideoFromTextDesc: "ڤیدیۆ لە وەسفێکی ورد دروست بکە.",
+        generateVideoFromImage: "ڤیدیۆ لە وێنە",
+        generateVideoFromImageDesc: "وێنەیەکی وەستاو بجوڵێنە لەگەڵ وەسفێکی هەڵبژاردەیی.",
+        analyzeImage: "شیکردنەوەی وێنە",
+        analyzeImageDesc: "لێکدانەوەی ناوەڕۆکی وێنەیەک.",
+        editImage: "دەستکاریکردنی وێنە",
+        editImageDesc: "گۆڕانکاری لە وێنەدا بکە بە بەکارهێنانی فەرمانی دەقی.",
+        liveConversation: "گفتوگۆی ڕاستەوخۆ",
+        liveConversationDesc: "گفتوگۆیەکی دەنگی ڕاستەوخۆ لەگەڵ یاریدەدەری زیرەک ئەنجام بدە.",
+        endSession: "کۆتایی هێنان بە دانیشتن",
+        you: "تۆ",
+        backToTools: "گەڕانەوە بۆ هەموو ئامرازەکان",
+        imagePromptPlaceholder: "وێنەیەکی ڕاستەقینە لە...",
+        aspectRatio: "ڕێژەی ڕەهەند",
+        generate: "دروستکردن",
+        downloadImage: "داگرتنی وێنە",
+        elections: 'هەڵبژاردنەکان',
+        newElection: 'هەڵبژاردنی نوێ',
+        createElection: 'دروستکردنی هەڵبژاردن',
+        electionName: 'ناوی هەڵبژاردن',
+        startDate: 'ڕێکەوتی دەستپێک',
+        endDate: 'ڕێکەوتی کۆتایی',
+        electionStatus: 'بارودۆخ',
+        noElectionsFound: 'هیچ هەڵبژاردنێک دروست نەکراوە.',
+        electionCreatedSuccess: 'هەڵبژاردن بە سەرکەوتوویی دروست کرا!',
     },
     ar: {
         appName: 'الحملة الذكية',
@@ -977,9 +1120,10 @@ export const UI_TEXT: Translations = {
         dashboardSubtitle: "Election Dashboard",
         iraqiElections: "انتخابات العراق البرلمانية",
         electionYear: "٢٠٢٥",
-        totalVoters: "إجمالي الناخبين المسجلين",
-        approvedCandidates: "المرشحون المعتمدون",
-        expectedTurnout: "المشاركة المتوقعة",
+        totalElections: 'إجمالي الانتخابات',
+        activeElections: 'الانتخابات النشطة',
+        totalCandidates: 'إجمالي المرشحين',
+        validatedContacts: 'جهات الاتصال المعتمدة',
         governorateStats: "إحصائيات المحافظات",
         electionTimeline: "الجدول الزمني للانتخابات",
         timeline: {
@@ -989,7 +1133,12 @@ export const UI_TEXT: Translations = {
             electionDay: "يوم الانتخابات",
         },
         table: { governorate: "المحافظة", turnout: "المشاركة المتوقعة", status: "الحالة" },
-        status: { active: "نشط", medium: "متوسط" },
+        status: { 
+            active: "نشط",
+            pending: 'قيد الانتظار',
+            inactive: 'غير نشط',
+            medium: "متوسط"
+        },
         integrityHubTitle: "مركز نزاهة الانتخابات",
         integrityHubDesc: "الإبلاغ عن المخالفات الانتخابية بسرية وأمان. صوتك يساهم في ضمان انتخابات نزيهة.",
         reportDetails: "تفاصيل البلاغ",
@@ -1088,5 +1237,45 @@ export const UI_TEXT: Translations = {
         loginToVoterPortal: "تسجيل الدخول / إنشاء حساب للناخبين",
         loginToCandidatePortal: "تسجيل الدخول / إنشاء حساب للمرشحين",
         empoweringWomenInPolitics: "مساحة مخصصة لاكتشاف ودعم المرشحات.",
+        geminiTools: "أدوات Gemini",
+        geminiToolsDesc: "استكشف أدوات الذكاء الاصطناعي القوية لإنشاء المحتوى وتحليله.",
+        askNeighbor: "اسأل جارك",
+        askNeighborDesc: "اطرح أسئلة حول منطقتك المحلية، مدعومة بخرائط جوجل.",
+        askNeighborPlaceholder: "مثال: 'ابحث عن مكتبات عامة قريبة'",
+        ask: "اسأل",
+        results: "النتائج",
+        relevantLocations: "المواقع ذات الصلة",
+        aiAssistant: "المساعد الذكي",
+        askAnything: "اسأل أي شيء...",
+        sources: "المصادر",
+        refineWithAI: "تحسين بالنص",
+        generateImage: "إنشاء صورة",
+        generateImageDesc: "أنشئ صورًا فريدة من الأوصاف النصية.",
+        generateVideoFromText: "فيديو من نص",
+        generateVideoFromTextDesc: "أنشئ مقطع فيديو من مطالبة وصفية.",
+        generateVideoFromImage: "فيديو من صورة",
+        generateVideoFromImageDesc: "تحريك صورة ثابتة بمطالبة اختيارية.",
+        analyzeImage: "تحليل صورة",
+        analyzeImageDesc: "فهم محتويات الصورة.",
+        editImage: "تعديل صورة",
+        editImageDesc: "قم بإجراء تغييرات على صورة باستخدام أوامر نصية.",
+        liveConversation: "محادثة مباشرة",
+        liveConversationDesc: "أجرِ محادثة صوتية في الوقت الفعلي مع مساعد ذكي.",
+        endSession: "إنهاء الجلسة",
+        you: "أنت",
+        backToTools: "العودة إلى جميع الأدوات",
+        imagePromptPlaceholder: "صورة واقعية لـ...",
+        aspectRatio: "نسبة العرض إلى الارتفاع",
+        generate: "إنشاء",
+        downloadImage: "تنزيل الصورة",
+        elections: 'الانتخابات',
+        newElection: 'انتخاب جديد',
+        createElection: 'إنشاء انتخاب',
+        electionName: 'اسم الانتخاب',
+        startDate: 'تاريخ البدء',
+        endDate: 'تاريخ الانتهاء',
+        electionStatus: 'الحالة',
+        noElectionsFound: 'لم يتم إنشاء أي انتخابات بعد.',
+        electionCreatedSuccess: 'تم إنشاء الانتخاب بنجاح!',
     }
 };

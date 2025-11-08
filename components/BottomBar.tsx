@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppTab, User, Language, HomeViewMode } from '../types.ts';
-import { HomeIcon, TeaHouseIcon, DebateIcon, UserCircleIcon, DashboardIcon, UsersIcon, ChartIcon, LifebuoyIcon } from './icons/Icons.tsx';
+import { HomeIcon, TeaHouseIcon, DebateIcon, UserCircleIcon, DashboardIcon, UsersIcon, ChartIcon, LifebuoyIcon, SparklesIcon } from './icons/Icons.tsx';
 import { UI_TEXT } from '../translations.ts';
 
 interface BottomBarProps {
@@ -28,7 +28,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
     const socialNavItems = [
         { label: texts.home, icon: HomeIcon, tab: AppTab.Home, enabled: true },
         { label: texts.teaHouse, icon: TeaHouseIcon, tab: AppTab.TeaHouse, enabled: true },
-        { label: texts.debates, icon: DebateIcon, tab: AppTab.DebateRoom, enabled: true },
+        { label: texts.geminiTools, icon: SparklesIcon, tab: AppTab.GeminiTools, enabled: true },
         { label: texts.myProfile, icon: UserCircleIcon, tab: AppTab.UserProfile, enabled: user != null },
     ];
     

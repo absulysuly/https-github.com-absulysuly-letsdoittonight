@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { User, Post, PostPrivacy, Language } from '../../types.ts';
-import { SparklesIcon, PhotoIcon, VideoIcon, MicIcon, GlobeAltIcon, UsersIcon, LockClosedIcon, ChevronDownIcon } from '../icons/Icons.tsx';
-import { generatePostSuggestion } from '../../services/geminiService.ts';
+import { SparklesIcon, PhotoIcon, VideoIcon, MicIcon, GlobeAltIcon, UsersIcon, LockClosedIcon, ChevronDownIcon, ImageIcon } from '../icons/Icons.tsx';
+import { generatePostSuggestion, refinePostText } from '../../services/geminiService.ts';
 import { UI_TEXT } from '../../translations.ts';
 
 // Add SpeechRecognition to the window interface for TypeScript
@@ -35,9 +35,28 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
             return;
         }
         setIsGenerating(true);
-        const suggestion = await generatePostSuggestion(topic);
-        setContent(suggestion);
-        setIsGenerating(false);
+        try {
+            const suggestion = await generatePostSuggestion(topic);
+            setContent(suggestion);
+        } catch (e) {
+            console.error(e);
+            setContent("Failed to get suggestion.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+    
+    const handleRefinePost = async () => {
+        if (!content.trim()) return;
+        setIsGenerating(true);
+        try {
+            const refined = await refinePostText(content);
+            setContent(refined);
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     const handlePost = () => {
@@ -108,9 +127,13 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
                     <div className="border-t border-[var(--color-glass-border)] my-2"></div>
                     <div className="flex flex-col sm:flex-row gap-2">
                         <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={texts.enterTopicForAI} className="flex-grow p-2 text-sm border border-[var(--color-glass-border)] rounded-md bg-white/10 placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary" />
-                        <button onClick={handleGenerateSuggestion} disabled={isGenerating} className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-primary bg-primary/10 rounded-md hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button onClick={handleGenerateSuggestion} disabled={isGenerating || !topic} className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-primary bg-primary/10 rounded-md hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed">
                             <SparklesIcon className="w-4 h-4"/>
                             <span>{isGenerating ? texts.generating : texts.getSuggestion}</span>
+                        </button>
+                         <button onClick={handleRefinePost} disabled={isGenerating || !content} className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-secondary bg-secondary/10 rounded-md hover:bg-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <SparklesIcon className="w-4 h-4"/>
+                            <span>{texts.refineWithAI}</span>
                         </button>
                     </div>
                 </div>
@@ -119,6 +142,7 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
                 <div className="flex space-x-1 items-center">
                     <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><PhotoIcon className="w-6 h-6"/></button>
                     <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><VideoIcon className="w-6 h-6"/></button>
+                     <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><ImageIcon className="w-6 h-6"/></button>
                     <button onClick={handleToggleRecording} className={`flex items-center space-x-2 p-2 rounded-full transition-colors ${isRecording ? 'bg-red-500/10 text-red-400' : 'hover:bg-white/10 text-theme-text-muted'}`}>
                         <MicIcon className="w-6 h-6" />
                     </button>

@@ -27,9 +27,10 @@ export interface PoliticalParty {
 // --- Data Management & Dashboard Types ---
 
 export interface DashboardStats {
-    totalRegisteredVoters: number;
-    approvedCandidatesCount: number;
-    expectedTurnoutPercentage: number;
+    totalElections: number;
+    activeElections: number;
+    totalCandidates: number;
+    validatedContacts: number;
 }
 export interface ParticipationData {
     governorateId: number;
@@ -78,4 +79,13 @@ export interface QualityAnalyticsData {
         invalid: number;
     };
     qualityByGov: { name: string; quality: number }[];
+}
+
+export interface Election {
+    id: string;
+    name: string;
+    status: 'active' | 'pending' | 'inactive';
+    startDate: string; // ISO string
+    endDate: string; // ISO string
+    createdAt: string; // ISO string
 }
