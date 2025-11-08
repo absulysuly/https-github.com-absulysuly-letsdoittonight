@@ -4,15 +4,6 @@ import { VideoIcon, SparklesIcon, ImageIcon } from '../../icons/Icons.tsx';
 import * as gemini from '../../../services/geminiService.ts';
 import Spinner from '../../Spinner.tsx';
 
-declare global {
-    interface Window {
-        aistudio?: {
-            hasSelectedApiKey?: () => Promise<boolean>;
-            openSelectKey?: () => Promise<void>;
-        };
-    }
-}
-
 interface ReelComposerProps {
     user: User;
     onCreateReel: (reelDetails: { caption: string; videoFile?: File }) => void;
@@ -41,7 +32,7 @@ const ReelComposer: React.FC<ReelComposerProps> = ({ user, onCreateReel }) => {
 
     useEffect(() => {
         const checkKey = async () => {
-            if (typeof window !== 'undefined' && window.aistudio?.hasSelectedApiKey) {
+            if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
                 const keyStatus = await window.aistudio.hasSelectedApiKey();
                 setHasApiKey(keyStatus);
             }
@@ -50,10 +41,10 @@ const ReelComposer: React.FC<ReelComposerProps> = ({ user, onCreateReel }) => {
     }, []);
 
     const handleOpenKeySelector = async () => {
-        if (typeof window !== 'undefined' && window.aistudio?.openSelectKey) {
+        if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
             await window.aistudio.openSelectKey();
             // Assume success to avoid race conditions
-            setHasApiKey(true);
+            setHasApiKey(true); 
         }
     };
 

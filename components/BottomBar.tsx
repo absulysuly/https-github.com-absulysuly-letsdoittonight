@@ -29,6 +29,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
         { label: texts.home, icon: HomeIcon, tab: AppTab.Home, enabled: true },
         { label: texts.teaHouse, icon: TeaHouseIcon, tab: AppTab.TeaHouse, enabled: true },
         { label: texts.geminiTools, icon: SparklesIcon, tab: AppTab.GeminiTools, enabled: true },
+        { label: 'AI Studio', icon: SparklesIcon, tab: AppTab.AIStudioEmbed, enabled: true },
         { label: texts.myProfile, icon: UserCircleIcon, tab: AppTab.UserProfile, enabled: user != null },
     ];
     
@@ -36,13 +37,14 @@ const BottomBar: React.FC<BottomBarProps> = ({
         { label: texts.portal, icon: DashboardIcon, path: '/', enabled: true },
         { label: texts.electionCandidates, icon: UsersIcon, path: '/parties', enabled: true },
         { label: texts.electionData, icon: ChartIcon, path: '/compare', enabled: true },
+        { label: 'Data Viz', icon: ChartIcon, path: '/data-viz', enabled: true },
         { label: texts.resources, icon: LifebuoyIcon, path: '/integrity-hub', enabled: true },
     ];
 
     if (homeViewMode === 'Election') {
         return (
             <div className={`fixed bottom-0 left-0 right-0 z-50 h-16 lg:hidden ${barClasses}`}>
-                <div className="grid grid-cols-4 h-full max-w-lg mx-auto font-medium">
+                <div className="grid grid-cols-5 h-full max-w-lg mx-auto font-medium">
                     {electionNavItems.map(item => (item.enabled) && (
                         <button
                             key={item.label}
@@ -61,13 +63,13 @@ const BottomBar: React.FC<BottomBarProps> = ({
 
     return (
         <div className={`fixed bottom-0 left-0 right-0 z-50 h-16 lg:hidden ${barClasses}`}>
-            <div className="grid grid-cols-4 h-full max-w-lg mx-auto font-medium">
+            <div className="flex h-full max-w-lg mx-auto font-medium">
                 {socialNavItems.map(item => (item.enabled) && (
                     <button
                         key={item.label}
                         onClick={() => onSocialNavigate(item.tab)}
                         type="button"
-                        className={`inline-flex flex-col items-center justify-center px-2 group hover:bg-primary/10 ${socialActiveTab === item.tab ? 'text-primary' : 'text-theme-text-muted'}`}
+                        className={`flex-1 inline-flex flex-col items-center justify-center px-2 group hover:bg-primary/10 ${socialActiveTab === item.tab ? 'text-primary' : 'text-theme-text-muted'}`}
                     >
                         <item.icon className="w-6 h-6 mb-1" />
                         <span className="text-[10px] leading-tight text-center font-arabic">{item.label}</span>

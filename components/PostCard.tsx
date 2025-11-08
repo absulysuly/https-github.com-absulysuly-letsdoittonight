@@ -17,44 +17,45 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language, onSelectAuthor, onSelectPost }) => {
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const [translatedContent, setTranslatedContent] = useState<string | null>(null);
+    const [translations, setTranslations] = useState<Partial<Record<Language, string>>>({});
     const [isTranslating, setIsTranslating] = useState(false);
     const [isShowingTranslation, setIsShowingTranslation] = useState(false);
     // Assuming mock data is in Arabic for this feature
     const originalLanguage: Language = 'ar';
     const texts = UI_TEXT[language];
+    const isOfficialPost = post.author.id === 'ihec-official';
+
 
     useEffect(() => {
-        // Reset translation state when the post or language changes
+        // Reset showing translation when language or post changes
         setIsShowingTranslation(false);
-        setTranslatedContent(null);
-        setIsTranslating(false);
-
+        
         const getTranslation = async () => {
-            if (language !== originalLanguage && post.content) {
+            // Condition to translate: target language is not original, it's not a voice note, content exists, and it's not already in our cache.
+            if (language !== originalLanguage && post.type !== 'VoiceNote' && post.content && !translations[language]) {
                 setIsTranslating(true);
                 try {
                     const translation = await translateText(post.content, language);
                     // Only store the translation if it's successful and different from the original text.
-                    // This prevents showing a do-nothing "Show translation" button if the API fails or returns the same text.
                     if (translation && translation.trim() !== post.content.trim()) {
-                        setTranslatedContent(translation);
-                    } else {
-                        setTranslatedContent(null);
+                        setTranslations(prev => ({ ...prev, [language]: translation }));
                     }
                 } catch (error) {
                     console.error("Translation failed", error);
-                    setTranslatedContent(null);
                 } finally {
                     setIsTranslating(false);
                 }
             }
         };
 
-        if (post.type !== 'VoiceNote') {
-            getTranslation();
-        }
-    }, [language, post]);
+        getTranslation();
+    }, [language, post, translations]);
+    
+    // Reset cache when the post itself changes
+    useEffect(() => {
+        setTranslations({});
+    }, [post]);
+
 
     const handleInteraction = (e: React.MouseEvent, action: () => void) => {
         e.stopPropagation();
@@ -112,13 +113,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
         setMenuOpen(!isMenuOpen);
     };
 
-    const displayedContent = isShowingTranslation && translatedContent ? translatedContent : post.content;
-    const canToggleTranslation = translatedContent && language !== originalLanguage;
+    const currentTranslation = translations[language];
+    const displayedContent = isShowingTranslation && currentTranslation ? currentTranslation : post.content;
+    const canToggleTranslation = currentTranslation && language !== originalLanguage;
 
     return (
         <div onClick={() => onSelectPost(post)} className="glass-card rounded-xl shadow-lg mb-6 overflow-hidden cursor-pointer">
+            {isOfficialPost && (
+                <div className="bg-primary/10 text-primary text-xs font-bold p-2 flex items-center border-b border-primary/20">
+                    <VerifiedIcon className="w-5 h-5 mr-2 rtl:ml-2 rtl:mr-0" />
+                    OFFICIAL ANNOUNCEMENT
+                </div>
+            )}
             <div className="p-4">
-                 {post.isSponsored && (
+                 {post.isSponsored && !isOfficialPost && (
                     <div className="flex items-center text-xs font-bold text-theme-text-muted mb-2">
                         <SparklesIcon className="w-4 h-4 mr-1 text-primary"/>
                         <span>{texts.boostedPost}</span>
@@ -158,8 +166,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
                 ) : (
                     <div className="my-4 glass-card rounded-lg p-4 post-content-wrapper">
                         <p className="text-theme-text-base text-sm whitespace-pre-line font-arabic">{displayedContent}</p>
-                        {isTranslating && <p className="text-xs text-theme-text-muted animate-pulse mt-2">{texts.translating}</p>}
-                        {canToggleTranslation && !isTranslating && (
+                        {isTranslating && !currentTranslation && <p className="text-xs text-theme-text-muted animate-pulse mt-2">{texts.translating}</p>}
+                        {canToggleTranslation && (
                              <button
                                 onClick={(e) => { e.stopPropagation(); setIsShowingTranslation(prev => !prev); }}
                                 className="text-xs font-semibold text-primary hover:underline mt-2"
@@ -192,11 +200,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
                 <div className="border-t border-[var(--color-glass-border)] my-2"></div>
 
                 <div className="flex justify-around items-center text-theme-text-base">
-                    <button onClick={(e) => handleInteraction(e, handleLike)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center">
+                    <button disabled={isOfficialPost} onClick={(e) => handleInteraction(e, handleLike)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                         <HeartIcon className="w-6 h-6" />
                         <span className="font-semibold text-xs">{texts.like}</span>
                     </button>
-                     <button onClick={(e) => handleInteraction(e, handleComment)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center">
+                     <button disabled={isOfficialPost} onClick={(e) => handleInteraction(e, handleComment)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                         <CommentIcon className="w-6 h-6" />
                         <span className="font-semibold text-xs">{texts.comment}</span>
                     </button>

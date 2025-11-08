@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { User, UserRole, Governorate, Language, AppTab, Post, HomeViewMode, ThemeName, MainContentTab } from './types.ts';
 import * as api from './services/apiService.ts';
@@ -30,6 +29,7 @@ const StoryViewModal = lazy(() => import('./components/views/StoryViewModal.tsx'
 const ElectionHero = lazy(() => import('./components/ElectionHero.tsx'));
 const GeminiToolsView = lazy(() => import('./components/views/GeminiToolsView.tsx'));
 const Chatbot = lazy(() => import('./components/Chatbot.tsx'));
+const AIStudioEmbedView = lazy(() => import('./components/views/AIStudioEmbedView.tsx'));
 
 
 const ModeSwitcher: React.FC<{
@@ -255,6 +255,8 @@ const App: React.FC = () => {
                 return user?.role === UserRole.Candidate ? <CandidateDashboardView user={user} language={language} onSelectProfile={handleSelectProfile} onSelectPost={handleSelectPost} /> : <HomeView {...homeViewProps} />;
             case AppTab.GeminiTools:
                 return <GeminiToolsView language={language} />;
+            case AppTab.AIStudioEmbed:
+                return <AIStudioEmbedView language={language} />;
             default:
                 return <HomeView {...homeViewProps} />;
         }
@@ -269,11 +271,10 @@ const App: React.FC = () => {
                 language={language}
             />
             
-            <Sidebar
-                user={user}
-                activeTab={homeViewMode === 'Social' ? activeTab : electionPath}
-                onSocialNavigate={handleNavigate}
-                onElectionNavigate={setElectionPath}
+            <Sidebar 
+                user={user} 
+                activeTab={homeViewMode === 'Social' ? activeTab : electionPath} 
+                onNavigate={homeViewMode === 'Social' ? handleNavigate : setElectionPath}
                 homeViewMode={homeViewMode}
                 language={language}
             />

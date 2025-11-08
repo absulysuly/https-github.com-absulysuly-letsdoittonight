@@ -8,7 +8,7 @@ import HeroSection from '../HeroSection.tsx';
 import Stories from '../Stories.tsx';
 import ComposeView from './ComposeView.tsx';
 import PostCard from '../PostCard.tsx';
-import { TopNavBar } from '../TopNavBar.tsx';
+import TopNavBar from '../TopNavBar.tsx';
 import Spinner from '../Spinner.tsx';
 import ReelsView from './ReelsView.tsx';
 import CandidatesView from './CandidatesView.tsx';
@@ -21,6 +21,7 @@ import SeriousnessView from './SeriousnessView.tsx';
 import WomenCandidatesView from './WomenCandidatesView.tsx';
 
 const AskNeighborView = lazy(() => import('./AskNeighborView.tsx'));
+const IHECUpdatesView = lazy(() => import('./IHECUpdatesView.tsx'));
 
 
 interface HomeViewProps {
@@ -43,7 +44,7 @@ interface HomeViewProps {
 
 const TABS_WITH_FILTERS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.Debates, AppTab.Events, AppTab.Articles];
 const TABS_WITH_HERO: MainContentTab[] = [AppTab.Posts];
-const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.AskNeighbor, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
+const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.IHECUpdates, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.AskNeighbor, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
 
 
 const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGovernorate, onGovernorateChange, selectedParty, onPartyChange, parties, onSelectProfile, onSelectReel, onSelectPost, onSelectStory, language, activeTab, onTabChange, onCompose }) => {
@@ -245,6 +246,18 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
                 return (
                     <Suspense fallback={<Spinner />}>
                         <AskNeighborView language={language} />
+                    </Suspense>
+                );
+            case AppTab.IHECUpdates:
+                return (
+                    <Suspense fallback={<Spinner />}>
+                        <IHECUpdatesView 
+                            language={language} 
+                            user={user} 
+                            requestLogin={requestLogin} 
+                            onSelectPost={onSelectPost} 
+                            onSelectAuthor={onSelectProfile} 
+                        />
                     </Suspense>
                 );
             default:

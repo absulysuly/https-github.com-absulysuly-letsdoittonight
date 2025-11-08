@@ -84,9 +84,55 @@ export const SLUG_GOVERNORATE_MAP: Record<string, string> = Object.fromEntries(
   IRAQI_GOVERNORATES_INFO.map(g => [g.slug, g.enName])
 );
 
+// --- IHEC Official User ---
+export const IHEC_USER: User = {
+    id: 'ihec-official',
+    name: 'المفوضية العليا المستقلة للانتخابات',
+    role: UserRole.Voter, // Using voter role for simplicity, it's a non-candidate.
+    avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Seal_of_the_Independent_High_Electoral_Commission.svg/200px-Seal_of_the_Independent_High_Electoral_Commission.svg.png',
+    verified: true,
+    party: 'Government of Iraq',
+    governorate: 'Baghdad',
+    bio: 'The Independent High Electoral Commission of Iraq is responsible for planning, organizing, and supervising all elections and referendums.'
+};
+
 // --- MOCK DATA GENERATION ---
 const MOCK_USERS: User[] = [];
 const MOCK_POSTS: Post[] = [];
+const MOCK_IHEC_POSTS: Post[] = [
+    {
+        id: 'ihec-post-1',
+        author: IHEC_USER,
+        content: 'تعلن المفوضية العليا المستقلة للانتخابات عن فتح باب التسجيل للناخبين للانتخابات البرلمانية القادمة. يرجى من جميع المواطنين المؤهلين التوجه إلى أقرب مركز تسجيل لضمان حقهم في التصويت.',
+        timestamp: '1d ago',
+        likes: 12000,
+        comments: 1500,
+        shares: 4000,
+        type: 'Post',
+        mediaUrl: 'https://images.unsplash.com/photo-1561494265-d7480b6b856c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+    },
+    {
+        id: 'ihec-post-2',
+        author: IHEC_USER,
+        content: 'جدول المواعيد النهائية لتقديم المرشحين: آخر موعد لتقديم طلبات الترشح هو 15 سبتمبر 2024. لن يتم قبول أي طلبات بعد هذا التاريخ. لمزيد من المعلومات، يرجى زيارة موقعنا الرسمي.',
+        timestamp: '3d ago',
+        likes: 8500,
+        comments: 900,
+        shares: 2200,
+        type: 'Post',
+    },
+    {
+        id: 'ihec-post-3',
+        author: IHEC_USER,
+        content: 'تدعو المفوضية منظمات المجتمع المدني ووسائل الإعلام المحلية والدولية للتسجيل كمراقبين للعملية الانتخابية. التسجيل متاح الآن عبر بوابتنا الإلكترونية.',
+        timestamp: '5d ago',
+        likes: 9200,
+        comments: 1100,
+        shares: 3100,
+        type: 'Post',
+        mediaUrl: 'https://images.unsplash.com/photo-1607799279861-4d52110d55c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+    }
+];
 const MOCK_EVENTS: Event[] = [];
 const MOCK_ARTICLES: Article[] = [];
 const MOCK_DEBATES: Debate[] = [];
@@ -297,6 +343,7 @@ const generateTeaHouseTopicsAndMessages = () => {
 if (MOCK_USERS.length === 0) {
     // Add a default voter user
     MOCK_USERS.push({ id: 'user-0', name: 'Ali Ahmed', role: UserRole.Voter, avatarUrl: 'https://i.pravatar.cc/150?u=user-0', verified: false, party: 'Independent', governorate: 'Baghdad', gender: 'Male' });
+    MOCK_USERS.push(IHEC_USER);
     generateCandidates(80);
     generatePosts(160);
     generateEvents(20);
@@ -305,4 +352,4 @@ if (MOCK_USERS.length === 0) {
     generateTeaHouseTopicsAndMessages();
 }
 
-export { MOCK_USERS, MOCK_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES };
+export { MOCK_USERS, MOCK_POSTS, MOCK_IHEC_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES };

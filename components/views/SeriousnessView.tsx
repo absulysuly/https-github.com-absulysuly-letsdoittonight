@@ -43,7 +43,7 @@ const SeriousnessView: React.FC<SeriousnessViewProps> = ({ selectedGovernorate, 
         const fetchArticles = async () => {
             setIsLoading(true);
             try {
-                const data = await api.getArticles();
+                const data = await api.getArticles({ governorate: selectedGovernorate });
                 setArticles(data);
             } catch (error) {
                 console.error("Failed to fetch articles:", error);
