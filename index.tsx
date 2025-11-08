@@ -1,19 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-// Fix: Added .tsx extension to App import to fix module resolution error.
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
+import './index.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+  throw new Error('Could not find root element to mount to');
 }
 
-const root = ReactDOM.createRoot(rootElement);
+const root = createRoot(rootElement);
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
-  </React.StrictMode>
+  </StrictMode>,
 );
