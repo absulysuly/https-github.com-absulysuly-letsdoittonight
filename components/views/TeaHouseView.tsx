@@ -61,6 +61,11 @@ const TeaHouseView: React.FC<TeaHouseViewProps> = ({ user, requestLogin, languag
     const handleCreateTopic = async (data: { title: string; firstMessage: string; category: string; language: Language }) => {
         try {
             const newTopic = await api.createTeaHouseTopic(data);
+            if (!newTopic) {
+                console.error('Failed to create tea house topic.');
+                alert('Unable to create discussion. Please try again.');
+                return;
+            }
             setTopics(prev => [newTopic, ...prev]);
             setCreateModalOpen(false);
         } catch (error) {
