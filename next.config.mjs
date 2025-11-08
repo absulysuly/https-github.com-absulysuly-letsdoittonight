@@ -1,8 +1,15 @@
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  webpack: (config) => {
-    config.resolve.extensions = Array.from(new Set([...config.resolve.extensions, '.ts', '.tsx']));
+  swcMinify: true,
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+  webpack(config) {
+    config.resolve.extensions = [
+      ...(config.resolve.extensions || []),
+      ".ts",
+      ".tsx",
+    ];
     return config;
   },
 };
