@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
@@ -6,7 +7,7 @@ type StringTranslationKey = {
     [K in keyof LanguageTexts]: LanguageTexts[K] extends string ? K : never;
 }[keyof LanguageTexts];
 
-interface TopNavBarProps<T extends string> {
+export interface TopNavBarProps<T extends string> {
     tabs: T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
@@ -14,19 +15,19 @@ interface TopNavBarProps<T extends string> {
 }
 
 const tabTranslationKeys: Partial<Record<string, StringTranslationKey>> = {
-    'Posts': 'posts',
-    'Reels': 'reels',
-    'Candidates': 'candidates',
+    Posts: 'posts',
+    Reels: 'reels',
+    Candidates: 'candidates',
     'Women Candidates': 'womenCandidates',
-    'Debates': 'debates',
+    Debates: 'debates',
     'Tea House': 'teaHouse',
-    'Events': 'events',
-    'Articles': 'articles',
+    Events: 'events',
+    Articles: 'articles',
     'Ask Neighbor': 'askNeighbor',
 };
 
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
-    const texts = UI_TEXT[language] as LanguageTexts;
+export function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+    const texts = useMemo(() => UI_TEXT[language] as LanguageTexts, [language]);
     const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
     const getTabClasses = (tab: T) => {
@@ -57,5 +58,3 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
         </div>
     );
 }
-
-export default TopNavBar;

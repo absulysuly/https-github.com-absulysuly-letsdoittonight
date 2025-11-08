@@ -8,7 +8,7 @@ import HeroSection from '../HeroSection.tsx';
 import Stories from '../Stories.tsx';
 import ComposeView from './ComposeView.tsx';
 import PostCard from '../PostCard.tsx';
-import TopNavBar from '../TopNavBar.tsx';
+import { TopNavBar } from '../TopNavBar.tsx';
 import Spinner from '../Spinner.tsx';
 import ReelsView from './ReelsView.tsx';
 import CandidatesView from './CandidatesView.tsx';
