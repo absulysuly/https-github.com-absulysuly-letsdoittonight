@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
@@ -39,6 +39,8 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
 
     const getTabClasses = (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASS : INACTIVE_TAB_CLASS);
 
+    const handleTabClick = useCallback((tab: T) => () => onTabChange(tab), [onTabChange]);
+
     const getTabLabel = (tab: T) => {
         const translationKey = TAB_TRANSLATION_KEYS[tab];
         return translationKey ? texts[translationKey] : tab;
@@ -47,20 +49,21 @@ function TopNavBarComponent<T extends string>({ tabs, activeTab, onTabChange, la
     return (
         <div className={NAV_BAR_BASE_CLASS}>
             <nav className={TAB_CONTAINER_CLASS} aria-label="Tabs">
-                {tabs.map((tab) => {
-                    return (
-                        <button
-                            key={tab}
-                            onClick={() => onTabChange(tab)}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
-                        >
-                            {getTabLabel(tab)}
-                        </button>
-                    );
-                })}
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={handleTabClick(tab)}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                    >
+                        {getTabLabel(tab)}
+                    </button>
+                ))}
             </nav>
         </div>
     );
 }
 
-export const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+const MemoizedTopNavBar = memo(TopNavBarComponent);
+MemoizedTopNavBar.displayName = 'TopNavBar';
+
+export const TopNavBar = MemoizedTopNavBar as typeof TopNavBarComponent;
