@@ -60,7 +60,7 @@ npm run build
 
 printf '🔍 Validating backend...\n'
 BACKEND_STATUS="⚠️"
-if curl --silent --fail --max-time 10 "https://hamlet-unified-complete-2027-production.up.railway.app/health" >/dev/null; then
+if curl --silent --fail --max-time 10 "https://hamlet-unified-complete-2027-production.up.railway.app/api/health" >/dev/null; then
   BACKEND_STATUS="✅"
   printf '✅ Backend OK\n'
 else

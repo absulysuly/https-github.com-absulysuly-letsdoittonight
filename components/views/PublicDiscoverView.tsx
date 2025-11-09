@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Governorate, Language } from '../../types.ts';
 import * as api from '../../services/apiService.ts';
+import { fetchCandidates as fetchBackendCandidates, mapBackendCandidateToUser } from '../../services/backendClient.ts';
 import PublicDiscoverCandidateCard from '../PublicDiscoverCandidateCard.tsx';
 import { SLUG_PARTY_MAP, SLUG_GOVERNORATE_MAP, GOVERNORATE_AR_MAP } from '../../constants.ts';
 import { UI_TEXT } from '../../translations.ts';
@@ -18,40 +19,74 @@ const PublicDiscoverView: React.FC<PublicDiscoverViewProps> = ({ language }) => 
     const texts = UI_TEXT[language];
 
     useEffect(() => {
-        const fetchCandidates = async () => {
+        let isMounted = true;
+
+        const loadCandidates = async () => {
             setIsLoading(true);
+
+            const params = new URLSearchParams(window.location.search);
+            const partySlug = params.get('party') ?? undefined;
+            const govSlug = params.get('gov') ?? undefined;
+
+            const party = partySlug ? SLUG_PARTY_MAP[partySlug] : '';
+            const governorate = govSlug ? SLUG_GOVERNORATE_MAP[govSlug] : '';
+
+            if (!isMounted) return;
+
+            setPartyName(party);
+            setGovernorateName(governorate);
+
+            if (governorate && GOVERNORATE_AR_MAP[governorate as Governorate]) {
+                setGovernorateArName(GOVERNORATE_AR_MAP[governorate as Governorate]);
+            } else {
+                setGovernorateArName('');
+            }
+
             try {
-                const params = new URLSearchParams(window.location.search);
-                const partySlug = params.get('party');
-                const govSlug = params.get('gov');
+                const { data } = await fetchBackendCandidates({
+                    limit: 200,
+                    party: party || undefined,
+                    governorate: governorate || undefined,
+                });
 
-                // Set header text
-                const party = partySlug ? SLUG_PARTY_MAP[partySlug] : '';
-                const governorate = govSlug ? SLUG_GOVERNORATE_MAP[govSlug] : '';
-                setPartyName(party);
-                setGovernorateName(governorate);
-                
-                // Set Arabic name for governorate
-                if(governorate && GOVERNORATE_AR_MAP[governorate as Governorate]){
-                    setGovernorateArName(GOVERNORATE_AR_MAP[governorate as Governorate]);
-                }
+                if (!isMounted) return;
 
-                // Fetch candidates based on slugs
-                if (partySlug && govSlug) {
-                    const filteredCandidates = await api.getUsers({
-                        role: UserRole.Candidate,
-                        partySlug,
-                        governorateSlug: govSlug,
-                    });
-                    setCandidates(filteredCandidates);
+                const remoteCandidates = data.map(mapBackendCandidateToUser);
+
+                if (remoteCandidates.length > 0) {
+                    setCandidates(remoteCandidates);
+                    return;
                 }
             } catch (error) {
-                console.error("Failed to fetch candidates for discovery:", error);
-            } finally {
-                setIsLoading(false);
+                console.error('Failed to fetch candidates from backend:', error);
+            }
+
+            try {
+                const fallbackCandidates = await api.getUsers({
+                    role: UserRole.Candidate,
+                    partySlug: partySlug ?? 'All',
+                    governorateSlug: govSlug ?? 'All',
+                });
+
+                if (!isMounted) return;
+                setCandidates(fallbackCandidates);
+            } catch (fallbackError) {
+                console.error('Failed to load fallback candidates:', fallbackError);
+                if (isMounted) {
+                    setCandidates([]);
+                }
             }
         };
-        fetchCandidates();
+
+        loadCandidates().finally(() => {
+            if (isMounted) {
+                setIsLoading(false);
+            }
+        });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const pageTitle = partyName && governorateArName 

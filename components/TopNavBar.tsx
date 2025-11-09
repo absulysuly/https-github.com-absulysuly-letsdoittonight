@@ -1,5 +1,4 @@
-import { memo, useCallback, useMemo } from 'react';
-import type { ReactElement } from 'react';
+import { memo, useCallback, useMemo, type ReactElement } from 'react';
 
 import type { Language, MainContentTab } from '../types';
 import { UI_TEXT } from '../translations';
