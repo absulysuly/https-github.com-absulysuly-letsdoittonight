@@ -49,11 +49,18 @@ const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, l
         [activeTab]
     );
 
+    const createTabHandler = useCallback(
+        (tab: T) => () => {
+            onTabChange(tab);
+        },
+        [onTabChange]
+    );
+
     return (
         <div className={NAV_BAR_CLASSNAME}>
             <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
                 {tabs.map((tab) => (
-                    <button key={tab} onClick={() => onTabChange(tab)} className={getTabClasses(tab)}>
+                    <button key={tab} onClick={createTabHandler(tab)} className={getTabClasses(tab)}>
                         {tabLabels[tab] ?? tab}
                     </button>
                 ))}
@@ -64,4 +71,5 @@ const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, l
 
 const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
 
+export type { TopNavBarProps };
 export default TopNavBar;
