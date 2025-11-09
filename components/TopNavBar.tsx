@@ -3,6 +3,7 @@ import type { Language, MainContentTab } from '../types';
 import { UI_TEXT } from '../translations';
 
 type TranslationKey = keyof (typeof UI_TEXT)['en'];
+type TranslationTexts = Record<TranslationKey, string>;
 
 const TAB_TRANSLATION_KEYS = {
     Posts: 'posts',
@@ -31,32 +32,34 @@ const ACTIVE_TAB_CLASSNAME = `${TAB_BASE_CLASSNAME} border-primary text-primary 
 const INACTIVE_TAB_CLASSNAME =
     `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
 
-const translateTab = (tab: string, texts: Record<TranslationKey, string>) => {
+const translateTab = (tab: string, texts: TranslationTexts) => {
     const translationKey = TAB_TRANSLATION_KEYS[tab as keyof typeof TAB_TRANSLATION_KEYS];
     return translationKey ? texts[translationKey] : tab;
 };
 
-const createTabLabelMap = <T extends string>(tabs: readonly T[], texts: Record<TranslationKey, string>) =>
+const createTabLabelMap = <T extends string>(tabs: readonly T[], texts: TranslationTexts) =>
     tabs.reduce<Record<T, string>>((acc, tab) => {
         acc[tab] = translateTab(tab, texts);
         return acc;
     }, {} as Record<T, string>);
 
 const useTabLabels = <T extends string>(tabs: readonly T[], language: Language) => {
-    const texts = useMemo(() => UI_TEXT[language], [language]);
+    const texts = useMemo<TranslationTexts>(() => UI_TEXT[language], [language]);
     return useMemo(() => createTabLabelMap(tabs, texts), [tabs, texts]);
 };
 
-const TopNavBar = memo(function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+type TopNavBarComponent = <T extends string>(props: TopNavBarProps<T>) => JSX.Element;
+
+const TopNavBarInner: TopNavBarComponent = ({ tabs, activeTab, onTabChange, language }) => {
     const tabLabels = useTabLabels(tabs, language);
 
     const getTabClasses = useCallback(
-        (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME),
+        (tab: (typeof tabs)[number]) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME),
         [activeTab]
     );
 
     const createTabHandler = useCallback(
-        (tab: T) => () => {
+        (tab: (typeof tabs)[number]) => () => {
             onTabChange(tab);
         },
         [onTabChange]
@@ -73,8 +76,10 @@ const TopNavBar = memo(function TopNavBar<T extends string>({ tabs, activeTab, o
             </nav>
         </div>
     );
-});
+};
 
-TopNavBar.displayName = 'TopNavBar';
+const MemoizedTopNavBar = memo(TopNavBarInner) as TopNavBarComponent;
+MemoizedTopNavBar.displayName = 'TopNavBar';
 
-export default TopNavBar;
+export const TopNavBar = MemoizedTopNavBar;
+export type { TopNavBarProps };
