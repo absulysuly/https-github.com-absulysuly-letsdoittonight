@@ -78,8 +78,5 @@ const TopNavBarInner: TopNavBarComponent = ({ tabs, activeTab, onTabChange, lang
     );
 };
 
-const MemoizedTopNavBar = memo(TopNavBarInner) as TopNavBarComponent;
-MemoizedTopNavBar.displayName = 'TopNavBar';
-
-export const TopNavBar = MemoizedTopNavBar;
-export type { TopNavBarProps };
+export const TopNavBar = memo(TopNavBarInner) as TopNavBarComponent;
+TopNavBar.displayName = 'TopNavBar';
