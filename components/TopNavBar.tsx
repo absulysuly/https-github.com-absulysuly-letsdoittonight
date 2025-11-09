@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react';
-import type { Language } from '../types.ts';
-import { UI_TEXT } from '../translations.ts';
+import type { Language, MainContentTab } from '../types';
+import { UI_TEXT } from '../translations';
 
 type TranslationKey = keyof (typeof UI_TEXT)['en'];
 
@@ -15,7 +15,7 @@ const TAB_TRANSLATION_KEYS = {
     Articles: 'articles',
     'Ask Neighbor': 'askNeighbor',
     'IHEC Updates': 'ihecUpdates',
-} as const satisfies Record<string, TranslationKey>;
+} as const satisfies Partial<Record<MainContentTab, TranslationKey>>;
 
 export interface TopNavBarProps<T extends string> {
     tabs: readonly T[];
@@ -31,20 +31,29 @@ const ACTIVE_TAB_CLASSNAME = `${TAB_BASE_CLASSNAME} border-primary text-primary 
 const INACTIVE_TAB_CLASSNAME =
     `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
 
-const TopNavBarComponent = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
-    const texts = UI_TEXT[language];
+const translateTab = (tab: string, texts: Record<TranslationKey, string>) => {
+    const translationKey = TAB_TRANSLATION_KEYS[tab as keyof typeof TAB_TRANSLATION_KEYS];
+    return translationKey ? texts[translationKey] : tab;
+};
 
-    const tabLabels = useMemo(() => {
-        const translationLookup = TAB_TRANSLATION_KEYS as Record<string, TranslationKey | undefined>;
+const createTabLabelMap = <T extends string>(tabs: readonly T[], texts: Record<TranslationKey, string>) =>
+    tabs.reduce<Record<T, string>>((acc, tab) => {
+        acc[tab] = translateTab(tab, texts);
+        return acc;
+    }, {} as Record<T, string>);
 
-        return tabs.reduce<Record<T, string>>((acc, tab) => {
-            const translationKey = translationLookup[tab as string];
-            acc[tab] = translationKey ? texts[translationKey] : tab;
-            return acc;
-        }, {} as Record<T, string>);
-    }, [tabs, texts]);
+const useTabLabels = <T extends string>(tabs: readonly T[], language: Language) => {
+    const texts = useMemo(() => UI_TEXT[language], [language]);
+    return useMemo(() => createTabLabelMap(tabs, texts), [tabs, texts]);
+};
 
-    const getTabClasses = useCallback((tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME), [activeTab]);
+const TopNavBar = memo(function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+    const tabLabels = useTabLabels(tabs, language);
+
+    const getTabClasses = useCallback(
+        (tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME),
+        [activeTab]
+    );
 
     const createTabHandler = useCallback(
         (tab: T) => () => {
@@ -64,8 +73,8 @@ const TopNavBarComponent = <T extends string>({ tabs, activeTab, onTabChange, la
             </nav>
         </div>
     );
-};
+});
 
-const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+TopNavBar.displayName = 'TopNavBar';
 
 export default TopNavBar;
