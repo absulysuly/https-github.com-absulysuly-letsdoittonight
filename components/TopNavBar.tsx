@@ -17,7 +17,7 @@ const TAB_TRANSLATION_KEYS = {
     'IHEC Updates': 'ihecUpdates',
 } as const satisfies Record<string, TranslationKey>;
 
-interface TopNavBarProps<T extends string> {
+export interface TopNavBarProps<T extends string> {
     tabs: readonly T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
@@ -27,8 +27,11 @@ interface TopNavBarProps<T extends string> {
 const NAV_BAR_CLASSNAME = 'border-b border-[var(--color-glass-border)]';
 const TAB_BASE_CLASSNAME =
     'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic';
+const ACTIVE_TAB_CLASSNAME = `${TAB_BASE_CLASSNAME} border-primary text-primary glow`;
+const INACTIVE_TAB_CLASSNAME =
+    `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
 
-const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
+const TopNavBarComponent = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
     const texts = UI_TEXT[language];
 
     const tabLabels = useMemo(() => {
@@ -41,13 +44,7 @@ const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, l
         }, {} as Record<T, string>);
     }, [tabs, texts]);
 
-    const getTabClasses = useCallback(
-        (tab: T) =>
-            activeTab === tab
-                ? `${TAB_BASE_CLASSNAME} border-primary text-primary glow`
-                : `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`,
-        [activeTab]
-    );
+    const getTabClasses = useCallback((tab: T) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME), [activeTab]);
 
     const createTabHandler = useCallback(
         (tab: T) => () => {
