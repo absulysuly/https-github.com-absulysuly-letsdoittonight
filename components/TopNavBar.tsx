@@ -1,4 +1,6 @@
 import { memo, useCallback, useMemo } from 'react';
+import type { JSX } from 'react';
+
 import type { Language, MainContentTab } from '../types';
 import { UI_TEXT } from '../translations';
 
@@ -50,7 +52,7 @@ const useTabLabels = <T extends string>(tabs: readonly T[], language: Language) 
 
 type TopNavBarComponent = <T extends string>(props: TopNavBarProps<T>) => JSX.Element;
 
-const TopNavBarInner: TopNavBarComponent = ({ tabs, activeTab, onTabChange, language }) => {
+const TopNavBarInner = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
     const tabLabels = useTabLabels(tabs, language);
 
     const getTabClasses = useCallback(
