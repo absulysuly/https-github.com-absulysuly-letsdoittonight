@@ -1,58 +1,62 @@
+import { memo, useMemo } from 'react';
 import { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
+type TranslationKey = keyof (typeof UI_TEXT)['en'];
+
+const TAB_TRANSLATION_KEYS = {
+    Posts: 'posts',
+    Reels: 'reels',
+    Candidates: 'candidates',
+    'Women Candidates': 'womenCandidates',
+    Debates: 'debates',
+    'Tea House': 'teaHouse',
+    Events: 'events',
+    Articles: 'articles',
+    'Ask Neighbor': 'askNeighbor',
+    'IHEC Updates': 'ihecUpdates',
+} as const satisfies Record<string, TranslationKey>;
+
 interface TopNavBarProps<T extends string> {
-    tabs: T[];
+    tabs: readonly T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
     language: Language;
 }
 
-const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
-    'Posts': 'posts',
-    'Reels': 'reels',
-    'Candidates': 'candidates',
-    'Women Candidates': 'womenCandidates',
-    'Debates': 'debates',
-    'Tea House': 'teaHouse',
-    'Events': 'events',
-    'Articles': 'articles',
-    'Ask Neighbor': 'askNeighbor',
-    'IHEC Updates': 'ihecUpdates',
-};
+const NAV_BAR_CLASSNAME = 'border-b border-[var(--color-glass-border)]';
+const TAB_BASE_CLASSNAME =
+    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic';
 
-
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+const TopNavBar = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
     const texts = UI_TEXT[language];
-    const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
-    const getTabClasses = (tab: T) => {
-        const isActive = activeTab === tab;
-        return isActive
-            ? 'border-primary text-primary glow'
-            : 'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
-    };
+    const tabLabels = useMemo(() => {
+        const translationLookup = TAB_TRANSLATION_KEYS as Record<string, TranslationKey | undefined>;
+
+        return tabs.reduce<Record<T, string>>((acc, tab) => {
+            const translationKey = translationLookup[tab as string];
+            acc[tab] = translationKey ? texts[translationKey] : tab;
+            return acc;
+        }, {} as Record<T, string>);
+    }, [tabs, texts]);
+
+    const getTabClasses = (tab: T) =>
+        activeTab === tab
+            ? `${TAB_BASE_CLASSNAME} border-primary text-primary glow`
+            : `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
 
     return (
-        <div className={navBarClasses}>
+        <div className={NAV_BAR_CLASSNAME}>
             <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
-                {tabs.map((tab) => {
-                    const translationKey = tabTranslationKeys[tab];
-                    const label = translationKey ? texts[translationKey] : tab;
-
-                    return (
-                        <button
-                            key={tab}
-                            onClick={() => onTabChange(tab)}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
-                        >
-                            {label}
-                        </button>
-                    );
-                })}
+                {tabs.map((tab) => (
+                    <button key={tab} onClick={() => onTabChange(tab)} className={getTabClasses(tab)}>
+                        {tabLabels[tab] ?? tab}
+                    </button>
+                ))}
             </nav>
         </div>
     );
 };
 
-export default TopNavBar;
+export default memo(TopNavBar);
