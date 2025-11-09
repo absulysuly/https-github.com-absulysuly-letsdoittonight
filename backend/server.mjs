@@ -1,58 +1,116 @@
-import { createServer } from 'node:http';
-import { URL } from 'node:url';
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 import { importCandidates, candidates } from './importCandidates.mjs';
 
-const PORT = Number(process.env.PORT ?? 4001);
+const DEFAULT_PORT = Number.parseInt(process.env.PORT ?? '4001', 10);
+const FALLBACK_PORT = Number.parseInt(process.env.FALLBACK_PORT ?? `${DEFAULT_PORT + 1}`, 10);
 
-function sendJson(response, statusCode, payload) {
-    response.writeHead(statusCode, {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-    });
-    response.end(JSON.stringify(payload));
+/**
+ * Parses a list pagination query from an Express request.
+ * @param {import('express').Request} request
+ */
+function getPaginationParams(request) {
+    const page = Number.parseInt(request.query.page ?? '1', 10);
+    const limit = Number.parseInt(request.query.limit ?? '50', 10);
+
+    const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+    const safeLimit = Number.isNaN(limit) || limit < 1 ? 50 : Math.min(limit, 200);
+
+    return { page: safePage, limit: safeLimit };
 }
 
-function getPaginationParams(url) {
-    const pageParam = url.searchParams.get('page');
-    const limitParam = url.searchParams.get('limit');
+/**
+ * Filters the candidate list by the provided query.
+ * @param {string} query
+ */
+function filterCandidatesByQuery(query) {
+    const normalizedQuery = query.trim().toLowerCase();
 
-    const page = Number.parseInt(pageParam ?? '1', 10);
-    const limit = Number.parseInt(limitParam ?? '50', 10);
-
-    return {
-        page: Number.isNaN(page) || page < 1 ? 1 : page,
-        limit: Number.isNaN(limit) || limit < 1 ? 50 : Math.min(limit, 200),
-    };
-}
-
-function buildStats() {
-    const totals = {
-        total: candidates.length,
-        gender: {},
-        governorates: {},
-    };
-
-    for (const candidate of candidates) {
-        const genderKey = (candidate.gender ?? 'Unknown').trim() || 'Unknown';
-        totals.gender[genderKey] = (totals.gender[genderKey] ?? 0) + 1;
-
-        const governorateKey = (candidate.governorate ?? 'Unknown').trim() || 'Unknown';
-        totals.governorates[governorateKey] = (totals.governorates[governorateKey] ?? 0) + 1;
+    if (!normalizedQuery) {
+        return [];
     }
 
-    return totals;
+    return candidates.filter((candidate) =>
+        Object.values(candidate)
+            .filter((value) => value !== null && value !== undefined)
+            .some((value) => String(value).toLowerCase().includes(normalizedQuery)),
+    );
 }
 
-function handleCandidatesRequest(url, response) {
-    const { page, limit } = getPaginationParams(url);
+/**
+ * Attempts to bind the Express server to an available port, retrying the fallback if the
+ * preferred port is already taken.
+ * @param {import('express').Express} app
+ * @param {number} port
+ * @param {number} fallbackPort
+ */
+async function listenWithFallback(app, port, fallbackPort) {
+    const listen = (targetPort) =>
+        new Promise((resolve, reject) => {
+            const server = app.listen(targetPort);
+
+            const handleError = (error) => {
+                server.removeListener('listening', handleListening);
+                reject(Object.assign(error, { port: targetPort }));
+            };
+
+            const handleListening = () => {
+                server.removeListener('error', handleError);
+                resolve({ server, port: targetPort });
+            };
+
+            server.once('error', handleError);
+            server.once('listening', handleListening);
+        });
+
+    try {
+        return await listen(port);
+    } catch (error) {
+        if (error?.code === 'EADDRINUSE' && fallbackPort !== port) {
+            console.warn(
+                `⚠️  Port ${port} is busy. Retrying on port ${fallbackPort}...`,
+            );
+            return listen(fallbackPort);
+        }
+
+        throw error;
+    }
+}
+
+try {
+    await importCandidates();
+    console.log(`✅ ${candidates.length.toLocaleString()} candidates imported successfully`);
+} catch (error) {
+    console.error('❌ Failed to import candidate CSV:', error);
+    process.exitCode = 1;
+    throw error;
+}
+
+const app = express();
+
+app.set('trust proxy', 1);
+app.use(cors({ origin: '*' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(morgan('tiny'));
+
+app.get('/health', (request, response) => {
+    response.json({ status: 'ok', uptime: process.uptime() });
+});
+
+app.get('/api/stats', (request, response) => {
+    response.json({ totalCandidates: candidates.length });
+});
+
+app.get('/api/candidates', (request, response) => {
+    const { page, limit } = getPaginationParams(request);
     const start = (page - 1) * limit;
     const end = start + limit;
     const total = candidates.length;
-    const pageData = candidates.slice(start, end);
     const totalPages = Math.max(1, Math.ceil(total / limit));
 
-    return sendJson(response, 200, {
-        data: pageData,
+    response.json({
+        data: candidates.slice(start, end),
         meta: {
             total,
             page,
@@ -62,42 +120,47 @@ function handleCandidatesRequest(url, response) {
             hasPreviousPage: page > 1,
         },
     });
-}
+});
 
-function handleStatsRequest(response) {
-    return sendJson(response, 200, buildStats());
-}
+app.get('/api/search', (request, response) => {
+    const { q = '' } = request.query;
 
-await importCandidates();
-console.log('✅ 7,769 candidates imported successfully');
-
-const server = createServer((request, response) => {
-    if (!request.url) {
-        return sendJson(response, 400, { error: 'Invalid request' });
+    if (typeof q !== 'string') {
+        return response.status(400).json({ error: 'Query parameter "q" must be a string' });
     }
 
-    const url = new URL(request.url, `http://${request.headers.host ?? `localhost:${PORT}`}`);
+    const results = filterCandidatesByQuery(q);
 
-    if (request.method === 'GET' && url.pathname === '/api/candidates') {
-        return handleCandidatesRequest(url, response);
-    }
+    return response.json({
+        data: results,
+        meta: {
+            total: results.length,
+            query: q,
+        },
+    });
+});
 
-    if (request.method === 'GET' && url.pathname === '/api/stats') {
-        return handleStatsRequest(response);
-    }
+app.use((request, response) => {
+    response.status(404).json({ error: 'Not found' });
+});
 
-    if (request.method === 'OPTIONS') {
-        response.writeHead(204, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET,OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
+try {
+    const { server, port } = await listenWithFallback(app, DEFAULT_PORT, FALLBACK_PORT);
+    process.env.PORT = String(port);
+
+    const handleShutdown = () => {
+        console.log('Received shutdown signal. Closing server...');
+        server.close(() => {
+            console.log('Server closed gracefully');
+            process.exit(0);
         });
-        return response.end();
-    }
+    };
 
-    return sendJson(response, 404, { error: 'Not found' });
-});
+    process.on('SIGTERM', handleShutdown);
+    process.on('SIGINT', handleShutdown);
 
-server.listen(PORT, () => {
-    console.log(`Backend listening on port ${PORT}`);
-});
+    console.log(`Backend listening on port ${port}`);
+} catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exitCode = 1;
+}
