@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
@@ -41,10 +41,13 @@ const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, l
         }, {} as Record<T, string>);
     }, [tabs, texts]);
 
-    const getTabClasses = (tab: T) =>
-        activeTab === tab
-            ? `${TAB_BASE_CLASSNAME} border-primary text-primary glow`
-            : `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
+    const getTabClasses = useCallback(
+        (tab: T) =>
+            activeTab === tab
+                ? `${TAB_BASE_CLASSNAME} border-primary text-primary glow`
+                : `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`,
+        [activeTab]
+    );
 
     return (
         <div className={NAV_BAR_CLASSNAME}>
