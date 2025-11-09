@@ -1,0 +1,11 @@
+{
+  "name": "next",
+  "version": "0.0.0-shim",
+  "type": "module",
+  "bin": {
+    "next": "./bin/next-shim.mjs"
+  },
+  "dependencies": {
+    "vite": "^6.2.0"
+  }
+}
