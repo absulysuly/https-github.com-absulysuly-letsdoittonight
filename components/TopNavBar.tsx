@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { Language } from '../types.ts';
+import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
 type TranslationKey = keyof (typeof UI_TEXT)['en'];
@@ -28,7 +28,7 @@ const NAV_BAR_CLASSNAME = 'border-b border-[var(--color-glass-border)]';
 const TAB_BASE_CLASSNAME =
     'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic';
 
-const TopNavBar = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
+const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) => {
     const texts = UI_TEXT[language];
 
     const tabLabels = useMemo(() => {
@@ -59,4 +59,7 @@ const TopNavBar = <T extends string>({ tabs, activeTab, onTabChange, language }:
     );
 };
 
-export default memo(TopNavBar);
+const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
+
+export { TopNavBar };
+export default TopNavBar;
