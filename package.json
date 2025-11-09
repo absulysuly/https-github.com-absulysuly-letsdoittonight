@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev || node ./scripts/next-cli.mjs dev",
+    "dev": "vite",
     "dev:vite": "vite",
     "build": "vite build",
     "preview": "vite preview"
