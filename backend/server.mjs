@@ -1,166 +1,171 @@
 import express from 'express';
 import cors from 'cors';
-import morgan from 'morgan';
-import { importCandidates, candidates } from './importCandidates.mjs';
+import fs from 'fs';
+import path from 'path';
+import Papa from 'papaparse';
+import { fileURLToPath } from 'url';
 
-const DEFAULT_PORT = Number.parseInt(process.env.PORT ?? '4001', 10);
-const FALLBACK_PORT = Number.parseInt(process.env.FALLBACK_PORT ?? `${DEFAULT_PORT + 1}`, 10);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-/**
- * Parses a list pagination query from an Express request.
- * @param {import('express').Request} request
- */
-function getPaginationParams(request) {
-    const page = Number.parseInt(request.query.page ?? '1', 10);
-    const limit = Number.parseInt(request.query.limit ?? '50', 10);
+const app = express();
+app.use(express.json());
 
-    const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
-    const safeLimit = Number.isNaN(limit) || limit < 1 ? 50 : Math.min(limit, 200);
+// CORS configuration - update with your frontend URLs
+const allowedOrigins = [
+    "https://your-frontend-domain.vercel.app",
+    "http://localhost:3000",
+    "https://localhost:3000"
+];
 
-    return { page: safePage, limit: safeLimit };
-}
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
 
-/**
- * Filters the candidate list by the provided query.
- * @param {string} query
- */
-function filterCandidatesByQuery(query) {
-    const normalizedQuery = query.trim().toLowerCase();
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
+}));
 
-    if (!normalizedQuery) {
-        return [];
-    }
+// Global variable to store candidates
+let candidates = [];
 
-    return candidates.filter((candidate) =>
-        Object.values(candidate)
-            .filter((value) => value !== null && value !== undefined)
-            .some((value) => String(value).toLowerCase().includes(normalizedQuery)),
-    );
-}
-
-/**
- * Attempts to bind the Express server to an available port, retrying the fallback if the
- * preferred port is already taken.
- * @param {import('express').Express} app
- * @param {number} port
- * @param {number} fallbackPort
- */
-async function listenWithFallback(app, port, fallbackPort) {
-    const listen = (targetPort) =>
-        new Promise((resolve, reject) => {
-            const server = app.listen(targetPort);
-
-            const handleError = (error) => {
-                server.removeListener('listening', handleListening);
-                reject(Object.assign(error, { port: targetPort }));
-            };
-
-            const handleListening = () => {
-                server.removeListener('error', handleError);
-                resolve({ server, port: targetPort });
-            };
-
-            server.once('error', handleError);
-            server.once('listening', handleListening);
-        });
-
+// CSV Import Function
+async function importCandidates() {
     try {
-        return await listen(port);
-    } catch (error) {
-        if (error?.code === 'EADDRINUSE' && fallbackPort !== port) {
-            console.warn(
-                `⚠️  Port ${port} is busy. Retrying on port ${fallbackPort}...`,
-            );
-            return listen(fallbackPort);
+        const dataDir = path.join(__dirname, 'data');
+        const csvPath = path.join(dataDir, 'MASTER_CANDIDATES_7769.csv');
+
+        console.log('🔍 Looking for CSV file at:', csvPath);
+
+        if (!fs.existsSync(csvPath)) {
+            throw new Error(`Candidate CSV not found at ${csvPath}`);
         }
 
+        console.log('📁 CSV file found, reading...');
+        const csvText = await fs.promises.readFile(csvPath, 'utf8');
+
+        const { data: records, errors } = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            transform: (value) => value.trim()
+        });
+
+        if (errors.length > 0) {
+            console.warn('CSV parsing warnings:', errors);
+        }
+
+        candidates = records.filter(record => record.name && record.name.trim() !== '');
+
+        console.log(`✅ Successfully loaded ${candidates.length} candidates from CSV`);
+        return candidates;
+    } catch (error) {
+        console.error('❌ CSV import failed:', error.message);
         throw error;
     }
 }
 
-try {
-    await importCandidates();
-    console.log(`✅ ${candidates.length.toLocaleString()} candidates imported successfully`);
-} catch (error) {
-    console.error('❌ Failed to import candidate CSV:', error);
-    process.exitCode = 1;
-    throw error;
-}
-
-const app = express();
-
-app.set('trust proxy', 1);
-app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '1mb' }));
-app.use(morgan('tiny'));
-
-app.get('/health', (request, response) => {
-    response.json({ status: 'ok', uptime: process.uptime() });
-});
-
-app.get('/api/stats', (request, response) => {
-    response.json({ totalCandidates: candidates.length });
-});
-
-app.get('/api/candidates', (request, response) => {
-    const { page, limit } = getPaginationParams(request);
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const total = candidates.length;
-    const totalPages = Math.max(1, Math.ceil(total / limit));
-
-    response.json({
-        data: candidates.slice(start, end),
-        meta: {
-            total,
-            page,
-            limit,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        },
+// API Routes
+app.get('/api/stats', (req, res) => {
+    res.json({
+        totalCandidates: candidates.length,
+        loadedAt: new Date().toISOString()
     });
 });
 
-app.get('/api/search', (request, response) => {
-    const { q = '' } = request.query;
+app.get('/api/candidates', (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
 
-    if (typeof q !== 'string') {
-        return response.status(400).json({ error: 'Query parameter "q" must be a string' });
+    const paginatedCandidates = candidates.slice(startIndex, endIndex);
+
+    res.json({
+        data: paginatedCandidates,
+        total: candidates.length,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(candidates.length / limit)
+    });
+});
+
+app.get('/api/candidates/:id', (req, res) => {
+    const candidate = candidates.find(c => c.id === req.params.id);
+    if (!candidate) {
+        return res.status(404).json({ error: "Candidate not found" });
     }
+    res.json(candidate);
+});
 
-    const results = filterCandidatesByQuery(q);
-
-    return response.json({
-        data: results,
-        meta: {
-            total: results.length,
-            query: q,
-        },
+app.get('/health', (req, res) => {
+    res.json({
+        status: "ok",
+        total_candidates: candidates.length,
+        timestamp: Date.now(),
+        uptime: process.uptime()
     });
 });
 
-app.use((request, response) => {
-    response.status(404).json({ error: 'Not found' });
+// Root endpoint
+app.get('/', (req, res) => {
+    res.json({
+        message: "Hamlet Election Platform API",
+        version: "1.0.0",
+        endpoints: {
+            stats: "/api/stats",
+            candidates: "/api/candidates",
+            candidate: "/api/candidates/:id",
+            health: "/health"
+        }
+    });
 });
 
-try {
-    const { server, port } = await listenWithFallback(app, DEFAULT_PORT, FALLBACK_PORT);
-    process.env.PORT = String(port);
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 
-    const handleShutdown = () => {
-        console.log('Received shutdown signal. Closing server...');
-        server.close(() => {
-            console.log('Server closed gracefully');
-            process.exit(0);
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Endpoint not found' });
+});
+
+// Initialize and start server
+async function startServer() {
+    try {
+        console.log('🚀 Starting Hamlet Election Platform Backend...');
+
+        // Load candidates before starting server
+        await importCandidates();
+
+        const PORT = process.env.PORT || 4001;
+        const server = app.listen(PORT, () => {
+            console.log(`✅ Server running on port ${PORT}`);
+            console.log(`📊 API ready → ${candidates.length} candidates loaded`);
+            console.log(`🌐 Health check: http://localhost:${PORT}/health`);
+            console.log(`📈 Stats: http://localhost:${PORT}/api/stats`);
         });
-    };
 
-    process.on('SIGTERM', handleShutdown);
-    process.on('SIGINT', handleShutdown);
+        // Graceful shutdown
+        process.on('SIGTERM', () => {
+            console.log('SIGTERM received, shutting down gracefully');
+            server.close(() => {
+                console.log('Process terminated');
+            });
+        });
 
-    console.log(`Backend listening on port ${port}`);
-} catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exitCode = 1;
+    } catch (error) {
+        console.error('💥 Failed to start server:', error);
+        process.exit(1);
+    }
 }
+
+// Start the server
+startServer();
