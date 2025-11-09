@@ -7,6 +7,9 @@ import compression from 'compression';
 import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 
+import healthRoutes from './src/routes/health.js';
+import statsRoutes from './src/routes/stats.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -53,6 +56,9 @@ let candidates = [];
 let candidatesLoadedAt = null;
 const cacheFile = path.join(__dirname, 'data', 'candidates_cache.json');
 const cache = new Map();
+
+app.locals.getCandidateCount = () => candidates.length;
+app.locals.getCandidatesLoadedAt = () => (candidatesLoadedAt ? candidatesLoadedAt.toISOString() : null);
 
 // CSV Import Function with cache fallback
 async function importCandidates() {
@@ -108,13 +114,8 @@ setInterval(async () => {
 }, 5 * 60 * 1000);
 
 // API Routes
-app.get('/api/stats', (req, res) => {
-    res.json({
-        status: 'ok',
-        totalCandidates: candidates.length,
-        loadedAt: candidatesLoadedAt ? candidatesLoadedAt.toISOString() : null,
-    });
-});
+app.use('/api/health', healthRoutes);
+app.use('/api/stats', statsRoutes);
 
 const normalizeQuery = (value) => (typeof value === 'string' ? value.trim() : '');
 
@@ -177,17 +178,6 @@ app.get('/api/candidates/:id', (req, res) => {
     res.json(candidate);
 });
 
-const buildHealthPayload = () => ({
-    status: 'ok',
-    time: Date.now(),
-    totalCandidates: candidates.length,
-    uptime: process.uptime(),
-});
-
-app.get('/api/health', (req, res) => {
-    res.json(buildHealthPayload());
-});
-
 app.get('/api/cache/status', (req, res) => {
     res.json({
         cached: fs.existsSync(cacheFile),
@@ -197,7 +187,12 @@ app.get('/api/cache/status', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-    res.json(buildHealthPayload());
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        candidateCount: candidates.length,
+        timestamp: new Date().toISOString(),
+    });
 });
 
 // Serve static files from frontend dist directory
