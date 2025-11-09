@@ -3,8 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "bin": {
+    "next": "./scripts/next-cli.mjs"
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "next dev",
     "build": "vite build",
     "preview": "vite preview",
     "build:backend": "cd backend && npm install",
