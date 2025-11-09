@@ -3,6 +3,8 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
+import compression from 'compression';
+import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -10,16 +12,34 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.use(helmet({
+    contentSecurityPolicy: false,
+}));
+app.use(compression());
+
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
     next();
 });
 
+const allowedOrigins = [
+    'https://digitaldemocracy-iraq.vercel.app',
+    'https://hamlet-unified-complete-2027.vercel.app',
+    'http://localhost:5173',
+];
+
 const corsConfig = {
-    origin: '*',
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86_400,
 };
 
 app.use(cors(corsConfig));
@@ -31,42 +51,61 @@ app.options('*', cors(corsConfig));
 // Global variable to store candidates
 let candidates = [];
 let candidatesLoadedAt = null;
+const cacheFile = path.join(__dirname, 'data', 'candidates_cache.json');
+const cache = new Map();
 
-// CSV Import Function
+// CSV Import Function with cache fallback
 async function importCandidates() {
+    const dataDir = path.join(__dirname, 'data');
+    const csvPath = path.join(dataDir, 'MASTER_CANDIDATES_7769.csv');
+
     try {
-        const dataDir = path.join(__dirname, 'data');
-        const csvPath = path.join(dataDir, 'MASTER_CANDIDATES_7769.csv');
+        console.log('🔍 Loading candidates...');
+        if (!fs.existsSync(csvPath)) throw new Error('CSV file not found, attempting cache fallback');
 
-        console.log('🔍 Looking for CSV file at:', csvPath);
-
-        if (!fs.existsSync(csvPath)) {
-            throw new Error(`Candidate CSV not found at ${csvPath}`);
-        }
-
-        console.log('📁 CSV file found, reading...');
         const csvText = await fs.promises.readFile(csvPath, 'utf8');
-
         const { data: records, errors } = Papa.parse(csvText, {
             header: true,
             skipEmptyLines: true,
-            transform: (value) => value.trim()
+            transform: (value) => value.trim(),
         });
 
-        if (errors.length > 0) {
-            console.warn('CSV parsing warnings:', errors);
-        }
+        if (errors.length > 0) console.warn('CSV parse warnings:', errors);
+        candidates = records.filter((r) => r.full_name && r.full_name.trim() !== '');
 
-        candidates = records.filter(record => record.full_name && record.full_name.trim() !== '');
-
+        await fs.promises.writeFile(cacheFile, JSON.stringify(candidates, null, 2));
         candidatesLoadedAt = new Date();
-        console.log(`✅ Successfully loaded ${candidates.length} candidates from CSV`);
-        return candidates;
+        cache.clear();
+        console.log(`✅ CSV imported successfully (${candidates.length} candidates). Cache saved.`);
     } catch (error) {
-        console.error('❌ CSV import failed:', error.message);
-        throw error;
+        console.error('⚠️ Failed to import CSV:', error.message);
+
+        if (fs.existsSync(cacheFile)) {
+            console.log('♻️ Loading from local cache...');
+            const cacheText = await fs.promises.readFile(cacheFile, 'utf8');
+            candidates = JSON.parse(cacheText);
+            candidatesLoadedAt = new Date(fs.statSync(cacheFile).mtime);
+            cache.clear();
+            console.log(`✅ Loaded ${candidates.length} cached candidates.`);
+        } else {
+            console.warn('❌ No cache found. Serving empty dataset.');
+            candidates = [];
+            candidatesLoadedAt = new Date();
+            cache.clear();
+        }
     }
 }
+
+setInterval(async () => {
+    if (candidates.length > 0) {
+        try {
+            await fs.promises.writeFile(cacheFile, JSON.stringify(candidates, null, 2));
+            console.log('💾 Candidate cache refreshed.');
+        } catch (error) {
+            console.error('⚠️ Failed to refresh candidate cache:', error);
+        }
+    }
+}, 5 * 60 * 1000);
 
 // API Routes
 app.get('/api/stats', (req, res) => {
@@ -80,6 +119,11 @@ app.get('/api/stats', (req, res) => {
 const normalizeQuery = (value) => (typeof value === 'string' ? value.trim() : '');
 
 app.get('/api/candidates', (req, res) => {
+    const key = `${req.originalUrl}`;
+    if (cache.has(key)) {
+        return res.set('X-Cache', 'HIT').json(cache.get(key));
+    }
+
     const rawPage = Number.parseInt(req.query.page, 10) || 1;
     const rawLimit = Number.parseInt(req.query.limit, 10) || 10;
     const page = Math.max(1, rawPage);
@@ -113,13 +157,15 @@ app.get('/api/candidates', (req, res) => {
     const startIndex = (page - 1) * limit;
     const paginatedCandidates = filteredCandidates.slice(startIndex, startIndex + limit);
 
-    res.json({
+    const response = {
         data: paginatedCandidates,
         total: filteredCandidates.length,
         page,
         limit,
         totalPages: Math.max(1, Math.ceil(filteredCandidates.length / limit)),
-    });
+    };
+    cache.set(key, response);
+    res.set('X-Cache', 'MISS').json(response);
 });
 
 app.get('/api/candidates/:id', (req, res) => {
@@ -142,6 +188,14 @@ app.get('/api/health', (req, res) => {
     res.json(buildHealthPayload());
 });
 
+app.get('/api/cache/status', (req, res) => {
+    res.json({
+        cached: fs.existsSync(cacheFile),
+        candidates: candidates.length,
+        lastModified: fs.existsSync(cacheFile) ? fs.statSync(cacheFile).mtime : null,
+    });
+});
+
 app.get('/health', (req, res) => {
     res.json(buildHealthPayload());
 });
@@ -150,7 +204,11 @@ app.get('/health', (req, res) => {
 const distPath = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(distPath)) {
     console.log('📁 Serving frontend from:', distPath);
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+        maxAge: '7d',
+        etag: true,
+        lastModified: true,
+    }));
 
     // SPA fallback - serve index.html for all non-API routes
     app.get('*', (req, res, next) => {
@@ -179,7 +237,12 @@ if (fs.existsSync(distPath)) {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error('Error:', err.stack);
+    if (err?.message === 'Not allowed by CORS') {
+        console.warn('CORS rejection for origin:', req.get('origin'));
+        return res.status(403).json({ error: 'CORS: Origin not allowed' });
+    }
+
+    console.error('Error:', err.stack || err);
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
