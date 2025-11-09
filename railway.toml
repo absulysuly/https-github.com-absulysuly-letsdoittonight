@@ -2,9 +2,9 @@ project = "wonderful-reprieve"
 environment = "production"
 
 [build]
-root = "backend"
+builder = "nixpacks"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "npm run build && cd backend && npm install && npm start"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
