@@ -11,24 +11,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 
-// CORS configuration - update with your frontend URLs
-const allowedOrigins = [
-    "https://your-frontend-domain.vercel.app",
-    "http://localhost:3000",
-    "https://localhost:3000"
-];
-
+// CORS configuration - allow all origins for now (can be restricted later)
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
+    origin: true,
     credentials: true
 }));
 
@@ -60,7 +45,7 @@ async function importCandidates() {
             console.warn('CSV parsing warnings:', errors);
         }
 
-        candidates = records.filter(record => record.name && record.name.trim() !== '');
+        candidates = records.filter(record => record.full_name && record.full_name.trim() !== '');
 
         console.log(`✅ Successfully loaded ${candidates.length} candidates from CSV`);
         return candidates;
@@ -112,19 +97,36 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-    res.json({
-        message: "Hamlet Election Platform API",
-        version: "1.0.0",
-        endpoints: {
-            stats: "/api/stats",
-            candidates: "/api/candidates",
-            candidate: "/api/candidates/:id",
-            health: "/health"
+// Serve static files from frontend dist directory
+const distPath = path.join(__dirname, '..', 'dist');
+if (fs.existsSync(distPath)) {
+    console.log('📁 Serving frontend from:', distPath);
+    app.use(express.static(distPath));
+
+    // SPA fallback - serve index.html for all non-API routes
+    app.get('*', (req, res, next) => {
+        // Skip API routes
+        if (req.path.startsWith('/api') || req.path === '/health') {
+            return next();
         }
+        res.sendFile(path.join(distPath, 'index.html'));
     });
-});
+} else {
+    console.log('⚠️  Frontend dist not found. Serving API only.');
+    // Root endpoint (only if no frontend)
+    app.get('/', (req, res) => {
+        res.json({
+            message: "Hamlet Election Platform API",
+            version: "1.0.0",
+            endpoints: {
+                stats: "/api/stats",
+                candidates: "/api/candidates",
+                candidate: "/api/candidates/:id",
+                health: "/health"
+            }
+        });
+    });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
