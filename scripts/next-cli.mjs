@@ -3,7 +3,8 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const [, , command, ...commandArgs] = process.argv;
+const [, , commandFromCli, ...commandArgs] = process.argv;
+const command = commandFromCli ?? 'dev';
 
 const logShimNotice = (mode) => {
   const heading = mode === 'dev' ? 'development server' : `${mode} mode`;
@@ -32,6 +33,10 @@ switch (command) {
     run(process.execPath, [viteBin(), 'build', ...commandArgs]);
     break;
   case 'preview':
+    logShimNotice(command);
+    run(process.execPath, [viteBin(), 'preview', ...commandArgs]);
+    break;
+  case 'start':
     logShimNotice(command);
     run(process.execPath, [viteBin(), 'preview', ...commandArgs]);
     break;
