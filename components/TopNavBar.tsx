@@ -61,5 +61,4 @@ const TopNavBarComponent = <T extends string,>({ tabs, activeTab, onTabChange, l
 
 const TopNavBar = memo(TopNavBarComponent) as typeof TopNavBarComponent;
 
-export { TopNavBar };
 export default TopNavBar;
