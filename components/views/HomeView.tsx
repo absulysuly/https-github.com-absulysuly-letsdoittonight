@@ -36,6 +36,7 @@ interface HomeViewProps {
     onSelectReel: (reel: Post) => void;
     onSelectPost: (post: Post) => void;
     onSelectStory: (user: User) => void;
+    onAddStory: () => void;
     language: Language;
     activeTab: MainContentTab;
     onTabChange: (tab: MainContentTab) => void;
@@ -47,7 +48,7 @@ const TABS_WITH_HERO: MainContentTab[] = [AppTab.Posts];
 const SUB_TABS: MainContentTab[] = [AppTab.Posts, AppTab.Reels, AppTab.IHECUpdates, AppTab.Candidates, AppTab.WomenCandidates, AppTab.Debates, AppTab.AskNeighbor, AppTab.Events, AppTab.Articles, AppTab.TeaHouse];
 
 
-const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGovernorate, onGovernorateChange, selectedParty, onPartyChange, parties, onSelectProfile, onSelectReel, onSelectPost, onSelectStory, language, activeTab, onTabChange, onCompose }) => {
+const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGovernorate, onGovernorateChange, selectedParty, onPartyChange, parties, onSelectProfile, onSelectReel, onSelectPost, onSelectStory, onAddStory, language, activeTab, onTabChange, onCompose }) => {
     
     // --- STATE FOR ASYNC DATA ---
     const [socialPosts, setSocialPosts] = useState<Post[]>([]);
@@ -79,7 +80,7 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
     }, [selectedGovernorate, selectedParty]);
 
     // --- API HANDLERS ---
-    const handlePost = (postDetails: Partial<Post>) => {
+    const handlePost = (postDetails: Partial<Post> & { mediaFile?: File }) => {
         if (!user) return;
         api.createPost(postDetails, user).then(newPost => {
             setSocialPosts(prevPosts => [newPost, ...prevPosts]);
@@ -204,7 +205,7 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
                     acc.push(<PostCard key={post.id} post={post} user={user} requestLogin={requestLogin} language={language} onSelectAuthor={onSelectProfile} onSelectPost={onSelectPost} />);
                     // Inject stories every 4 posts
                     if ((index + 1) % 4 === 0) {
-                        acc.push(<div key={`stories-${index}`} className="my-6"><Stories users={storyCandidates} onSelectStory={onSelectStory} /></div>);
+                        acc.push(<div key={`stories-${index}`} className="my-6"><Stories users={storyCandidates} onSelectStory={onSelectStory} currentUser={user} onAddStory={onAddStory} /></div>);
                     }
                     return acc;
                 }, [] as React.ReactNode[]);
@@ -275,7 +276,7 @@ const HomeView: React.FC<HomeViewProps> = ({ user, requestLogin, selectedGoverno
                             <HeroSection />
                         </div>
                         <div className="mt-6">
-                            <Stories users={storyCandidates} onSelectStory={onSelectStory}/>
+                            <Stories users={storyCandidates} onSelectStory={onSelectStory} currentUser={user} onAddStory={onAddStory} />
                         </div>
                     </>
                 )}

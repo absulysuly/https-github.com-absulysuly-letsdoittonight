@@ -76,6 +76,8 @@ export interface User {
     email?: string;
     emailVerified?: boolean;
     gender?: 'Male' | 'Female';
+    verificationCode?: string;
+    stories?: Post[];
 }
 
 export interface Post {
@@ -86,8 +88,9 @@ export interface Post {
     likes: number;
     comments: number;
     shares: number;
-    type: 'Post' | 'Reel' | 'VoiceNote';
+    type: 'Post' | 'Reel' | 'VoiceNote' | 'Story';
     mediaUrl?: string;
+    mediaType?: 'image' | 'video';
     duration?: number; // for voice notes
 // Fix: Added optional 'isSponsored' property to support sponsored content feature.
     isSponsored?: boolean;

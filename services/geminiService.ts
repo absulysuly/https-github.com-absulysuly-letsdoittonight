@@ -31,6 +31,20 @@ export const generatePostSuggestion = async (topic: string): Promise<string> => 
     }
 };
 
+export const generateReelCaption = async (topic: string): Promise<string> => {
+    try {
+        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: `Generate a short, engaging, and trendy social media caption for a video reel for an Iraqi political candidate. The topic is: "${topic}". The caption should be in Arabic and include relevant hashtags.`,
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error getting reel caption suggestion:", error);
+        throw new Error("Failed to generate caption from Gemini API.");
+    }
+};
+
 export const refinePostText = async (text: string): Promise<string> => {
     try {
         const ai = new GoogleGenAI({apiKey: process.env.API_KEY});

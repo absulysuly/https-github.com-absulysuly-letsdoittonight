@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Post, Language } from '../../types.ts';
-import { VerifiedIcon, WhatsAppIcon, PhoneIcon, EmailIcon, MessageIcon, ShareIcon, FemaleIcon } from '../icons/Icons.tsx';
+import { VerifiedIcon, WhatsAppIcon, PhoneIcon, EmailIcon, MessageIcon, ShareIcon, FemaleIcon, PlusIcon, CheckIcon } from '../icons/Icons.tsx';
 import PostCard from '../PostCard.tsx';
 import * as api from '../../services/apiService.ts';
 import ContactMPForm from '../ContactMPForm.tsx';
@@ -20,6 +20,8 @@ const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({ candidate, 
     const [candidatePosts, setCandidatePosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isQrModalOpen, setQrModalOpen] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [isSubmittingFollow, setIsSubmittingFollow] = useState(false);
     const texts = UI_TEXT[language];
 
     useEffect(() => {
@@ -37,6 +39,8 @@ const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({ candidate, 
             }
         };
         fetchPosts();
+        // Reset follow state when candidate changes
+        setIsFollowing(false);
     }, [candidate.id, candidate.role]);
 
     if (candidate.role !== UserRole.Candidate) {
@@ -51,6 +55,24 @@ const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({ candidate, 
         // TODO: Wire up contact actions to backend
     };
 
+     const handleFollow = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!user) {
+            requestLogin();
+            return;
+        }
+        if (isFollowing) return;
+
+        setIsSubmittingFollow(true);
+        api.followCandidate(candidate.id).then(response => {
+            if (response.success) {
+                setIsFollowing(true);
+            }
+        }).finally(() => {
+            setIsSubmittingFollow(false);
+        });
+    };
+
     const qrUrl = `https://civic-social.yoursite.web.app/discover?party=${candidate.partySlug}&gov=${candidate.governorateSlug}&candidate=${candidate.id}`;
 
     return (
@@ -59,13 +81,34 @@ const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({ candidate, 
                 <div className="p-6">
                     <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
                         <img loading="lazy" className="w-24 h-24 rounded-full ring-4 ring-white/50 shadow-md" src={candidate.avatarUrl} alt={candidate.name} />
-                        <div>
-                            <h2 className="text-2xl font-bold flex items-center">
-                                {candidate.name}
-                                {candidate.verified && <VerifiedIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
-                                {candidate.gender === 'Female' && <FemaleIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
-                            </h2>
-                            <p className="text-md text-slate-400">{candidate.party} - {candidate.governorate}</p>
+                        <div className="w-full">
+                             <div className="flex justify-between items-start mb-2">
+                                <div>
+                                    <h2 className="text-2xl font-bold flex items-center">
+                                        {candidate.name}
+                                        {candidate.verified && <VerifiedIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
+                                        {candidate.gender === 'Female' && <FemaleIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
+                                    </h2>
+                                    <p className="text-md text-slate-400">{candidate.party} - {candidate.governorate}</p>
+                                </div>
+                                <button
+                                    onClick={handleFollow}
+                                    disabled={isSubmittingFollow || isFollowing}
+                                    className={`flex items-center space-x-2 px-4 py-2 text-sm font-semibold rounded-full transition-all disabled:opacity-70 ${isFollowing ? 'bg-secondary/80 text-on-primary' : 'bg-primary text-on-primary hover:brightness-110'}`}
+                                >
+                                    {isFollowing ? (
+                                        <>
+                                            <CheckIcon className="w-4 h-4"/>
+                                            <span>{texts.following}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <PlusIcon className="w-4 h-4"/>
+                                            <span>{texts.follow}</span>
+                                        </>
+                                    )}
+                                </button>
+                             </div>
                             <p className="text-sm mt-2 text-slate-200">{candidate.bio || texts.noBio}</p>
                             <div className="flex space-x-2 mt-4 text-slate-200">
                                 <button onClick={handleInteraction} className="p-2 bg-white/10 rounded-full hover:bg-white/20"><WhatsAppIcon className="w-5 h-5" /></button>

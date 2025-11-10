@@ -23,14 +23,12 @@ const StoryViewModal: React.FC<StoryViewModalProps> = ({ storyUser, onClose, onS
     useEffect(() => {
         const fetchStories = async () => {
             setIsLoading(true);
-            const userPosts = await api.getPosts({ authorId: storyUser.id });
-            const storyPosts = userPosts.filter(p => p.mediaUrl && p.type !== 'VoiceNote').slice(0, 8); // Limit to 8 stories
+            const userStories = await api.getUserStories(storyUser.id);
             
-            if (storyPosts.length === 0) {
-                 // If no stories, close modal after a short delay
+            if (userStories.length === 0) {
                 setTimeout(onClose, 500);
             } else {
-                setStories(storyPosts);
+                setStories(userStories);
                 setIsLoading(false);
                 setCurrentIndex(0);
             }
@@ -57,8 +55,8 @@ const StoryViewModal: React.FC<StoryViewModalProps> = ({ storyUser, onClose, onS
         if (stories.length === 0 || isLoading) return;
 
         const currentStory = stories[currentIndex];
-        // Treat Reels as video stories, anything else with media as an image story
-        if (currentStory.type !== 'Reel') {
+        
+        if (currentStory.mediaType !== 'video') {
             timerRef.current = window.setTimeout(() => {
                 goToNext();
             }, 5000); // 5 seconds for images
@@ -82,7 +80,7 @@ const StoryViewModal: React.FC<StoryViewModalProps> = ({ storyUser, onClose, onS
                         <div
                             key={currentIndex} // Reset animation on change
                             className="h-1 bg-white rounded-full story-progress-bar"
-                            style={{ animationDuration: stories[currentIndex].type === 'Reel' ? '0s' : '5s' }}
+                            style={{ animationDuration: stories[currentIndex].mediaType === 'video' ? '0s' : '5s' }}
                         />
                     )}
                 </div>
@@ -101,7 +99,6 @@ const StoryViewModal: React.FC<StoryViewModalProps> = ({ storyUser, onClose, onS
     }
     
     if (stories.length === 0) {
-        // This state is brief before onClose is called, but good to handle
         return (
              <div className="fixed inset-0 bg-black z-50 flex items-center justify-center text-white">
                 {texts.noStories}
@@ -126,7 +123,7 @@ const StoryViewModal: React.FC<StoryViewModalProps> = ({ storyUser, onClose, onS
                     </div>
 
                     <div className="w-full h-full flex items-center justify-center p-2">
-                        {currentStory.type === 'Reel' ? (
+                        {currentStory.mediaType === 'video' ? (
                             <video 
                                 key={currentStory.id} 
                                 src={currentStory.mediaUrl} 

@@ -16,6 +16,9 @@ const ReelComposer: React.FC<ReelComposerProps> = ({ user, onCreateReel }) => {
     const [caption, setCaption] = useState('');
     const [fileName, setFileName] = useState('');
     const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [captionTopic, setCaptionTopic] = useState('');
+    const [isGeneratingCaption, setIsGeneratingCaption] = useState(false);
+
 
     // State for AI generation
     const [prompt, setPrompt] = useState('');
@@ -76,6 +79,20 @@ const ReelComposer: React.FC<ReelComposerProps> = ({ user, onCreateReel }) => {
         }
     };
 
+    const handleGenerateCaption = async () => {
+        if (!captionTopic.trim()) return;
+        setIsGeneratingCaption(true);
+        try {
+            const newCaption = await gemini.generateReelCaption(captionTopic);
+            setCaption(newCaption);
+        } catch (e) {
+            console.error("Caption generation failed:", e);
+            // Optional: Set an error state to display to the user
+        } finally {
+            setIsGeneratingCaption(false);
+        }
+    };
+
     const handleGenerateVideo = async () => {
         if ((mode === 'fromText' && !prompt) || (mode === 'fromImage' && !imageBase64)) {
             setError('Please provide a prompt or an image.');
@@ -130,6 +147,28 @@ const ReelComposer: React.FC<ReelComposerProps> = ({ user, onCreateReel }) => {
             {mode === 'upload' && (
                 <div className="space-y-3">
                     <textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full p-2 border-none rounded-md bg-transparent focus:ring-0 placeholder-theme-text-muted" rows={2} placeholder="Reel caption..." />
+                    
+                    {/* AI Caption Generation Section */}
+                    <div className="p-3 border border-dashed border-[var(--color-glass-border)] rounded-lg space-y-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <input 
+                                type="text" 
+                                value={captionTopic} 
+                                onChange={(e) => setCaptionTopic(e.target.value)} 
+                                placeholder="Topic for AI caption (e.g., 'visiting the market')" 
+                                className="flex-grow p-2 text-sm border border-[var(--color-glass-border)] rounded-md bg-white/10 placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary" 
+                            />
+                            <button 
+                                onClick={handleGenerateCaption} 
+                                disabled={isGeneratingCaption || !captionTopic.trim()} 
+                                className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-secondary bg-secondary/10 rounded-md hover:bg-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <SparklesIcon className="w-4 h-4"/>
+                                <span>{isGeneratingCaption ? 'Generating...' : 'Generate Caption'}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <label className="flex items-center justify-center space-x-2 px-3 py-2 text-sm font-semibold text-primary bg-primary/10 rounded-md hover:bg-primary/20 cursor-pointer">
                         <VideoIcon className="w-5 h-5"/>
                         <span className="truncate">{fileName || 'Upload Video'}</span>

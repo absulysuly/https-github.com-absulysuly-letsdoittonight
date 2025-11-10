@@ -14,7 +14,7 @@ declare global {
 
 interface ComposeViewProps {
     user: User;
-    onPost: (postDetails: Partial<Post>) => void;
+    onPost: (postDetails: Partial<Post> & { mediaFile?: File }) => void;
     language: Language;
 }
 
@@ -25,6 +25,10 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
     const [isRecording, setIsRecording] = useState(false);
     const [privacy, setPrivacy] = useState<PostPrivacy>(PostPrivacy.Public);
     const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+    const [mediaFile, setMediaFile] = useState<File | null>(null);
+    const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const recognitionRef = useRef<any>(null);
     const contentOnRecordStartRef = useRef('');
     const texts = UI_TEXT[language];
@@ -60,10 +64,12 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
     };
 
     const handlePost = () => {
-        if (content.trim()) {
-            onPost({ content, type: 'Post', privacy });
+        if (content.trim() || mediaFile) {
+            onPost({ content, type: 'Post', privacy, mediaFile: mediaFile || undefined });
             setContent('');
             setTopic('');
+            setMediaFile(null);
+            setMediaPreview(null);
         }
     };
     
@@ -75,6 +81,22 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
     const handlePreview = () => {
         alert(`${texts.previewingPost}:\n\n${content}\n\n${texts.privacy}: ${privacy}`);
     };
+
+    const handleFileIconClick = (accept: string) => {
+        if (fileInputRef.current) {
+            fileInputRef.current.accept = accept;
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setMediaFile(file);
+            setMediaPreview(URL.createObjectURL(file));
+        }
+    };
+
 
     const handleToggleRecording = () => {
         if (isRecording) {
@@ -120,10 +142,23 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
 
     return (
         <div className="glass-card rounded-lg p-4">
+            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
             <div className="flex space-x-4">
                 <img className="w-12 h-12 rounded-full ring-2 ring-white/50" src={user.avatarUrl} alt={user.name} />
                 <div className="w-full">
                     <textarea value={content} onChange={(e) => setContent(e.target.value)} className="w-full p-2 border-none rounded-md bg-transparent focus:ring-0 text-lg placeholder-theme-text-muted" rows={5} placeholder={texts.whatsOnYourMind} />
+                    
+                    {mediaPreview && (
+                        <div className="mt-2 relative">
+                            {mediaFile?.type.startsWith('video') ? (
+                                <video src={mediaPreview} controls className="max-h-60 rounded-lg" />
+                            ) : (
+                                <img src={mediaPreview} alt="Preview" className="max-h-60 rounded-lg" />
+                            )}
+                            <button onClick={() => { setMediaFile(null); setMediaPreview(null); }} className="absolute top-2 right-2 bg-black/50 p-1 rounded-full text-white">&times;</button>
+                        </div>
+                    )}
+                    
                     <div className="border-t border-[var(--color-glass-border)] my-2"></div>
                     <div className="flex flex-col sm:flex-row gap-2">
                         <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={texts.enterTopicForAI} className="flex-grow p-2 text-sm border border-[var(--color-glass-border)] rounded-md bg-white/10 placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary" />
@@ -140,8 +175,8 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
             </div>
             <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
                 <div className="flex space-x-1 items-center">
-                    <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><PhotoIcon className="w-6 h-6"/></button>
-                    <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><VideoIcon className="w-6 h-6"/></button>
+                    <button onClick={() => handleFileIconClick('image/*')} className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><PhotoIcon className="w-6 h-6"/></button>
+                    <button onClick={() => handleFileIconClick('video/*')} className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><VideoIcon className="w-6 h-6"/></button>
                      <button className="p-2 rounded-full hover:bg-white/10 text-theme-text-muted"><ImageIcon className="w-6 h-6"/></button>
                     <button onClick={handleToggleRecording} className={`flex items-center space-x-2 p-2 rounded-full transition-colors ${isRecording ? 'bg-red-500/10 text-red-400' : 'hover:bg-white/10 text-theme-text-muted'}`}>
                         <MicIcon className="w-6 h-6" />
@@ -166,7 +201,7 @@ const ComposeView: React.FC<ComposeViewProps> = ({ user, onPost, language }) => 
                 <div className="flex items-center space-x-2">
                     <button onClick={handleSaveDraft} className="px-4 py-2 text-sm font-semibold bg-white/10 text-theme-text-base rounded-full hover:bg-white/20">{texts.saveDraft}</button>
                     <button onClick={handlePreview} className="px-4 py-2 text-sm font-semibold bg-white/10 text-theme-text-base rounded-full hover:bg-white/20">{texts.preview}</button>
-                    <button onClick={handlePost} disabled={!content.trim()} className="px-6 py-2 font-bold bg-primary text-on-primary rounded-full transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button onClick={handlePost} disabled={!content.trim() && !mediaFile} className="px-6 py-2 font-bold bg-primary text-on-primary rounded-full transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">
                         {texts.post}
                     </button>
                 </div>

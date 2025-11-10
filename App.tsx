@@ -26,6 +26,7 @@ const CandidateDashboardView = lazy(() => import('./components/views/CandidateDa
 const FullScreenReelView = lazy(() => import('./components/views/FullScreenReelView.tsx'));
 const ElectionManagementView = lazy(() => import('./components/views/ElectionManagementView.tsx'));
 const StoryViewModal = lazy(() => import('./components/views/StoryViewModal.tsx'));
+const StoryComposerModal = lazy(() => import('./components/StoryComposerModal.tsx'));
 const ElectionHero = lazy(() => import('./components/ElectionHero.tsx'));
 const GeminiToolsView = lazy(() => import('./components/views/GeminiToolsView.tsx'));
 const Chatbot = lazy(() => import('./components/Chatbot.tsx'));
@@ -68,6 +69,7 @@ const App: React.FC = () => {
     const [activeTab, setActiveTab] = useState<AppTab>(AppTab.Home);
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
     const [isComposeModalOpen, setComposeModalOpen] = useState(false);
+    const [isStoryComposerOpen, setIsStoryComposerOpen] = useState(false);
     const [isHighContrast, setHighContrast] = useState(false);
     const [language, setLanguage] = useState<Language>('ar');
     const [activeTheme, setActiveTheme] = useState<ThemeName>('euphratesTeal');
@@ -203,6 +205,17 @@ const App: React.FC = () => {
         setSelectedPostForDetail(null);
     };
     
+    const handlePostStory = (mediaFile: File) => {
+        if (!user) return;
+        api.createStory(mediaFile, user).then(newStory => {
+            // Optimistically update user object
+            setUser(currentUser => currentUser ? { ...currentUser, stories: [...(currentUser.stories || []), newStory] } : null);
+            setIsStoryComposerOpen(false);
+            // Optionally, open the story viewer right after posting
+            // setSelectedStoryUser(user);
+        });
+    };
+    
     // --- RENDER LOGIC ---
     if (isPublicDiscoverPage) {
         return (
@@ -231,6 +244,7 @@ const App: React.FC = () => {
             onSelectReel: handleSelectReel,
             onSelectPost: handleSelectPost,
             onSelectStory: handleSelectStory,
+            onAddStory: () => setIsStoryComposerOpen(true),
             language: language,
             activeTab: mainHomeTab,
             onTabChange: setMainHomeTab,
@@ -340,6 +354,15 @@ const App: React.FC = () => {
 
             {isLoginModalOpen && <LoginModal onLogin={handleLogin} onClose={() => setLoginModalOpen(false)} language={language} onLanguageChange={setLanguage} />}
             {isComposeModalOpen && user && <ComposeModal user={user} onClose={() => setComposeModalOpen(false)} language={language} />}
+            {isStoryComposerOpen && user && (
+                <Suspense fallback={<Spinner />}>
+                    <StoryComposerModal 
+                        user={user}
+                        onClose={() => setIsStoryComposerOpen(false)}
+                        onPostStory={handlePostStory}
+                    />
+                </Suspense>
+            )}
             {selectedPostForDetail && <PostDetailModal post={selectedPostForDetail} user={user} onClose={handleClosePostDetail} requestLogin={() => setLoginModalOpen(true)} language={language} />}
             {selectedStoryUser && (
                 <Suspense fallback={null}>

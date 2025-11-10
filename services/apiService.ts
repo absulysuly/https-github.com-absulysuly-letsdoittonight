@@ -66,6 +66,12 @@ export const getPosts = (filters: { type?: 'Post' | 'Reel' | 'VoiceNote', author
     return simulateDelay(posts);
 };
 
+export const getUserStories = (userId: string): Promise<Post[]> => {
+    const user = MOCK_USERS.find(u => u.id === userId);
+    const stories = user?.stories || [];
+    return simulateDelay(stories);
+};
+
 export const getIHECPosts = (): Promise<Post[]> => {
     return simulateDelay(MOCK_IHEC_POSTS);
 };
@@ -91,7 +97,7 @@ export const getDebates = (filters: { governorate?: Governorate | 'All', party?:
     return simulateDelay(debates);
 };
 
-export const createPost = (postDetails: Partial<Post>, author: User): Promise<Post> => {
+export const createPost = (postDetails: Partial<Post> & { mediaFile?: File }, author: User): Promise<Post> => {
     const newPost: Post = {
         id: `post-${Date.now()}`,
         author,
@@ -103,9 +109,39 @@ export const createPost = (postDetails: Partial<Post>, author: User): Promise<Po
         type: 'Post',
         ...postDetails,
     };
+    if (postDetails.mediaFile) {
+        newPost.mediaUrl = URL.createObjectURL(postDetails.mediaFile);
+        newPost.mediaType = postDetails.mediaFile.type.startsWith('video') ? 'video' : 'image';
+    }
+
     MOCK_POSTS.unshift(newPost);
     return simulateDelay(newPost);
 };
+
+export const createStory = (mediaFile: File, author: User): Promise<Post> => {
+    const newStory: Post = {
+        id: `story-${Date.now()}`,
+        author,
+        content: '',
+        timestamp: 'Just now',
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        type: 'Story',
+        mediaUrl: URL.createObjectURL(mediaFile),
+        mediaType: mediaFile.type.startsWith('video') ? 'video' : 'image',
+    };
+    
+    const user = MOCK_USERS.find(u => u.id === author.id);
+    if (user) {
+        if (!user.stories) {
+            user.stories = [];
+        }
+        user.stories.push(newStory);
+    }
+    return simulateDelay(newStory);
+};
+
 
 export const createReel = (details: { caption: string; videoFile?: File }, author: User): Promise<Post> => {
      const newReel: Post = {
@@ -134,11 +170,14 @@ export const createEvent = (details: { title: string, date: string, location: st
 };
 
 export const socialLogin = (provider: 'google' | 'facebook'): Promise<User> => {
-    // Return a mock voter user
-    return simulateDelay(MOCK_USERS.find(u => u.role === UserRole.Voter)!);
+    // Return a mock voter user that is already verified
+    const user = { ...MOCK_USERS.find(u => u.role === UserRole.Voter)! };
+    user.emailVerified = true;
+    return simulateDelay(user);
 };
 
 export const registerUser = (details: { name: string; email: string; role: UserRole }): Promise<User> => {
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const newUser: User = {
         id: `user-${Date.now()}`,
         name: details.name,
@@ -149,16 +188,18 @@ export const registerUser = (details: { name: string; email: string; role: UserR
         governorate: 'Baghdad',
         email: details.email,
         emailVerified: false,
+        verificationCode,
     };
     MOCK_USERS.push(newUser);
     return simulateDelay(newUser);
 };
 
-export const checkVerificationStatus = (userId: string): Promise<User | null> => {
+export const checkVerificationStatus = (userId: string, code: string): Promise<User | null> => {
     const user = MOCK_USERS.find(u => u.id === userId);
-    if (user) {
-        // Simulate verification after a delay
+    if (user && user.verificationCode === code) {
+        // If code matches, verify the user and remove the code.
         user.emailVerified = true;
+        delete user.verificationCode;
     }
     return simulateDelay(user || null);
 };

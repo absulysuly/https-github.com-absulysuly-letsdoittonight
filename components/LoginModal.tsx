@@ -4,6 +4,7 @@ import { XMarkIcon, ArrowLeftIcon, GoogleIcon, FacebookIcon, EnvelopeIcon } from
 import LanguageSwitcher from './LanguageSwitcher.tsx';
 import { UI_TEXT } from '../translations.ts';
 import * as api from '../services/apiService.ts';
+import Spinner from './Spinner.tsx';
 
 interface LoginModalProps {
     onLogin: (user: User) => void;
@@ -13,11 +14,15 @@ interface LoginModalProps {
 }
 
 type ModalView = 'selection' | 'voter' | 'candidate' | 'verify';
+type AuthProvider = 'google' | 'facebook';
 
 const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onLanguageChange }) => {
     const [view, setView] = useState<ModalView>('selection');
     const [pendingUser, setPendingUser] = useState<User | null>(null);
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationError, setVerificationError] = useState('');
     const [resentMessage, setResentMessage] = useState('');
+    const [isAuthenticating, setIsAuthenticating] = useState<AuthProvider | null>(null);
     const texts = UI_TEXT[language];
 
     const handleApiResponse = (user: User) => {
@@ -29,12 +34,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
         }
     };
 
-    const handleSocialLogin = async (provider: 'google' | 'facebook') => {
-        const user = await api.socialLogin(provider);
-        if (user) {
-            handleApiResponse(user);
-        } else {
-            alert(texts.socialLoginFailed);
+    const handleSocialLogin = async (provider: AuthProvider) => {
+        setIsAuthenticating(provider);
+        try {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            const user = await api.socialLogin(provider);
+            if (user) {
+                // Social logins are considered pre-verified
+                onLogin(user);
+            } else {
+                throw new Error(texts.socialLoginFailed);
+            }
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
+            setIsAuthenticating(null);
         }
     };
 
@@ -48,12 +63,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
     };
 
     const handleCheckVerification = async () => {
-        if (!pendingUser) return;
-        const user = await api.checkVerificationStatus(pendingUser.id);
+        if (!pendingUser || !verificationCode) return;
+        setVerificationError('');
+        const user = await api.checkVerificationStatus(pendingUser.id, verificationCode);
         if (user && user.emailVerified) {
             onLogin(user);
         } else {
-            alert(texts.emailNotVerified);
+            setVerificationError('Invalid code. Please try again.');
         }
     };
 
@@ -98,6 +114,24 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
             </div>
         );
     };
+    
+    if (isAuthenticating) {
+        return (
+             <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center backdrop-blur-sm p-4" onClick={onClose}>
+                <div
+                    className="glass-card rounded-lg shadow-xl w-full max-w-sm p-6 text-center relative"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="flex flex-col items-center justify-center h-48">
+                        <Spinner />
+                        <p className="mt-4 text-lg font-semibold text-theme-text-base">
+                            Connecting to {isAuthenticating === 'google' ? 'Google' : 'Facebook'}...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const renderContent = () => {
         switch (view) {
@@ -110,9 +144,25 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
                      <div className="text-center">
                         <EnvelopeIcon className="w-12 h-12 mx-auto text-primary mb-4" />
                         <h2 className="text-xl font-bold mb-2 text-theme-text-base font-arabic">{texts.verifyYourEmail}</h2>
-                        <p className="text-theme-text-muted mb-6 text-sm">{texts.verificationSentMessage}</p>
-                        <button onClick={handleCheckVerification} className="w-full px-6 py-2 font-bold bg-primary text-on-primary rounded-full transition-all hover:brightness-110">
-                            {texts.checkVerification}
+                        <p className="text-theme-text-muted mb-4 text-sm">{texts.verificationSentMessage}</p>
+                        
+                        <div className="bg-black/20 p-3 rounded-lg mb-4">
+                            <p className="text-xs text-theme-text-muted">For demo purposes, your code is:</p>
+                            <p className="text-2xl font-bold tracking-widest">{pendingUser?.verificationCode}</p>
+                        </div>
+
+                        <input 
+                            type="text"
+                            value={verificationCode}
+                            onChange={(e) => setVerificationCode(e.target.value)}
+                            maxLength={6}
+                            placeholder="Enter 6-digit code"
+                            className="w-full p-3 text-center text-lg tracking-[0.5em] border border-[var(--color-glass-border)] rounded-md bg-white/10 text-theme-text-base placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                        {verificationError && <p className="text-red-400 text-sm mt-2">{verificationError}</p>}
+
+                        <button onClick={handleCheckVerification} className="w-full px-6 py-2 mt-4 font-bold bg-primary text-on-primary rounded-full transition-all hover:brightness-110">
+                            {'Verify'}
                         </button>
                         <div className="mt-4 text-xs text-theme-text-muted">
                             <span>{texts.didNotReceiveEmail} </span>

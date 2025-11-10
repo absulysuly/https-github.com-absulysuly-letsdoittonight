@@ -20,6 +20,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
     const [translations, setTranslations] = useState<Partial<Record<Language, string>>>({});
     const [isTranslating, setIsTranslating] = useState(false);
     const [isShowingTranslation, setIsShowingTranslation] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(post.likes);
+
     // Assuming mock data is in Arabic for this feature
     const originalLanguage: Language = 'ar';
     const texts = UI_TEXT[language];
@@ -54,6 +57,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
     // Reset cache when the post itself changes
     useEffect(() => {
         setTranslations({});
+        setLikeCount(post.likes);
+        setIsLiked(false);
     }, [post]);
 
 
@@ -67,8 +72,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
         }
     };
     
-    const handleLike = () => api.likePost(post.id).then(() => console.log('Liked post'));
-    const handleComment = () => console.log('Comment action placeholder');
+    const handleLike = () => {
+        // Optimistic UI update
+        setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+        setIsLiked(prev => !prev);
+        // Simulated API call
+        api.likePost(post.id).then(() => console.log('Liked post API call finished'));
+    };
+
+    const handleComment = () => {
+        // Open the detail modal to view/add comments
+        onSelectPost(post);
+    };
 
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -181,15 +196,19 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
 
             {post.mediaUrl && post.type !== 'VoiceNote' && (
                 <div className="px-2 pb-2">
-                     <img loading="lazy" className="w-full object-cover max-h-96 rounded-lg ring-1 ring-white/10" src={post.mediaUrl} alt="Post media" />
+                     {post.mediaType === 'video' ? (
+                        <video src={post.mediaUrl} controls className="w-full object-cover aspect-video rounded-lg ring-1 ring-white/10" />
+                     ) : (
+                        <img loading="lazy" className="w-full object-cover aspect-[3/2] rounded-lg ring-1 ring-white/10" src={post.mediaUrl} alt="Post media" />
+                     )}
                 </div>
             )}
 
             <div className="px-4 pb-2">
                 <div className="flex justify-between text-theme-text-muted">
                     <div className="flex items-center space-x-1">
-                        <HeartIcon className="w-4 h-4 text-theme-text-base" />
-                        <span className="text-xs">{post.likes}</span>
+                        <HeartIcon className={`w-4 h-4 ${isLiked ? 'text-red-500 fill-current' : 'text-theme-text-base'}`} />
+                        <span className="text-xs">{likeCount}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-xs">
                         <span>{post.comments} {texts.comment.toLowerCase()}s</span>
@@ -201,7 +220,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
 
                 <div className="flex justify-around items-center text-theme-text-base">
                     <button disabled={isOfficialPost} onClick={(e) => handleInteraction(e, handleLike)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                        <HeartIcon className="w-6 h-6" />
+                        <HeartIcon className={`w-6 h-6 ${isLiked ? 'text-red-500 fill-current' : ''}`} />
                         <span className="font-semibold text-xs">{texts.like}</span>
                     </button>
                      <button disabled={isOfficialPost} onClick={(e) => handleInteraction(e, handleComment)} className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-primary/10 w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed">

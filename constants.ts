@@ -93,7 +93,8 @@ export const IHEC_USER: User = {
     verified: true,
     party: 'Government of Iraq',
     governorate: 'Baghdad',
-    bio: 'The Independent High Electoral Commission of Iraq is responsible for planning, organizing, and supervising all elections and referendums.'
+    bio: 'The Independent High Electoral Commission of Iraq is responsible for planning, organizing, and supervising all elections and referendums.',
+    stories: [],
 };
 
 // --- MOCK DATA GENERATION ---
@@ -109,7 +110,8 @@ const MOCK_IHEC_POSTS: Post[] = [
         comments: 1500,
         shares: 4000,
         type: 'Post',
-        mediaUrl: 'https://images.unsplash.com/photo-1561494265-d7480b6b856c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        mediaUrl: 'https://images.unsplash.com/photo-1561494265-d7480b6b856c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        mediaType: 'image',
     },
     {
         id: 'ihec-post-2',
@@ -130,7 +132,8 @@ const MOCK_IHEC_POSTS: Post[] = [
         comments: 1100,
         shares: 3100,
         type: 'Post',
-        mediaUrl: 'https://images.unsplash.com/photo-1607799279861-4d52110d55c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        mediaUrl: 'https://images.unsplash.com/photo-1607799279861-4d52110d55c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        mediaType: 'image',
     }
 ];
 const MOCK_EVENTS: Event[] = [];
@@ -226,6 +229,7 @@ const generateCandidates = (count: number) => {
             partySlug: PARTY_SLUG_MAP[party],
             governorateSlug: GOVERNORATE_SLUG_MAP[governorate],
             gender,
+            stories: [],
         });
     }
 };
@@ -246,6 +250,7 @@ const generatePosts = (count: number) => {
         });
         
         let mediaUrl: string | undefined;
+        let mediaType: Post['mediaType'] | undefined;
         if (type === 'VoiceNote') {
             // Use a valid, CORS-friendly audio URL for voice notes to allow waveform generation.
             mediaUrl = 'https://webaudioapi.com/samples/audio-tag/chrono.mp3';
@@ -259,8 +264,12 @@ const generatePosts = (count: number) => {
                 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
             ];
             mediaUrl = getRandom(reelVideos);
+            mediaType = 'video';
         } else { // 'Post'
-            mediaUrl = Math.random() > 0.4 ? `https://picsum.photos/seed/${i}/600/400` : undefined;
+            if (Math.random() > 0.4) {
+                 mediaUrl = `https://picsum.photos/seed/${i}/600/400`;
+                 mediaType = 'image';
+            }
         }
 
         MOCK_POSTS.push({
@@ -273,6 +282,7 @@ const generatePosts = (count: number) => {
             shares: Math.floor(Math.random() * 150),
             type,
             mediaUrl,
+            mediaType,
             isSponsored: Math.random() > 0.9 ? true : false,
         });
     }
@@ -343,7 +353,7 @@ const generateTeaHouseTopicsAndMessages = () => {
   ];
   MOCK_TEA_HOUSE_TOPICS.push(...topics);
 
-  const voter = { id: 'voter-1', name: 'ناخب عراقي', role: UserRole.Voter, avatarUrl: 'https://i.pravatar.cc/150?u=voter-1', verified: false, party: 'Independent', governorate: 'Baghdad' as Governorate };
+  const voter = { id: 'voter-1', name: 'ناخب عراقي', role: UserRole.Voter, avatarUrl: 'https://i.pravatar.cc/150?u=voter-1', verified: false, party: 'Independent', governorate: 'Baghdad' as Governorate, stories: [] };
   if (!MOCK_USERS.some(u => u.id === voter.id)) {
       MOCK_USERS.push(voter);
   }
@@ -360,7 +370,7 @@ const generateTeaHouseTopicsAndMessages = () => {
 // --- Initial Data Population ---
 if (MOCK_USERS.length === 0) {
     // Add a default voter user
-    MOCK_USERS.push({ id: 'user-0', name: 'Ali Ahmed', role: UserRole.Voter, avatarUrl: 'https://i.pravatar.cc/150?u=user-0', verified: false, party: 'Independent', governorate: 'Baghdad', gender: 'Male' });
+    MOCK_USERS.push({ id: 'user-0', name: 'Ali Ahmed', role: UserRole.Voter, avatarUrl: 'https://i.pravatar.cc/150?u=user-0', verified: false, party: 'Independent', governorate: 'Baghdad', gender: 'Male', stories: [] });
     MOCK_USERS.push(IHEC_USER);
     generateCandidates(80);
     generatePosts(160);
