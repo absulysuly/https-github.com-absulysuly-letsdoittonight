@@ -1,0 +1,36 @@
+name: Auto Rollback on Failed Performance
+
+on:
+  workflow_run:
+    workflows: ["Lighthouse Performance Check"]
+    types: [completed]
+
+jobs:
+  rollback:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Fetch Deploy History
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel ls | head -n 5
+
+      - name: Roll Back to Stable
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          LAST=$(vercel ls | grep https-github-com-absulysuly-letsdoi | head -n 1 | awk '{print $2}')
+          echo "🔁 Rolling back to $LAST"
+          vercel rollback $LAST
+          git tag -f stable-frontend
+          git push origin stable-frontend --force
