@@ -288,19 +288,19 @@ export function createBlob(data: Float32Array): Blob {
 }
 
 export const startLiveConversation = (callbacks: {
-    onOpen: () => void;
-    onMessage: (message: LiveServerMessage) => Promise<void>;
-    onError: (e: ErrorEvent) => void;
-    onClose: (e: CloseEvent) => void;
+    onopen: () => void;
+    onmessage: (message: LiveServerMessage) => Promise<void>;
+    onerror: (e: ErrorEvent) => void;
+    onclose: (e: CloseEvent) => void;
 }): Promise<LiveSession> => {
      const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
      return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
         callbacks: {
-          onopen: callbacks.onOpen,
-          onmessage: callbacks.onMessage,
-          onerror: callbacks.onError,
-          onclose: callbacks.onClose,
+          onopen: callbacks.onopen,
+          onmessage: callbacks.onmessage,
+          onerror: callbacks.onerror,
+          onclose: callbacks.onclose,
         },
         config: {
             responseModalities: [Modality.AUDIO],

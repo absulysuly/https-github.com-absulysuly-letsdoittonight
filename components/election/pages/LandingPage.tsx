@@ -93,12 +93,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, language }) => {
             <h2 className="text-2xl font-bold text-center text-official-900 mb-2">{texts.dataManagement}</h2>
             <p className="text-center text-official-700 mb-6">{texts.dataManagementDesc}</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 <FeatureCard title={texts.apiConfig} description={texts.apiConfigDesc} icon={<ApiIcon />} color="#0284c7" onClick={() => onNavigate('/api-config')} />
                 <FeatureCard title={texts.dataCollection} description={texts.dataCollectionDesc} icon={<DatabaseIcon />} color="#059669" onClick={() => onNavigate('/data-collection')} />
                 <FeatureCard title={texts.contactValidation} description={texts.contactValidationDesc} icon={<IdentificationIcon />} color="#d97706" onClick={() => onNavigate('/contact-validation')} />
                 <FeatureCard title={texts.candidateEnrichment} description={texts.candidateEnrichmentDesc} icon={<SparklesIcon />} color="#9333ea" onClick={() => onNavigate('/candidate-enrichment')} />
                 <FeatureCard title={texts.qualityAnalytics} description={texts.qualityAnalyticsDesc} icon={<ChartIcon />} color="#db2777" onClick={() => onNavigate('/quality-analytics')} />
+                <FeatureCard title="Raw Data Viewer" description="Visualize raw JSON data from agents." icon={<DatabaseIcon />} color="#d946ef" onClick={() => onNavigate('/raw-data')} />
+                <FeatureCard title="Agent Data Processor" description="Merge, process, and unify JSON files." icon={<SparklesIcon />} color="#1d4ed8" onClick={() => onNavigate('/agent-data-processor')} />
             </div>
         </section>
     </div>

@@ -20,6 +20,8 @@ const DataCollectionPage = lazy(() => import('../election/pages/DataCollectionPa
 const ContactValidationPage = lazy(() => import('../election/pages/ContactValidationPage.tsx'));
 const CandidateEnrichmentPage = lazy(() => import('../election/pages/CandidateEnrichmentPage.tsx'));
 const QualityAnalyticsPage = lazy(() => import('../election/pages/QualityAnalyticsPage.tsx'));
+const RawDataViewerPage = lazy(() => import('../election/pages/RawDataViewerPage.tsx'));
+const AgentDataProcessorPage = lazy(() => import('../election/pages/AgentDataProcessorPage.tsx'));
 const DataVizEmbedView = lazy(() => import('./DataVizEmbedView.tsx'));
 
 
@@ -77,6 +79,10 @@ const ElectionManagementView: React.FC<ElectionManagementViewProps> = ({ path, o
                 return <CandidateEnrichmentPage {...pageProps} />;
             case '/quality-analytics':
                 return <QualityAnalyticsPage {...pageProps} />;
+            case '/raw-data':
+                return <RawDataViewerPage {...pageProps} />;
+            case '/agent-data-processor':
+                return <AgentDataProcessorPage {...pageProps} />;
             case '/data-viz':
                 return <DataVizEmbedView language={language} />;
             default:

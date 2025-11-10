@@ -1,84 +1,59 @@
-import { memo, useCallback, useMemo } from 'react';
-import type { ReactElement } from 'react';
+import React from 'react';
+import { Language } from '../types.ts';
+import { UI_TEXT } from '../translations.ts';
 
-import type { Language, MainContentTab } from '../types';
-import { UI_TEXT } from '../translations';
-
-type TranslationKey = keyof (typeof UI_TEXT)['en'];
-type TranslationTexts = Record<TranslationKey, string>;
-
-const TAB_TRANSLATION_KEYS = {
-    Posts: 'posts',
-    Reels: 'reels',
-    Candidates: 'candidates',
-    'Women Candidates': 'womenCandidates',
-    Debates: 'debates',
-    'Tea House': 'teaHouse',
-    Events: 'events',
-    Articles: 'articles',
-    'Ask Neighbor': 'askNeighbor',
-    'IHEC Updates': 'ihecUpdates',
-} as const satisfies Partial<Record<MainContentTab, TranslationKey>>;
-
-export interface TopNavBarProps<T extends string> {
-    tabs: readonly T[];
+interface TopNavBarProps<T extends string> {
+    tabs: T[];
     activeTab: T;
     onTabChange: (tab: T) => void;
     language: Language;
 }
 
-const NAV_BAR_CLASSNAME = 'border-b border-[var(--color-glass-border)]';
-const TAB_BASE_CLASSNAME =
-    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic';
-const ACTIVE_TAB_CLASSNAME = `${TAB_BASE_CLASSNAME} border-primary text-primary glow`;
-const INACTIVE_TAB_CLASSNAME =
-    `${TAB_BASE_CLASSNAME} border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted`;
-
-const translateTab = (tab: string, texts: TranslationTexts) => {
-    const translationKey = TAB_TRANSLATION_KEYS[tab as keyof typeof TAB_TRANSLATION_KEYS];
-    return translationKey ? texts[translationKey] : tab;
+const tabTranslationKeys: { [key: string]: keyof (typeof UI_TEXT)['en'] } = {
+    'Posts': 'posts',
+    'Reels': 'reels',
+    'Candidates': 'candidates',
+    'Women Candidates': 'womenCandidates',
+    'Debates': 'debates',
+    'Tea House': 'teaHouse',
+    'Events': 'events',
+    'Articles': 'articles',
+    'Ask Neighbor': 'askNeighbor',
+    'IHEC Updates': 'ihecUpdates',
 };
 
-const createTabLabelMap = <T extends string>(tabs: readonly T[], texts: TranslationTexts) =>
-    tabs.reduce<Record<T, string>>((acc, tab) => {
-        acc[tab] = translateTab(tab, texts);
-        return acc;
-    }, {} as Record<T, string>);
 
-const useTabLabels = <T extends string>(tabs: readonly T[], language: Language) => {
-    const texts = useMemo<TranslationTexts>(() => UI_TEXT[language], [language]);
-    return useMemo(() => createTabLabelMap(tabs, texts), [tabs, texts]);
-};
+function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+    const texts = UI_TEXT[language];
+    const navBarClasses = 'border-b border-[var(--color-glass-border)]';
 
-type TopNavBarComponent = <T extends string>(props: TopNavBarProps<T>) => ReactElement;
-
-const TopNavBarInner = <T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>): ReactElement => {
-    const tabLabels = useTabLabels(tabs, language);
-
-    const getTabClasses = useCallback(
-        (tab: (typeof tabs)[number]) => (activeTab === tab ? ACTIVE_TAB_CLASSNAME : INACTIVE_TAB_CLASSNAME),
-        [activeTab]
-    );
-
-    const createTabHandler = useCallback(
-        (tab: (typeof tabs)[number]) => () => {
-            onTabChange(tab);
-        },
-        [onTabChange]
-    );
+    const getTabClasses = (tab: T) => {
+        const isActive = activeTab === tab;
+        return isActive
+            ? 'border-primary text-primary glow'
+            : 'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
+    };
 
     return (
-        <div className={NAV_BAR_CLASSNAME}>
+        <div className={navBarClasses}>
             <nav className="-mb-px flex justify-center space-x-6 px-4 sm:px-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
-                {tabs.map((tab) => (
-                    <button key={tab} onClick={createTabHandler(tab)} className={getTabClasses(tab)}>
-                        {tabLabels[tab] ?? tab}
-                    </button>
-                ))}
+                {tabs.map((tab) => {
+                    const translationKey = tabTranslationKeys[tab];
+                    const label = translationKey ? texts[translationKey] : tab;
+
+                    return (
+                        <button
+                            key={tab}
+                            onClick={() => onTabChange(tab)}
+                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors font-arabic ${getTabClasses(tab)}`}
+                        >
+                            {label}
+                        </button>
+                    );
+                })}
             </nav>
         </div>
     );
 };
 
-export const TopNavBar = memo(TopNavBarInner) as TopNavBarComponent;
-TopNavBar.displayName = 'TopNavBar';
+export default TopNavBar;

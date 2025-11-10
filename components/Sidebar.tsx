@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppTab, UserRole, User, HomeViewMode, Language } from '../types.ts';
-import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon, SparklesIcon } from './icons/Icons.tsx';
+import { DashboardIcon, SettingsIcon, DebateIcon, TeaHouseIcon, UsersIcon, ChartIcon, HomeIcon, ScaleIcon, LifebuoyIcon, IdentificationIcon, SparklesIcon, DatabaseIcon } from './icons/Icons.tsx';
 import { UI_TEXT } from '../translations.ts';
 
 interface SidebarProps {
@@ -31,6 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, onNavigate, homeView
         { label: 'Integrity Hub', icon: ScaleIcon, path: '/integrity-hub', enabled: true },
         { label: 'Data & Analytics', icon: ChartIcon, path: '/compare', enabled: true },
         { label: 'Data Viz', icon: ChartIcon, path: '/data-viz', enabled: true },
+        { label: 'Raw Data', icon: DatabaseIcon, path: '/raw-data', enabled: true },
+        { label: 'Agent Processor', icon: SparklesIcon, path: '/agent-data-processor', enabled: true },
         { label: 'Resources', icon: LifebuoyIcon, path: '/terms-of-service', enabled: true },
     ];
 

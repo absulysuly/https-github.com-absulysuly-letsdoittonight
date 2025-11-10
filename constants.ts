@@ -244,6 +244,24 @@ const generatePosts = (count: number) => {
             // @ts-ignore
             contentTemplate = contentTemplate.replace(regex, () => getRandom(placeholders[key]));
         });
+        
+        let mediaUrl: string | undefined;
+        if (type === 'VoiceNote') {
+            // Use a valid, CORS-friendly audio URL for voice notes to allow waveform generation.
+            mediaUrl = 'https://webaudioapi.com/samples/audio-tag/chrono.mp3';
+        } else if (type === 'Reel') {
+            // Use a valid video URL for Reels.
+            const reelVideos = [
+                'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+                'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+            ];
+            mediaUrl = getRandom(reelVideos);
+        } else { // 'Post'
+            mediaUrl = Math.random() > 0.4 ? `https://picsum.photos/seed/${i}/600/400` : undefined;
+        }
 
         MOCK_POSTS.push({
             id: `post-${i + 1}`,
@@ -254,7 +272,7 @@ const generatePosts = (count: number) => {
             comments: Math.floor(Math.random() * 300),
             shares: Math.floor(Math.random() * 150),
             type,
-            mediaUrl: Math.random() > 0.4 ? `https://picsum.photos/seed/${i}/600/400` : undefined,
+            mediaUrl,
             isSponsored: Math.random() > 0.9 ? true : false,
         });
     }

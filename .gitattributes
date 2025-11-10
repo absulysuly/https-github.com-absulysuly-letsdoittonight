@@ -1,8 +1,0 @@
-# Ensure large binary assets do not block commits or generate spurious diffs
-*.csv binary
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.pdf binary
-*.zip binary

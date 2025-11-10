@@ -9,20 +9,24 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-  };
+  // Fix: Reverted to constructor-based state initialization to resolve property access error on 'this.props'.
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      hasError: false,
+    };
+  }
 
-  public static getDerivedStateFromError(_: Error): State {
+  static getDerivedStateFromError(_: Error): State {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
 
-  public render() {
+  render() {
     if (this.state.hasError) {
       return (
         <div style={{ padding: '2rem', textAlign: 'center' }}>

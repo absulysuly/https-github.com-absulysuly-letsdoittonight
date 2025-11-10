@@ -61,7 +61,8 @@ const LiveConversationView: React.FC<LiveConversationViewProps> = ({ language, o
             outputAudioContextRef.current = outputAudioContext;
 
             const sessionPromise = startLiveConversation({
-                onOpen: () => {
+// Fix: Renamed `onOpen` to `onopen` to match the expected property name in the `startLiveConversation` function's callbacks object.
+                onopen: () => {
                     setIsConnecting(false);
                     setIsConnected(true);
                     console.log('Session opened. Streaming microphone audio.');
@@ -81,7 +82,7 @@ const LiveConversationView: React.FC<LiveConversationViewProps> = ({ language, o
                     source.connect(scriptProcessor);
                     scriptProcessor.connect(inputAudioContext.destination);
                 },
-                onMessage: async (message: LiveServerMessage) => {
+                onmessage: async (message: LiveServerMessage) => {
                      // Handle transcription
                     if (message.serverContent?.inputTranscription) {
                         setCurrentTurn(prev => ({...prev, user: prev.user + message.serverContent.inputTranscription.text}));
@@ -114,12 +115,12 @@ const LiveConversationView: React.FC<LiveConversationViewProps> = ({ language, o
                         audioQueueRef.current.add(source);
                     }
                 },
-                onError: (e) => {
+                onerror: (e) => {
                     console.error('Session error:', e);
                     setError('A connection error occurred.');
                     cleanup();
                 },
-                onClose: () => {
+                onclose: () => {
                     console.log('Session closed.');
                     cleanup();
                 },
