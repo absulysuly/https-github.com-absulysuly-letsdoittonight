@@ -124,7 +124,7 @@ const AgentDataProcessorPage: React.FC<{ onNavigate: (path: string) => void }> =
         const unified: Record<string, any> = {};
 
         for (const { name, content } of fileData) {
-            const agentKey = name.replace('.json', '').replace(/[\s\W]/g, '_');
+            const agentKey = (name || `agent_${Date.now()}`).replace('.json', '').replace(/[\s\W]/g, '_');
             try {
                 const data = JSON.parse(content);
                 const sections = [];
