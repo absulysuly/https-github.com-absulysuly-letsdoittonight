@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, UserRole, Governorate, Language } from '../../types.ts';
-import * as api from '../../services/apiService.ts';
-import { fetchCandidates as fetchBackendCandidates, mapBackendCandidateToUser } from '../../services/backendClient.ts';
+import { User, Governorate, Language } from '../../types.ts';
 import PublicDiscoverCandidateCard from '../PublicDiscoverCandidateCard.tsx';
 import { SLUG_PARTY_MAP, SLUG_GOVERNORATE_MAP, GOVERNORATE_AR_MAP } from '../../constants.ts';
 import { UI_TEXT } from '../../translations.ts';
+import { loadCandidateDirectory } from '../../services/candidateDataService.ts';
 
 interface PublicDiscoverViewProps {
     language: Language;
@@ -43,35 +42,23 @@ const PublicDiscoverView: React.FC<PublicDiscoverViewProps> = ({ language }) => 
             }
 
             try {
-                const { data } = await fetchBackendCandidates({
+                const resolvedGovernorate =
+                    governorate && GOVERNORATE_AR_MAP[governorate as Governorate]
+                        ? (governorate as Governorate)
+                        : undefined;
+
+                const directoryCandidates = await loadCandidateDirectory({
                     limit: 200,
-                    party: party || undefined,
-                    governorate: governorate || undefined,
+                    party: party || 'All',
+                    partySlug: partySlug ?? undefined,
+                    governorate: resolvedGovernorate ?? 'All',
+                    governorateSlug: govSlug ?? undefined,
                 });
 
                 if (!isMounted) return;
-
-                const remoteCandidates = data.map(mapBackendCandidateToUser);
-
-                if (remoteCandidates.length > 0) {
-                    setCandidates(remoteCandidates);
-                    return;
-                }
+                setCandidates(directoryCandidates);
             } catch (error) {
-                console.error('Failed to fetch candidates from backend:', error);
-            }
-
-            try {
-                const fallbackCandidates = await api.getUsers({
-                    role: UserRole.Candidate,
-                    partySlug: partySlug ?? 'All',
-                    governorateSlug: govSlug ?? 'All',
-                });
-
-                if (!isMounted) return;
-                setCandidates(fallbackCandidates);
-            } catch (fallbackError) {
-                console.error('Failed to load fallback candidates:', fallbackError);
+                console.error('Failed to load candidates:', error);
                 if (isMounted) {
                     setCandidates([]);
                 }

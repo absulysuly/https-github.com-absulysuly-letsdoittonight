@@ -1,12 +1,12 @@
 // Fix: Populating components/views/CandidatesView.tsx with a list of candidates.
 import React, { useState, useEffect } from 'react';
-import { Governorate, User, UserRole, Language } from '../../types.ts';
+import { Governorate, User, Language } from '../../types.ts';
 import { GOVERNORATES, GOVERNORATE_AR_MAP } from '../../constants.ts';
 import CandidatePill from '../CandidatePill.tsx';
-import * as api from '../../services/apiService.ts';
 import { ResponsiveGrid } from '../UI/Responsive.tsx';
 import { UI_TEXT } from '../../translations.ts';
 import Spinner from '../Spinner.tsx';
+import { loadCandidateDirectory } from '../../services/candidateDataService.ts';
 
 interface CandidatesViewProps {
     selectedGovernorate: Governorate | 'All';
@@ -33,19 +33,20 @@ const CandidatesView: React.FC<CandidatesViewProps> = ({ selectedGovernorate, se
         const fetchCandidates = async () => {
             setIsLoading(true);
             try {
-                const users = await api.getUsers({
-                    role: UserRole.Candidate,
+                const users = await loadCandidateDirectory({
                     governorate: localGovernorate,
                     party: localParty,
                     gender: localGender,
+                    limit: 200,
                 });
                 setCandidates(users);
             } catch (error) {
-                console.error("Failed to fetch candidates:", error);
+                console.error('Failed to fetch candidates:', error);
             } finally {
                 setIsLoading(false);
             }
         };
+
         fetchCandidates();
     }, [localGovernorate, localParty, localGender]);
 
