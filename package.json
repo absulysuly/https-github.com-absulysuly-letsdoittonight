@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "vite build",
     "preview": "vite preview",
+    "postinstall": "node ./scripts/setup-next-shim.mjs",
     "build:backend": "cd backend && npm install",
     "start:backend": "cd backend && npm start"
   },
