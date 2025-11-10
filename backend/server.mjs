@@ -25,15 +25,45 @@ app.use((req, res, next) => {
     next();
 });
 
-const allowedOrigins = [
+const defaultAllowedOrigins = [
     'https://digitaldemocracy-iraq.vercel.app',
     'https://hamlet-unified-complete-2027.vercel.app',
     'http://localhost:5173',
+    '*.vercel.app',
 ];
+
+const envOriginCandidates = [
+    process.env.FRONTEND_URL,
+    process.env.NEXT_PUBLIC_FRONTEND_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.SITE_URL,
+    process.env.ORIGIN,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
+].filter(Boolean).map(origin => origin.trim());
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOriginCandidates]));
+
+const isAllowedOrigin = (origin) => {
+    return allowedOrigins.some((allowed) => {
+        if (allowed === '*') {
+            return true;
+        }
+        if (allowed.startsWith('*.')) {
+            const suffix = allowed.slice(1);
+            return origin.endsWith(suffix);
+        }
+        return allowed === origin;
+    });
+};
+
+if (process.env.NODE_ENV !== 'production') {
+    console.log('CORS allowed origins:', allowedOrigins);
+}
 
 const corsConfig = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || isAllowedOrigin(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
