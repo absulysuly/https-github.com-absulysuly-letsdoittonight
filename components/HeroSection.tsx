@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import { Post } from '../types.ts';
 import * as api from '../services/apiService.ts';
 
-const HeroSection: React.FC = () => {
+const HeroSection: FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [slides, setSlides] = useState<{ image: string; caption: string; subcaption: string; }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -79,7 +79,15 @@ const HeroSection: React.FC = () => {
                             slideIndex === currentIndex ? 'opacity-100' : 'opacity-0'
                         }`}
                     >
-                        <img loading={slideIndex === 0 ? "eager" : "lazy"} fetchPriority={slideIndex === 0 ? "high" : "auto"} src={slide.image} alt={`Slide ${slideIndex + 1}`} className="w-full h-full object-cover" />
+                        <img
+                            loading={slideIndex === 0 ? "eager" : "lazy"}
+                            fetchPriority={slideIndex === 0 ? "high" : "auto"}
+                            src={slide.image}
+                            alt={`Slide ${slideIndex + 1}`}
+                            width={1280}
+                            height={720}
+                            className="w-full h-full object-cover"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                         <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white">
                             <h3 className="font-bold text-lg">{slide.caption}</h3>

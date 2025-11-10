@@ -1,5 +1,4 @@
-import React from 'react';
-import { Language } from '../types.ts';
+import type { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 
 interface TopNavBarProps<T extends string> {
