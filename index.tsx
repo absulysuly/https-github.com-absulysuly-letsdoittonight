@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 // Fix: Added .tsx extension to App import to fix module resolution error.
 import App from './App.tsx';
@@ -11,9 +11,9 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-  <StrictMode>
+  <React.StrictMode>
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
-  </StrictMode>
+  </React.StrictMode>
 );
