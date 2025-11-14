@@ -1,6 +1,12 @@
 import { User, UserRole, Post, Event, Article, Debate, Governorate, TeaHouseTopic, TeaHouseMessage, Language } from '../types.ts';
 import { MOCK_USERS, MOCK_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES, IRAQI_GOVERNORATES_INFO, MOCK_IHEC_POSTS } from '../constants.ts';
 import { Candidate, NewsArticle, PoliticalParty, DashboardStats, ParticipationData, ApiConfig, DataCollectionStats, ContactValidationItem, EnrichmentData, QualityAnalyticsData } from '../components/election/types.ts';
+import { request } from './httpClient.ts';
+
+const remoteApiAvailable = () => {
+    const baseUrl = import.meta.env.VITE_API_URL as string | undefined;
+    return Boolean(baseUrl && baseUrl.trim());
+};
 
 // --- MOCK API Service ---
 // This service simulates API calls by returning mock data after a short delay.
@@ -16,7 +22,18 @@ export const getParties = (): Promise<string[]> => {
     return simulateDelay(parties);
 };
 
-export const getCandidateStats = (): Promise<{ total: number; women: number; men: number; }> => {
+export const getCandidateStats = async (): Promise<{ total: number; women: number; men: number; }> => {
+    if (remoteApiAvailable()) {
+        try {
+            const stats = await request<{ total: number; women: number; men: number }>('/api/candidates/stats');
+            if (typeof stats?.total === 'number') {
+                return stats;
+            }
+        } catch (error) {
+            console.warn('Falling back to mock candidate stats', error);
+        }
+    }
+
     const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate);
     const women = candidates.filter(c => c.gender === 'Female').length;
     const men = candidates.length - women;
@@ -153,7 +170,7 @@ export const createReel = (details: { caption: string; videoFile?: File }, autho
         comments: 0,
         shares: 0,
         type: 'Reel',
-        mediaUrl: '/assets/mock-video.mp4', // Placeholder
+        mediaUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     };
     MOCK_POSTS.unshift(newReel);
     return simulateDelay(newReel);
@@ -291,9 +308,30 @@ export const getPartyById = (id: string): Promise<{ party: PoliticalParty; candi
     });
 };
 
-export const getAllElectionCandidates = (): Promise<Candidate[]> => {
+export const getAllElectionCandidates = async (): Promise<Candidate[]> => {
+    if (remoteApiAvailable()) {
+        try {
+            const candidates = await request<Candidate[]>('/api/candidates');
+            if (Array.isArray(candidates) && candidates.length > 0) {
+                return candidates.map(candidate => ({
+                    ...candidate,
+                    imageUrl: candidate.imageUrl ?? candidate.avatarUrl,
+                }));
+            }
+        } catch (error) {
+            console.warn('Falling back to mock candidate collection', error);
+        }
+    }
+
     const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate).map(c => ({
-        id: c.id, name: c.name, party: c.party, imageUrl: c.avatarUrl, verified: c.verified
+        id: c.id,
+        name: c.name,
+        party: c.party,
+        imageUrl: c.avatarUrl,
+        avatarUrl: c.avatarUrl,
+        verified: c.verified,
+        governorate: c.governorate,
+        updatedAt: new Date().toISOString(),
     }));
     return simulateDelay(candidates);
 };
@@ -346,5 +384,23 @@ export const getQualityAnalyticsData = (): Promise<QualityAnalyticsData> => {
     return simulateDelay({
         overallQuality: { verified: 78, pending: 15, invalid: 7 },
         qualityByGov: IRAQI_GOVERNORATES_INFO.map(g => ({ name: g.name.substring(0, 3), quality: 50 + Math.random() * 50 })).slice(0, 6),
+    });
+};
+
+export const getAgentStatuses = async () => {
+    if (remoteApiAvailable()) {
+        try {
+            return await request<{ agents: { agent: string; healthy: boolean; lastRunAt?: string; tasksCompleted: number; }[] }>('/api/agent/status');
+        } catch (error) {
+            console.warn('Falling back to mock agent statuses', error);
+        }
+    }
+
+    return simulateDelay({
+        agents: [
+            { agent: 'content', healthy: true, lastRunAt: new Date().toISOString(), tasksCompleted: 128 },
+            { agent: 'outreach', healthy: true, lastRunAt: new Date().toISOString(), tasksCompleted: 87 },
+            { agent: 'segmentation', healthy: false, lastRunAt: new Date(Date.now() - 1000 * 60 * 42).toISOString(), tasksCompleted: 54 },
+        ],
     });
 };

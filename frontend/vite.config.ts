@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+          '@byond-election/shared': path.resolve(__dirname, '../shared'),
         }
       }
     };

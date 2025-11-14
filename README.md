@@ -1,80 +1,148 @@
-# Hamlet - Civic Social Platform
+# Byond Election Platform
 
-Hamlet is a single-page civic social platform designed to surface verified candidate content by governorate for Iraq’s 2025 national election. It supports various content formats (posts, reels, events, debates), integrates social media features, and is designed to be fully accessible and bilingual (English, Arabic, Sorani Kurdish).
+This repository hosts the production-ready Byond Election stack, combining the voter-facing frontend, operational backend, shared types, and curated assets required to run the 2025 Iraqi election experience. The project is structured as a multi-package workspace so each surface can be deployed independently while still sharing contracts and tooling.
 
-## Project Structure
-
-The application is a modern, single-page application built with React and TypeScript, styled with Tailwind CSS. It operates without a traditional build tool like Vite or Create React App, using ES modules directly in the browser via an `importmap`.
+## Repository Layout
 
 ```
 /
-├── components/
-│   ├── icons/
-│   │   └── Icons.tsx         # SVG icons as React components
-│   ├── views/
-│   │   ├── compose/
-│   │   │   ├── EventComposer.tsx # UI for creating events
-│   │   │   └── ReelComposer.tsx  # UI for creating reels
-│   │   ├── CandidatesView.tsx  # View for listing candidates
-│   │   ├── CandidateProfileView.tsx # Detailed view for a single candidate
-│   │   ├── ComposeView.tsx     # Main post composer UI
-│   │   ├── DebatesView.tsx     # View for listing debates
-│   │   ├── ...and other views...
-│   ├── BottomBar.tsx         # Mobile navigation
-│   ├── CandidatePill.tsx     # Compact candidate display component
-│   ├── Header.tsx            # Main application header
-│   ├── HeroSection.tsx       # Image carousel on the home page
-│   ├── LanguageSwitcher.tsx  # UI for changing language
-│   ├── LoginModal.tsx        # Login/Registration modal
-│   ├── PostCard.tsx          # Component for displaying a single post
-│   ├── Sidebar.tsx           # Desktop sidebar navigation
-│   ├── Stories.tsx           # Horizontal stories component
-│   └── TopNavBar.tsx         # Reusable tab navigation
-├── services/
-│   └── geminiService.ts      # Service for interacting with the Google Gemini API
-├── App.tsx                   # Main application component, manages state and views
-├── constants.ts              # Mock data for users, posts, etc.
-├── index.html                # The single HTML entry point
-├── index.tsx                 # Renders the React application
-├── translations.ts           # Contains all UI text for EN, KU, AR
-└── types.ts                  # TypeScript type definitions
+├── frontend/              # Vite + React 19 application
+│   ├── src/               # UI components, views, services, and utilities
+│   ├── index.html         # Single entry point (uses local Tailwind build)
+│   ├── tailwind.config.ts # Tailwind configuration wired to CSS variables
+│   └── package.json       # Frontend dependencies and scripts
+├── backend/               # Express + Prisma API service
+│   ├── src/
+│   │   ├── agents/        # Agent status aggregation helpers
+│   │   ├── config/        # Environment + logger configuration
+│   │   ├── middleware/    # Error handling
+│   │   ├── routes/        # /api endpoints (health, candidates, agent)
+│   │   └── services/      # Prisma client + candidate domain logic
+│   ├── prisma/            # Prisma schema
+│   └── package.json
+├── shared/                # Shared TypeScript contracts (Candidate, AgentTask, UserRole)
+├── assets/                # Checked-in minimal asset set for deployment
+├── .env.production.example# Reference environment variables for all services
+└── package.json           # Workspace scripts
 ```
 
-## Key Files & Features
+## Prerequisites
 
--   **`App.tsx`**: The core of the application. It manages all major state, including the current user, active view, selected language, and modal visibility. This is the central hub for application logic.
--   **`components/views/HomeView.tsx`**: The main dashboard that users see. It aggregates multiple components like the `HeroSection`, `Stories`, and the main content feed, which is tabbed to show Posts, Reels, Events, etc.
--   **`constants.ts`**: Currently, all data is mocked and stored here. This file is the primary target for replacement when integrating a backend.
--   **`translations.ts`**: A simple but effective internationalization (i18n) solution. All display text is pulled from this file based on the selected language.
--   **Guest Mode & Login Flow**: The app starts in a "guest" mode where content is viewable. Interactions (liking, commenting, viewing reels) are intercepted by the `requestLogin` function, which opens the `LoginModal` to encourage sign-ups.
+- Node.js 20+
+- npm 10+
+- PostgreSQL instance for the backend (Railway recommended)
 
-## Next Steps: Integrating a Backend
+## Environment Variables
 
-This foundational code is designed for easy integration with a real backend API. Here are the recommended steps:
+Copy `.env.production.example` to an environment-specific file (never commit private secrets):
 
-1.  **Replace Mock Data with API Calls:**
-    -   In components like `HomeView.tsx`, `CandidatesView.tsx`, etc., replace direct imports from `constants.ts` with `useEffect` hooks that fetch data from your API.
-    -   Create a dedicated `apiService.ts` file to centralize `fetch` or `axios` logic for endpoints like `/posts`, `/users`, `/events`, etc.
-    -   Example: In `HomeView.tsx`, instead of `const socialPosts = MOCK_POSTS.filter(...)`, you would have:
-        ```typescript
-        const [posts, setPosts] = useState<Post[]>([]);
-        useEffect(() => {
-          // apiService.getPosts(selectedGovernorate).then(setPosts);
-        }, [selectedGovernorate]);
-        ```
+```bash
+cp .env.production.example .env
+```
 
-2.  **Implement Real Authentication:**
-    -   In `LoginModal.tsx`, modify `handleSelectRole` to call your API's `/login` or `/register` endpoint.
-    -   Upon successful login, the API should return a user object and a token (e.g., JWT).
-    -   Store the token securely (e.g., in an HttpOnly cookie or `localStorage`) and update the `user` state in `App.tsx`.
-    -   Implement a `useEffect` hook in `App.tsx` to check for a valid token on initial load to keep the user logged in.
+Populate the values:
 
-3.  **Connect "Compose" Functionality:**
-    -   In `ComposeView.tsx`, `ReelComposer.tsx`, and `EventComposer.tsx`, the `onPost`, `onCreateReel`, and `onCreateEvent` handlers should be wired to make `POST` requests to your backend API.
-    -   Handle form data, including file uploads for reels, and send it to the appropriate endpoints.
+- `DATABASE_URL` – PostgreSQL connection string (Railway provides this automatically)
+- `JWT_SECRET` – long random secret for auth flows
+- `CORS_ORIGINS` – comma-separated list of allowed origins (e.g. your Vercel frontend URL)
+- `NODE_ENV` – `production` in deployed environments
+- `EXPECTED_CANDIDATE_COUNT` – must remain `7769`
+- `VITE_API_URL` – public API base URL consumed by the frontend
 
-4.  **Secure the Gemini API Key:**
-    -   The `geminiService.ts` currently expects `process.env.API_KEY`. In a production environment, this client-side call is insecure.
-    -   **Action:** Create a backend endpoint (e.g., `/api/generate-suggestion`) that securely calls the Gemini API from the server. The client-side `generatePostSuggestion` function should then call this new backend endpoint instead of the Gemini API directly.
+Both the backend and frontend load these variables at build/runtime. `.env*` files are ignored by Git to prevent accidental leaks.
 
-By following these steps, you can transition the application from a mock-data prototype to a fully functional, data-driven platform.
+## Installing Dependencies
+
+From the repository root, install all workspace dependencies:
+
+```bash
+npm install
+```
+
+This will bootstrap the frontend, backend, and shared packages.
+
+## Local Development
+
+Run the backend API (port 4000 by default):
+
+```bash
+npm run dev:backend
+```
+
+In a separate terminal, start the frontend:
+
+```bash
+npm run dev:frontend
+```
+
+The frontend uses `VITE_API_URL` to talk to the backend. If you run both locally the default value of `http://localhost:4000` will be used.
+
+## Production Builds
+
+Generate production bundles for both services:
+
+```bash
+npm run build
+```
+
+- Backend build → `backend/dist`
+- Frontend build → `frontend/dist`
+
+### Railway (Backend)
+
+- Root directory: `backend`
+- Build command: `npm run build`
+- Start command: `npm run start:prod`
+
+### Vercel or Railway (Frontend)
+
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Output directory: `frontend/dist`
+
+Ensure `VITE_API_URL` is set to the deployed backend URL in the hosting dashboard.
+
+## Key Backend Endpoints
+
+| Endpoint                | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
+| `GET /api/health`       | Returns `{ ok: true }` with timestamp + environment    |
+| `GET /api/candidates`   | Returns candidate array (7,769 bilingual records)      |
+| `GET /api/candidates?summary=true` | Returns `{ count: 7769 }`                      |
+| `GET /api/candidates/stats` | Returns totals + gender split                        |
+| `GET /api/agent/status` | Reports content/outreach/segmentation agent health     |
+
+`GET /api/candidates/validate` can be used in CI to enforce the canonical record count.
+
+## Candidate Count Verification
+
+The script `npm --prefix backend run verify:candidates` ensures the `Candidate` table contains exactly **7,769** bilingual entries. The command exits with a non-zero status if the count deviates so it can be wired into CI/CD pipelines.
+
+## Testing & Validation
+
+- `npm run build` – compiles backend and frontend
+- `npm run dev:backend` – launches the API for manual QA
+- `npm run dev:frontend` – launches the Vite dev server
+
+## Branch Protection Recommendation
+
+Enable the following rules on `main` in your Git host:
+
+- Require pull request reviews before merging
+- Require the workspace `npm run build` job to pass
+- Block force pushes and deletions
+
+## Deployment Checklist
+
+1. Confirm `npm run build` succeeds.
+2. Deploy backend (Railway) with the environment variables from `.env.production.example`.
+3. Deploy frontend (Vercel or Railway) pointing to the backend API URL.
+4. Run `npm --prefix backend run verify:candidates` or call `/api/candidates/validate` to confirm the 7,769 record set.
+5. Visit the production frontend and ensure:
+   - Candidate list loads with the correct count
+   - Agent dashboard surfaces agent status
+   - Assets load from `/assets`
+   - No `.env` or `.git` artefacts are exposed
+6. Review deployment logs for warnings or errors.
+
+Once the above steps succeed, mark the status as **ready for review**.

@@ -1,10 +1,8 @@
+import type { Candidate as SharedCandidate } from '@byond-election/shared/types';
+
 // Fix: Defining types for the election portal part of the application.
-export interface Candidate {
-    id: string;
-    name: string;
-    party: string;
+export interface Candidate extends SharedCandidate {
     imageUrl: string;
-    verified: boolean;
 }
 
 export interface NewsArticle {
