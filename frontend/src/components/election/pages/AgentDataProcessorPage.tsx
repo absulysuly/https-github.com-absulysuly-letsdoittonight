@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ManagementPageHeader from '../components/ManagementPageHeader.tsx';
 import { SparklesIcon } from '../../icons/Icons.tsx';
 import Card from '../components/ui/Card.tsx';
@@ -6,6 +6,7 @@ import Button from '../components/ui/Button.tsx';
 import JsonViewer from '../components/JsonViewer.tsx';
 import Spinner from '../../Spinner.tsx';
 import Textarea from '../components/ui/Textarea.tsx';
+import * as api from '../../../services/apiService.ts';
 
 // --- Logic replicated from the user's Node.js script ---
 
@@ -50,6 +51,35 @@ const AgentDataProcessorPage: React.FC<{ onNavigate: (path: string) => void }> =
     const [result, setResult] = useState<object | null>(null);
     const [error, setError] = useState('');
     const [dragOver, setDragOver] = useState(false);
+    const [statusError, setStatusError] = useState('');
+    const [statuses, setStatuses] = useState<Array<{ agent: string; healthy: boolean; lastRunAt?: string; tasksCompleted: number }>>([]);
+    const [loadingStatuses, setLoadingStatuses] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadStatuses = async () => {
+            try {
+                setLoadingStatuses(true);
+                setStatusError('');
+                const response = await api.getAgentStatuses();
+                if (isMounted && response?.agents) {
+                    setStatuses(response.agents);
+                }
+            } catch (err: any) {
+                if (isMounted) {
+                    setStatusError(err?.message ?? 'Unable to load agent statuses');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoadingStatuses(false);
+                }
+            }
+        };
+        loadStatuses();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const handleFileChange = (selectedFiles: FileList | null) => {
         if (selectedFiles) {
@@ -218,6 +248,36 @@ const AgentDataProcessorPage: React.FC<{ onNavigate: (path: string) => void }> =
                 onBack={() => onNavigate('/')}
                 icon={<SparklesIcon className="w-8 h-8 text-formal-primary-600" />}
             />
+
+            <Card className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Agent Health</h3>
+                {loadingStatuses ? (
+                    <div className="flex items-center gap-3 text-sm text-official-700">
+                        <Spinner />
+                        <span>Loading agent statuses...</span>
+                    </div>
+                ) : statusError ? (
+                    <p className="text-sm text-red-500">{statusError}</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {statuses.map(status => (
+                            <div key={status.agent} className="p-4 rounded-lg border border-official-300 bg-white/10">
+                                <p className="text-sm font-semibold uppercase tracking-wide text-official-700">{status.agent}</p>
+                                <p className={`mt-1 text-xl font-bold ${status.healthy ? 'text-emerald-600' : 'text-amber-500'}`}>
+                                    {status.healthy ? 'Operational' : 'Attention Needed'}
+                                </p>
+                                <p className="text-xs text-official-700 mt-2">Completed tasks: {status.tasksCompleted}</p>
+                                {status.lastRunAt && (
+                                    <p className="text-xs text-official-600">Last run: {new Date(status.lastRunAt).toLocaleString()}</p>
+                                )}
+                            </div>
+                        ))}
+                        {statuses.length === 0 && (
+                            <p className="text-sm text-official-700">No agent runs have been recorded yet.</p>
+                        )}
+                    </div>
+                )}
+            </Card>
 
             <Card className="mb-6">
                  <div className="flex border-b border-official-300 mb-4">

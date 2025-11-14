@@ -1,11 +1,9 @@
 import { colorThemes } from './utils/colorThemes.ts';
+import { UserRole } from '@byond-election/shared/types';
+
+export { UserRole } from '@byond-election/shared/types';
 
 // --- ENUMS & LITERAL TYPES ---
-
-export enum UserRole {
-    Voter = 'Voter',
-    Candidate = 'Candidate',
-}
 
 export enum AppTab {
     Home = 'Home',

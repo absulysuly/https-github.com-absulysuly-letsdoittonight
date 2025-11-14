@@ -1,4 +1,3 @@
-import React from 'react';
 import { Language } from '../types.ts';
 import { UI_TEXT } from '../translations.ts';
 

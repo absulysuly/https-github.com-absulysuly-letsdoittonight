@@ -11,9 +11,11 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "node"
+      "node",
+      "vite/client"
     ],
     "moduleResolution": "bundler",
+    "baseUrl": ".",
     "isolatedModules": true,
     "moduleDetection": "force",
     "allowJs": true,
@@ -21,6 +23,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@byond-election/shared/*": [
+        "../shared/*"
       ]
     },
     "allowImportingTsExtensions": true,

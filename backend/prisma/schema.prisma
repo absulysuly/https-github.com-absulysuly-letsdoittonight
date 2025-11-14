@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Candidate {
+  id           String   @id
+  slug         String   @unique
+  name         String
+  nameAr       String
+  party        String
+  governorate  String
+  avatarUrl    String
+  imageUrl     String?
+  biographyEn  String
+  biographyAr  String
+  languages    String[]
+  verified     Boolean  @default(false)
+  gender       String?
+  contactEmail String?
+  contactPhone String?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+}
+
+model AgentTask {
+  id          String   @id @default(cuid())
+  agent       String
+  status      String   @default("pending")
+  payload     Json
+  result      Json?
+  error       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AgentRunLog {
+  id        String   @id @default(cuid())
+  agent     String
+  status    String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+@@index([party])
+@@index([governorate])
