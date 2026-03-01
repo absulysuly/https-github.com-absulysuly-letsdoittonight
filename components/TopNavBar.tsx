@@ -8,7 +8,7 @@ interface TopNavBarProps<T extends string> {
   language: Language;
 }
 
-const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
+const tabTranslationKeys: Partial<Record<string, keyof (typeof UI_TEXT)['en']>> = {
   Posts: 'posts',
   Reels: 'reels',
   Candidates: 'candidates',
@@ -21,7 +21,12 @@ const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
   'IHEC Updates': 'ihecUpdates',
 };
 
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+export default function TopNavBar<T extends string>({
+  tabs,
+  activeTab,
+  onTabChange,
+  language,
+}: TopNavBarProps<T>) {
   const texts = UI_TEXT[language];
 
   const getTabClasses = (tab: T) => {
@@ -55,5 +60,3 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
     </div>
   );
 }
-
-export default TopNavBar;
