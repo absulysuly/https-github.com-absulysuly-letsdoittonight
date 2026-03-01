@@ -8,7 +8,9 @@ interface TopNavBarProps<T extends string> {
   language: Language;
 }
 
-const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
+type TranslationKey = keyof (typeof UI_TEXT)['en'];
+
+const tabTranslationKeys: Record<string, TranslationKey> = {
   Posts: 'posts',
   Reels: 'reels',
   Candidates: 'candidates',
@@ -24,19 +26,14 @@ const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
 function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
   const texts = UI_TEXT[language];
 
-  const getTabClasses = (tab: T) => {
-    const isActive = activeTab === tab;
-    return isActive
+  const getTabClasses = (tab: T) =>
+    activeTab === tab
       ? 'border-primary text-primary glow'
       : 'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
-  };
 
   return (
     <div className="border-b border-[var(--color-glass-border)]">
-      <nav
-        className="-mb-px flex justify-center space-x-6 overflow-x-auto px-4 no-scrollbar sm:px-6"
-        aria-label="Tabs"
-      >
+      <nav className="-mb-px flex justify-center space-x-6 overflow-x-auto px-4 no-scrollbar sm:px-6" aria-label="Tabs">
         {tabs.map((tab) => {
           const translationKey = tabTranslationKeys[tab];
           const label = translationKey ? texts[translationKey] : tab;
@@ -44,6 +41,7 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
           return (
             <button
               key={tab}
+              type="button"
               onClick={() => onTabChange(tab)}
               className={`whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium font-arabic transition-colors ${getTabClasses(tab)}`}
             >
