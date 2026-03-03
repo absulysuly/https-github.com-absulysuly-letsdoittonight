@@ -3,7 +3,8 @@ import { Language } from '../../types.ts';
 import { UI_TEXT } from '../../translations.ts';
 import { startLiveConversation, decode, decodeAudioData, createBlob } from '../../services/geminiService.ts';
 import { MicIcon, SparklesIcon } from '../icons/Icons.tsx';
-import { LiveServerMessage, LiveSession } from '@google/genai';
+type LiveServerMessage = any;
+type LiveSession = any;
 import Spinner from '../Spinner.tsx';
 
 interface LiveConversationViewProps {

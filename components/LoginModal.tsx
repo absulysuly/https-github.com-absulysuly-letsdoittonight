@@ -11,15 +11,19 @@ interface LoginModalProps {
     onClose: () => void;
     language: Language;
     onLanguageChange: (lang: Language) => void;
+    authLogin?: (email: string, password: string) => Promise<void>;
+    authSignup?: (email: string, password: string, name: string) => Promise<void>;
+    authLogout?: () => Promise<void>;
 }
 
 type ModalView = 'selection' | 'voter' | 'candidate' | 'verify';
 type AuthProvider = 'google' | 'facebook';
 
-const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onLanguageChange }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onLanguageChange, authLogin, authSignup }) => {
     const [view, setView] = useState<ModalView>('selection');
     const [pendingUser, setPendingUser] = useState<User | null>(null);
     const [verificationCode, setVerificationCode] = useState('');
+    const [password, setPassword] = useState('password123');
     const [verificationError, setVerificationError] = useState('');
     const [resentMessage, setResentMessage] = useState('');
     const [isAuthenticating, setIsAuthenticating] = useState<AuthProvider | null>(null);
@@ -39,9 +43,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
         try {
             // Simulate API call delay
             await new Promise(resolve => setTimeout(resolve, 1500));
+            if (authLogin) {
+                await authLogin(`${provider}@example.com`, password);
+                onClose();
+                return;
+            }
             const user = await api.socialLogin(provider);
             if (user) {
-                // Social logins are considered pre-verified
                 onLogin(user);
             } else {
                 throw new Error(texts.socialLoginFailed);
@@ -54,6 +62,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
     };
 
     const handleRegister = async (details: { name: string; email: string; role: UserRole }) => {
+        if (authSignup) {
+            await authSignup(details.email, password, details.name);
+            onClose();
+            return;
+        }
         const newUser = await api.registerUser(details);
         if (newUser) {
             handleApiResponse(newUser);
@@ -106,6 +119,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
                      <div>
                         <label className="text-sm font-medium text-theme-text-muted font-arabic">{texts.emailAddress}</label>
                         <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="mt-1 block w-full p-2 border border-[var(--color-glass-border)] rounded-md bg-white/10 text-theme-text-base placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary" />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-theme-text-muted font-arabic">Password</label>
+                        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="mt-1 block w-full p-2 border border-[var(--color-glass-border)] rounded-md bg-white/10 text-theme-text-base placeholder-theme-text-muted focus:outline-none focus:ring-1 focus:ring-primary" />
                     </div>
                     <button type="submit" className="w-full mt-2 px-6 py-2 font-bold bg-primary text-on-primary rounded-full transition-all hover:brightness-110 disabled:opacity-50">
                         {texts.createAccount}

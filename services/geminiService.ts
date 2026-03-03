@@ -1,4 +1,10 @@
-import { GoogleGenAI, GenerateContentResponse, LiveServerMessage, Modality, Type, GenerateContentStreamResponse, Chat, LiveSession, Blob } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
+type LiveServerMessage = any;
+type LiveSession = any;
+type Blob = { data: string; mimeType: string };
+
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_PLACEHOLDER = "Gemini API key not configured.";
 
 // --- GENERAL UTILITY ---
 
@@ -18,8 +24,9 @@ const fileToGenerativePart = async (file: File) => {
 // --- TEXT & CHAT ---
 
 export const generatePostSuggestion = async (topic: string): Promise<string> => {
+    if (!GEMINI_API_KEY) return GEMINI_PLACEHOLDER
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: `Generate a short, engaging social media post for an Iraqi political candidate about the topic: "${topic}". The post should be in Arabic.`,
@@ -32,8 +39,9 @@ export const generatePostSuggestion = async (topic: string): Promise<string> => 
 };
 
 export const generateReelCaption = async (topic: string): Promise<string> => {
+    if (!GEMINI_API_KEY) return GEMINI_PLACEHOLDER
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: `Generate a short, engaging, and trendy social media caption for a video reel for an Iraqi political candidate. The topic is: "${topic}". The caption should be in Arabic and include relevant hashtags.`,
@@ -46,8 +54,9 @@ export const generateReelCaption = async (topic: string): Promise<string> => {
 };
 
 export const refinePostText = async (text: string): Promise<string> => {
+    if (!GEMINI_API_KEY) return GEMINI_PLACEHOLDER
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-flash-latest',
             contents: `Refine the following social media post to be more clear, impactful, and engaging for an Iraqi audience. Keep the original language. Post: "${text}"`,
@@ -61,8 +70,9 @@ export const refinePostText = async (text: string): Promise<string> => {
 
 export const translateText = async (text: string, targetLanguage: 'en' | 'ku' | 'ar'): Promise<string> => {
      if (!text) return "";
+     if (!GEMINI_API_KEY) return text;
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-flash-latest',
             contents: `Translate the following text to ${targetLanguage}: "${text}"`,
@@ -78,8 +88,9 @@ export const translateText = async (text: string, targetLanguage: 'en' | 'ku' | 
 // --- GROUNDING ---
 
 export const generateTextWithGoogleSearch = async (prompt: string): Promise<{text: string, chunks: any[]}> => {
+     if (!GEMINI_API_KEY) return { text: GEMINI_PLACEHOLDER, chunks: [] }
      try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
            model: "gemini-2.5-flash",
            contents: prompt,
@@ -96,8 +107,9 @@ export const generateTextWithGoogleSearch = async (prompt: string): Promise<{tex
 };
 
 export const generateTextWithGoogleMaps = async (prompt: string, location: { latitude: number; longitude: number; }): Promise<{text: string, chunks: any[]}> => {
+    if (!GEMINI_API_KEY) return { text: GEMINI_PLACEHOLDER, chunks: [] }
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
@@ -126,7 +138,7 @@ export const generateTextWithGoogleMaps = async (prompt: string, location: { lat
 
 export const analyzeImage = async (imageBase64: string, mimeType: string, prompt: string): Promise<string> => {
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const imagePart = { inlineData: { data: imageBase64, mimeType } };
         const textPart = { text: prompt };
         
@@ -143,7 +155,7 @@ export const analyzeImage = async (imageBase64: string, mimeType: string, prompt
 
 export const editImage = async (imageBase64: string, mimeType: string, prompt: string): Promise<string> => {
      try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: {
@@ -168,7 +180,7 @@ export const editImage = async (imageBase64: string, mimeType: string, prompt: s
 
 export const generateImage = async (prompt: string, aspectRatio: '1:1' | '16:9' | '9:16' | '4:3' | '3:4'): Promise<string> => {
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateImages({
             model: 'imagen-4.0-generate-001',
             prompt: prompt,
@@ -192,7 +204,7 @@ export const analyzeVideo = async (videoFile: File, prompt: string): Promise<str
     try {
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
         
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-pro', // Using pro as requested
             contents: `This is a simulation. A user has uploaded a video named "${videoFile.name}". Based on the user's prompt, provide a plausible analysis. The user's prompt is: "${prompt}"`,
@@ -226,13 +238,13 @@ const pollVeoOperation = async (operation: any, ai: GoogleGenAI, onProgress: (me
     }
     
     onProgress('Fetching generated video...');
-    const videoResponse = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+    const videoResponse = await fetch(`${downloadLink}&key=${GEMINI_API_KEY}`);
     const videoBlob = await videoResponse.blob();
     return URL.createObjectURL(videoBlob);
 }
 
 export const generateVideoFromText = async (prompt: string, aspectRatio: '16:9' | '9:16', onProgress: (message: string) => void): Promise<string> => {
-    const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
     let operation = await ai.models.generateVideos({
       model: 'veo-3.1-fast-generate-preview',
       prompt: prompt,
@@ -242,7 +254,7 @@ export const generateVideoFromText = async (prompt: string, aspectRatio: '16:9' 
 };
 
 export const generateVideoFromImage = async (imageBase64: string, mimeType: string, prompt: string, aspectRatio: '16:9' | '9:16', onProgress: (message: string) => void): Promise<string> => {
-    const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
     let operation = await ai.models.generateVideos({
       model: 'veo-3.1-fast-generate-preview',
       prompt: prompt,
@@ -307,7 +319,7 @@ export const startLiveConversation = (callbacks: {
     onerror: (e: ErrorEvent) => void;
     onclose: (e: CloseEvent) => void;
 }): Promise<LiveSession> => {
-     const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+     const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
      return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
         callbacks: {

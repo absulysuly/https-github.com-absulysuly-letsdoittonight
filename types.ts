@@ -97,6 +97,9 @@ export interface Post {
     privacy?: PostPrivacy;
 }
 
+
+export type Candidate = User;
+
 export interface Event {
     id: string;
     title: string;
