@@ -10,17 +10,39 @@ export default function GeneralFeedView({ language }: { language: Language }) {
   const [offset, setOffset] = useState(0)
 
   useEffect(() => {
-    postService.getGeneralPosts(20, 0).then((data) => {
-      setPosts(data)
-      setLoading(false)
-    })
+    let isMounted = true
+
+    const fetchPosts = async () => {
+      try {
+        const data = await postService.getGeneralPosts(20, 0)
+        if (isMounted) {
+          setPosts(data)
+        }
+      } catch (error) {
+        console.error('Failed to load general feed', error)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void fetchPosts()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const loadMore = async () => {
     const nextOffset = offset + 20
-    const more = await postService.getGeneralPosts(20, nextOffset)
-    setOffset(nextOffset)
-    setPosts((prev) => [...prev, ...more])
+    try {
+      const more = await postService.getGeneralPosts(20, nextOffset)
+      setOffset(nextOffset)
+      setPosts((prev) => [...prev, ...more])
+    } catch (error) {
+      console.error('Failed to load more posts', error)
+    }
   }
 
   if (loading) return <div className="p-4">Loading...</div>

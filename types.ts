@@ -4,10 +4,11 @@ export type UserRole = 'general' | 'student'
 
 export interface Profile {
   id: string
+  role: UserRole
+  username?: string
   email?: string
   full_name?: string
   avatar_url?: string
-  role: UserRole
 }
 
 export interface Post {
