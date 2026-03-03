@@ -1,148 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { User, UserRole, Post, Language } from '../../types.ts';
-import { VerifiedIcon, WhatsAppIcon, PhoneIcon, EmailIcon, MessageIcon, ShareIcon, FemaleIcon, PlusIcon, CheckIcon } from '../icons/Icons.tsx';
-import PostCard from '../PostCard.tsx';
-import * as api from '../../services/apiService.ts';
-import ContactMPForm from '../ContactMPForm.tsx';
-import QRCodeModal from '../QRCodeModal.tsx';
-import { UI_TEXT } from '../../translations.ts';
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import type { Candidate } from '../../types'
+import { getCandidateById } from '../../services/api/candidateService'
 
-interface CandidateProfileViewProps {
-    candidate: User;
-    user: User | null;
-    requestLogin: () => void;
-    language: Language;
-    onSelectProfile: (profile: User) => void;
-    onSelectPost: (post: Post) => void;
+export default function CandidateProfileView() {
+  const { id = '' } = useParams()
+  const [candidate, setCandidate] = useState<Candidate | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setLoading(true)
+    setError(null)
+    getCandidateById(id)
+      .then(setCandidate)
+      .catch(() => setError('Failed to load candidate'))
+      .finally(() => setLoading(false))
+  }, [id])
+
+  if (loading) return <div className="flex justify-center p-8"><div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
+  if (error) return <div className="text-center text-red-500 p-8">{error}</div>
+  if (!candidate) return <div className="text-center text-gray-500 p-8">Candidate not found</div>
+
+  return (
+    <div className="p-6">
+      <div className="glass-card rounded-xl p-6">
+        <h1 className="text-2xl font-bold">{candidate.name}</h1>
+        <p className="text-theme-text-muted mt-2">{candidate.party} • {candidate.governorate}</p>
+        <p className="mt-4">{candidate.bio || 'No biography available.'}</p>
+      </div>
+    </div>
+  )
 }
-
-const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({ candidate, user, requestLogin, language, onSelectProfile, onSelectPost }) => {
-    const [candidatePosts, setCandidatePosts] = useState<Post[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isQrModalOpen, setQrModalOpen] = useState(false);
-    const [isFollowing, setIsFollowing] = useState(false);
-    const [isSubmittingFollow, setIsSubmittingFollow] = useState(false);
-    const texts = UI_TEXT[language];
-
-    useEffect(() => {
-        if (candidate.role !== UserRole.Candidate) return;
-
-        const fetchPosts = async () => {
-            setIsLoading(true);
-            try {
-                const posts = await api.getPosts({ authorId: candidate.id });
-                setCandidatePosts(posts);
-            } catch (error) {
-                console.error("Failed to fetch candidate posts:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchPosts();
-        // Reset follow state when candidate changes
-        setIsFollowing(false);
-    }, [candidate.id, candidate.role]);
-
-    if (candidate.role !== UserRole.Candidate) {
-        return <p className="p-6 text-center">{texts.notACandidate}</p>;
-    }
-    
-    const handleInteraction = (e: React.MouseEvent) => {
-        if (!user) {
-            e.preventDefault();
-            requestLogin();
-        }
-        // TODO: Wire up contact actions to backend
-    };
-
-     const handleFollow = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!user) {
-            requestLogin();
-            return;
-        }
-        if (isFollowing) return;
-
-        setIsSubmittingFollow(true);
-        api.followCandidate(candidate.id).then(response => {
-            if (response.success) {
-                setIsFollowing(true);
-            }
-        }).finally(() => {
-            setIsSubmittingFollow(false);
-        });
-    };
-
-    const qrUrl = `https://civic-social.yoursite.web.app/discover?party=${candidate.partySlug}&gov=${candidate.governorateSlug}&candidate=${candidate.id}`;
-
-    return (
-        <div className="max-w-4xl mx-auto p-4 sm:p-6 text-white">
-            <div className="glass-card rounded-lg shadow-lg overflow-hidden mb-6">
-                <div className="p-6">
-                    <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
-                        <img loading="lazy" className="w-24 h-24 rounded-full ring-4 ring-white/50 shadow-md" src={candidate.avatarUrl} alt={candidate.name} />
-                        <div className="w-full">
-                             <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <h2 className="text-2xl font-bold flex items-center">
-                                        {candidate.name}
-                                        {candidate.verified && <VerifiedIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
-                                        {candidate.gender === 'Female' && <FemaleIcon className="w-6 h-6 text-brand-hot-pink ml-2" />}
-                                    </h2>
-                                    <p className="text-md text-slate-400">{candidate.party} - {candidate.governorate}</p>
-                                </div>
-                                <button
-                                    onClick={handleFollow}
-                                    disabled={isSubmittingFollow || isFollowing}
-                                    className={`flex items-center space-x-2 px-4 py-2 text-sm font-semibold rounded-full transition-all disabled:opacity-70 ${isFollowing ? 'bg-secondary/80 text-on-primary' : 'bg-primary text-on-primary hover:brightness-110'}`}
-                                >
-                                    {isFollowing ? (
-                                        <>
-                                            <CheckIcon className="w-4 h-4"/>
-                                            <span>{texts.following}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <PlusIcon className="w-4 h-4"/>
-                                            <span>{texts.follow}</span>
-                                        </>
-                                    )}
-                                </button>
-                             </div>
-                            <p className="text-sm mt-2 text-slate-200">{candidate.bio || texts.noBio}</p>
-                            <div className="flex space-x-2 mt-4 text-slate-200">
-                                <button onClick={handleInteraction} className="p-2 bg-white/10 rounded-full hover:bg-white/20"><WhatsAppIcon className="w-5 h-5" /></button>
-                                <button onClick={handleInteraction} className="p-2 bg-white/10 rounded-full hover:bg-white/20"><PhoneIcon className="w-5 h-5" /></button>
-                                <button onClick={handleInteraction} className="p-2 bg-white/10 rounded-full hover:bg-white/20"><EmailIcon className="w-5 h-5" /></button>
-                                <button onClick={handleInteraction} className="p-2 bg-white/10 rounded-full hover:bg-white/20"><MessageIcon className="w-5 h-5" /></button>
-                                <button onClick={() => setQrModalOpen(true)} className="p-2 bg-white/10 rounded-full hover:bg-white/20" title="Share with QR Code"><ShareIcon className="w-5 h-5" /></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            {candidate.isElected && <ContactMPForm language={language} />}
-
-            <div>
-                <h3 className="text-xl font-bold mb-4">{texts.postsBy.replace('{name}', candidate.name)}</h3>
-                {isLoading ? (
-                    <p className="text-center py-10 text-slate-400">{texts.loadingPosts}</p>
-                ) : candidatePosts.length > 0 ? (
-                    candidatePosts.map(post => <PostCard key={post.id} post={post} user={user} requestLogin={requestLogin} language={language} onSelectAuthor={onSelectProfile} onSelectPost={onSelectPost} />)
-                ) : (
-                    <p className="text-center py-10 text-slate-400">{texts.noPostsYetCandidate}</p>
-                )}
-            </div>
-             {isQrModalOpen && (
-                <QRCodeModal
-                    url={qrUrl}
-                    onClose={() => setQrModalOpen(false)}
-                    title={`Share ${candidate.name}'s Party Info`}
-                />
-            )}
-        </div>
-    );
-};
-
-export default CandidateProfileView;

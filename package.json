@@ -4,18 +4,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/next-cli.mjs dev",
-    "build": "node scripts/next-cli.mjs build",
-    "preview": "node scripts/next-cli.mjs preview",
-    "diagnose": "node scripts/diagnose-react-imports.mjs"
+    "dev": "vite --clearScreen=false",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.29.0",
+    "@supabase/supabase-js": "^2.57.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "@google/genai": "^1.29.0"
+    "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
