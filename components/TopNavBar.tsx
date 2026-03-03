@@ -1,5 +1,5 @@
-import { UI_TEXT } from '../translations.ts';
-import { Language } from '../types.ts';
+import { UI_TEXT } from '../translations';
+import { Language } from '../types';
 
 interface TopNavBarProps<T extends string> {
   tabs: T[];
