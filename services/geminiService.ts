@@ -6,6 +6,14 @@ type Blob = { data: string; mimeType: string };
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_PLACEHOLDER = "Gemini API key not configured.";
 
+const ensureApiKey = (): string | null => {
+  if (!GEMINI_API_KEY) {
+    console.warn(GEMINI_PLACEHOLDER)
+    return null
+  }
+  return GEMINI_API_KEY
+}
+
 // --- GENERAL UTILITY ---
 
 // Helper to convert a file to a base64 string
@@ -137,6 +145,8 @@ export const generateTextWithGoogleMaps = async (prompt: string, location: { lat
 // --- IMAGE & VIDEO ---
 
 export const analyzeImage = async (imageBase64: string, mimeType: string, prompt: string): Promise<string> => {
+    const apiKey = ensureApiKey()
+    if (!apiKey) return GEMINI_PLACEHOLDER
     try {
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const imagePart = { inlineData: { data: imageBase64, mimeType } };
@@ -154,6 +164,8 @@ export const analyzeImage = async (imageBase64: string, mimeType: string, prompt
 };
 
 export const editImage = async (imageBase64: string, mimeType: string, prompt: string): Promise<string> => {
+     const apiKey = ensureApiKey()
+     if (!apiKey) return ''
      try {
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
@@ -179,6 +191,8 @@ export const editImage = async (imageBase64: string, mimeType: string, prompt: s
 };
 
 export const generateImage = async (prompt: string, aspectRatio: '1:1' | '16:9' | '9:16' | '4:3' | '3:4'): Promise<string> => {
+    const apiKey = ensureApiKey()
+    if (!apiKey) return ''
     try {
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateImages({
@@ -201,6 +215,8 @@ export const analyzeVideo = async (videoFile: File, prompt: string): Promise<str
     // Client-side video analysis is complex. This is a simulation.
     // In a real-world scenario, you would upload the video to a server,
     // which would then use a server-side SDK to interact with the Gemini API for video.
+    const apiKey = ensureApiKey()
+    if (!apiKey) return GEMINI_PLACEHOLDER
     try {
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
         
@@ -221,7 +237,7 @@ export const analyzeVideo = async (videoFile: File, prompt: string): Promise<str
 // --- VEO VIDEO GENERATION ---
 
 // Helper for Veo polling
-const pollVeoOperation = async (operation: any, ai: GoogleGenAI, onProgress: (message: string) => void): Promise<string> => {
+const pollVeoOperation = async (operation: any, ai: GoogleGenAI, apiKey: string, onProgress: (message: string) => void): Promise<string> => {
     let currentOperation = operation;
     const startTime = Date.now();
     
@@ -238,22 +254,26 @@ const pollVeoOperation = async (operation: any, ai: GoogleGenAI, onProgress: (me
     }
     
     onProgress('Fetching generated video...');
-    const videoResponse = await fetch(`${downloadLink}&key=${GEMINI_API_KEY}`);
+    const videoResponse = await fetch(`${downloadLink}&key=${apiKey}`);
     const videoBlob = await videoResponse.blob();
     return URL.createObjectURL(videoBlob);
 }
 
 export const generateVideoFromText = async (prompt: string, aspectRatio: '16:9' | '9:16', onProgress: (message: string) => void): Promise<string> => {
+    const apiKey = ensureApiKey()
+    if (!apiKey) return ''
     const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
     let operation = await ai.models.generateVideos({
       model: 'veo-3.1-fast-generate-preview',
       prompt: prompt,
       config: { numberOfVideos: 1, resolution: '720p', aspectRatio: aspectRatio }
     });
-    return pollVeoOperation(operation, ai, onProgress);
+    return pollVeoOperation(operation, ai, apiKey, onProgress);
 };
 
 export const generateVideoFromImage = async (imageBase64: string, mimeType: string, prompt: string, aspectRatio: '16:9' | '9:16', onProgress: (message: string) => void): Promise<string> => {
+    const apiKey = ensureApiKey()
+    if (!apiKey) return ''
     const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
     let operation = await ai.models.generateVideos({
       model: 'veo-3.1-fast-generate-preview',
@@ -261,7 +281,7 @@ export const generateVideoFromImage = async (imageBase64: string, mimeType: stri
       image: { imageBytes: imageBase64, mimeType: mimeType },
       config: { numberOfVideos: 1, resolution: '720p', aspectRatio: aspectRatio }
     });
-    return pollVeoOperation(operation, ai, onProgress);
+    return pollVeoOperation(operation, ai, apiKey, onProgress);
 }
 
 
@@ -319,6 +339,10 @@ export const startLiveConversation = (callbacks: {
     onerror: (e: ErrorEvent) => void;
     onclose: (e: CloseEvent) => void;
 }): Promise<LiveSession> => {
+     const apiKey = ensureApiKey()
+     if (!apiKey) {
+      return Promise.reject(new Error(GEMINI_PLACEHOLDER))
+     }
      const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
      return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
