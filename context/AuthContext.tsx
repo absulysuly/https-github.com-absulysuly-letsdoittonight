@@ -1,76 +1,99 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { supabase } from '../services/supabaseClient'
-
-interface User {
-  id: string
-  email: string
-  name?: string
-  role?: string
-  avatar_url?: string
-}
+import { profileService } from '../services/profileService'
+import type { Profile, UserRole } from '../types'
 
 interface AuthContextType {
-  user: User | null
+  profile: Profile | null
   isAuthenticated: boolean
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   signup: (email: string, password: string, name: string) => Promise<void>
   logout: () => Promise<void>
+  isStudent: boolean
+  role: UserRole
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (!supabase) { setLoading(false); return }
+  const hydrateProfile = async (userId: string, email?: string, full_name?: string) => {
+    const p = await profileService.getProfile(userId)
+    setProfile(p || { id: userId, email, full_name, role: 'general' })
+  }
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        setUser({
-          id: data.session.user.id,
-          email: data.session.user.email!,
-          name: data.session.user.user_metadata?.name,
-        })
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
+    supabase.auth.getSession().then(async ({ data }) => {
+      const sessionUser = data.session?.user
+      if (sessionUser) {
+        await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
       }
       setLoading(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ? {
-        id: session.user.id,
-        email: session.user.email!,
-        name: session.user.user_metadata?.name,
-      } : null)
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const sessionUser = session?.user
+      if (sessionUser) {
+        await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
+      } else {
+        setProfile(null)
+      }
     })
 
-    return () => listener?.subscription.unsubscribe()
+    return () => listener.subscription.unsubscribe()
   }, [])
 
   const login = async (email: string, password: string) => {
-    if (!supabase) { setUser({ id: 'mock', email }); return }
+    if (!supabase) {
+      setProfile({ id: 'mock-user', email, full_name: 'Mock User', role: 'student' })
+      return
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
   }
 
   const signup = async (email: string, password: string, name: string) => {
-    if (!supabase) { setUser({ id: 'mock', email, name }); return }
+    if (!supabase) {
+      setProfile({ id: 'mock-user', email, full_name: name, role: 'general' })
+      return
+    }
+
     const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { data: { name } }
+      email,
+      password,
+      options: { data: { name } },
     })
     if (error) throw error
   }
 
   const logout = async () => {
     if (supabase) await supabase.auth.signOut()
-    setUser(null)
+    setProfile(null)
   }
 
+  const role: UserRole = profile?.role || 'general'
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{
+        profile,
+        isAuthenticated: !!profile,
+        loading,
+        login,
+        signup,
+        logout,
+        isStudent: role === 'student',
+        role,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

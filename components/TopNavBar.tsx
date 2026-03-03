@@ -1,59 +1,34 @@
-import { UI_TEXT } from '../translations';
-import { Language } from '../types';
+import { UI_TEXT } from '../translations'
+import type { Language } from '../types'
 
 interface TopNavBarProps<T extends string> {
-  tabs: T[];
-  activeTab: T;
-  onTabChange: (tab: T) => void;
-  language: Language;
+  tabs: T[]
+  activeTab: T
+  onTabChange: (tab: T) => void
+  language: Language
 }
 
-const tabTranslationKeys = {
-  Posts: 'posts',
-  Reels: 'reels',
-  Candidates: 'candidates',
-  'Women Candidates': 'womenCandidates',
-  Debates: 'debates',
-  'Tea House': 'teaHouse',
-  Events: 'events',
-  Articles: 'articles',
-  'Ask Neighbor': 'askNeighbor',
-  'IHEC Updates': 'ihecUpdates',
-} as const satisfies Partial<Record<string, keyof (typeof UI_TEXT)['en']>>;
-
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
-  const texts = UI_TEXT[language];
-
-  const getTabClasses = (tab: T) => {
-    const isActive = activeTab === tab;
-    return isActive
-      ? 'border-primary text-primary glow'
-      : 'border-transparent text-theme-text-muted hover:text-theme-text-base hover:border-theme-text-muted';
-  };
+export default function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+  const text = UI_TEXT[language]
+  const labels: Record<string, string> = {
+    General: text.home,
+    Campus: text.campus,
+    Community: text.community,
+  }
 
   return (
-    <div className="border-b border-[var(--color-glass-border)]">
-      <nav
-        className="-mb-px flex justify-center space-x-6 overflow-x-auto px-4 no-scrollbar sm:px-6"
-        aria-label="Tabs"
-      >
-        {tabs.map((tab) => {
-          const translationKey = tabTranslationKeys[tab as keyof typeof tabTranslationKeys];
-          const label = translationKey ? texts[translationKey] : tab;
-
-          return (
-            <button
-              key={tab}
-              onClick={() => onTabChange(tab)}
-              className={`whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium font-arabic transition-colors ${getTabClasses(tab)}`}
-            >
-              {label}
-            </button>
-          );
-        })}
+    <div className="border-b border-white/10">
+      <nav className="-mb-px flex justify-center space-x-6 overflow-x-auto px-4" aria-label="Tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => onTabChange(tab)}
+            className={`whitespace-nowrap border-b-2 px-1 py-4 text-sm ${activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-theme-text-muted'}`}
+          >
+            {labels[tab] || tab}
+          </button>
+        ))}
       </nav>
     </div>
-  );
+  )
 }
-
-export default TopNavBar;
