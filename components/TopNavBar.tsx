@@ -8,7 +8,7 @@ interface TopNavBarProps<T extends string> {
   language: Language;
 }
 
-const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
+const tabTranslationKeys = {
   Posts: 'posts',
   Reels: 'reels',
   Candidates: 'candidates',
@@ -19,7 +19,7 @@ const tabTranslationKeys: Record<string, keyof (typeof UI_TEXT)['en']> = {
   Articles: 'articles',
   'Ask Neighbor': 'askNeighbor',
   'IHEC Updates': 'ihecUpdates',
-};
+} as const satisfies Partial<Record<string, keyof (typeof UI_TEXT)['en']>>;
 
 function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
   const texts = UI_TEXT[language];
@@ -38,7 +38,7 @@ function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }:
         aria-label="Tabs"
       >
         {tabs.map((tab) => {
-          const translationKey = tabTranslationKeys[tab];
+          const translationKey = tabTranslationKeys[tab as keyof typeof tabTranslationKeys];
           const label = translationKey ? texts[translationKey] : tab;
 
           return (
