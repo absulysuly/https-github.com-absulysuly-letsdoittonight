@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { BrowserRouter, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import BottomBar from './components/BottomBar'
@@ -12,6 +13,7 @@ function AppShell() {
   const [homeViewMode] = useState<HomeViewMode>('Social')
   const [isLoginModalOpen, setLoginModalOpen] = useState(false)
   const { user, login, signup, logout } = useAuth()
+  const navigate = useNavigate()
 
   const uiUser = useMemo<User | null>(() => {
     if (!user) return null
@@ -40,8 +42,10 @@ function AppShell() {
       [AppTab.GeminiTools]: '/',
       [AppTab.AIStudioEmbed]: '/',
     }
-    const path = routeMap[String(tab)] || String(tab) || '/'
-    window.location.assign(path)
+
+    const rawTarget = routeMap[String(tab)] || String(tab) || '/'
+    const targetPath = rawTarget.startsWith('/') ? rawTarget : '/'
+    navigate(targetPath)
   }
 
   return (
@@ -79,7 +83,9 @@ function AppShell() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppShell />
+      <BrowserRouter>
+        <AppShell />
+      </BrowserRouter>
     </AuthProvider>
   )
 }
