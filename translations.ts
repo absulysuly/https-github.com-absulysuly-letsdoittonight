@@ -19,6 +19,7 @@ const en: TranslationMap = {
   signIn: 'Sign in',
   notifications: 'Notifications',
   search: 'Search',
+  studentsOnly: 'Campus posting is available for student accounts only.',
 }
 
 const ar: TranslationMap = {
@@ -38,6 +39,7 @@ const ar: TranslationMap = {
   signIn: 'تسجيل الدخول',
   notifications: 'الإشعارات',
   search: 'بحث',
+  studentsOnly: 'النشر في الحرم الجامعي متاح لحسابات الطلاب فقط.',
 }
 
 const ku: TranslationMap = {
@@ -57,6 +59,7 @@ const ku: TranslationMap = {
   signIn: 'چوونەژوورەوە',
   notifications: 'ئاگادارکردنەوەکان',
   search: 'گەڕان',
+  studentsOnly: 'پۆستکردن لە کامپەس تەنها بۆ هەژماری خوێندکارانە.',
 }
 
 export const UI_TEXT: Record<Language, TranslationMap> = { en, ar, ku }

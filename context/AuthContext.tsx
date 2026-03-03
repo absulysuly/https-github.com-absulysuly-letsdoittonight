@@ -26,18 +26,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    if (!supabase) {
-      setLoading(false)
-      return
+    let isMounted = true
+
+    const bootstrapAuth = async () => {
+      if (!supabase) {
+        if (isMounted) {
+          setLoading(false)
+        }
+        return
+      }
+
+      try {
+        const { data } = await supabase.auth.getSession()
+        const sessionUser = data.session?.user
+        if (sessionUser && isMounted) {
+          await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
+        }
+      } catch (error) {
+        console.error('Failed to bootstrap auth session', error)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
     }
 
-    supabase.auth.getSession().then(async ({ data }) => {
-      const sessionUser = data.session?.user
-      if (sessionUser) {
-        await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
+    void bootstrapAuth()
+
+    if (!supabase) {
+      return () => {
+        isMounted = false
       }
-      setLoading(false)
-    })
+    }
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const sessionUser = session?.user
@@ -48,35 +68,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     })
 
-    return () => listener.subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      listener.subscription.unsubscribe()
+    }
   }, [])
 
   const login = async (email: string, password: string) => {
-    if (!supabase) {
-      setProfile({ id: 'mock-user', email, full_name: 'Mock User', role: 'student' })
-      return
+    try {
+      setLoading(true)
+      if (!supabase) {
+        setProfile({ id: 'mock-user', email, full_name: 'Mock User', role: 'student' })
+        return
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+    } finally {
+      setLoading(false)
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
   }
 
   const signup = async (email: string, password: string, name: string) => {
-    if (!supabase) {
-      setProfile({ id: 'mock-user', email, full_name: name, role: 'general' })
-      return
-    }
+    try {
+      setLoading(true)
+      if (!supabase) {
+        setProfile({ id: 'mock-user', email, full_name: name, role: 'general' })
+        return
+      }
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
-    })
-    if (error) throw error
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      })
+      if (error) throw error
+    } finally {
+      setLoading(false)
+    }
   }
 
   const logout = async () => {
-    if (supabase) await supabase.auth.signOut()
-    setProfile(null)
+    try {
+      setLoading(true)
+      if (supabase) await supabase.auth.signOut()
+      setProfile(null)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const role: UserRole = profile?.role || 'general'
