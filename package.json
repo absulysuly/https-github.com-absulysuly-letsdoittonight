@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "node scripts/next-cli.mjs dev",
+    "build": "node scripts/next-cli.mjs build",
+    "preview": "node scripts/next-cli.mjs preview",
+    "diagnose": "node scripts/diagnose-react-imports.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",
