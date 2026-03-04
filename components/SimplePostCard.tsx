@@ -1,6 +1,10 @@
 import { UI_TEXT } from '../translations'
 import type { Language, Post } from '../types'
 
+export function SimplePostCardSkeleton() {
+  return <article className="h-28 animate-pulse rounded-xl border border-white/10 bg-black/20 p-4" />
+}
+
 export default function SimplePostCard({ post, language }: { post: Post; language: Language }) {
   const text = UI_TEXT[language]
 

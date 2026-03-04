@@ -15,5 +15,5 @@ export default function ProtectedRoute({ children, requireStudent = false }: Pro
   if (!isAuthenticated) return <Navigate to="/" replace state={{ from: location }} />
   if (requireStudent && !isStudent) return <Navigate to="/" replace />
 
-  return children
+  return <>{children}</>
 }

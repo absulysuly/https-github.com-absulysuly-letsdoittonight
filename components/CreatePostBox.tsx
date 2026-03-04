@@ -3,42 +3,28 @@ import { useAuth } from '../context/AuthContext'
 import { postService } from '../services/postService'
 import { UI_TEXT } from '../translations'
 import { sanitizePostContent } from '../utils/sanitize'
-import { getErrorMessage } from '../utils/error'
 import type { Language, Post } from '../types'
 
 export default function CreatePostBox({ language, category, onCreated }: { language: Language; category: 'general' | 'campus'; onCreated: (post: Post) => void }) {
   const text = UI_TEXT[language]
-  const { profile, isAuthenticated, isStudent } = useAuth()
+  const { profile, isAuthenticated, role } = useAuth()
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const submit = async () => {
     const sanitizedContent = sanitizePostContent(content)
-
-    if (!profile || !sanitizedContent || submitting) {
-      return
-    }
-
-    if (category === 'campus' && !isStudent) {
-      setError(text.studentsOnly)
-      return
-    }
+    if (!profile || !sanitizedContent || submitting) return
 
     try {
       setSubmitting(true)
       setError(null)
-      const post = await postService.createPost({ content: sanitizedContent, category, user_id: profile.id })
-      if (!post) {
-        setError('Unable to publish post right now. Please try again.')
-        return
-      }
-
+      const post = await postService.createPost({ content: sanitizedContent, category, user_id: profile.id }, role)
       setContent('')
       onCreated(post)
     } catch (err) {
-      console.error('Failed to create post from composer', err)
-      setError(getErrorMessage(err, 'Unable to publish post right now. Please try again.'))
+      console.error('[hamlet:createPostBox]', err)
+      setError('Post failed. Please try again.')
     } finally {
       setSubmitting(false)
     }
