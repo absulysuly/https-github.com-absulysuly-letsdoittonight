@@ -5,6 +5,7 @@ import SimplePostCard from '../SimplePostCard'
 import { UI_TEXT } from '../../translations'
 import CreatePostBox from '../CreatePostBox'
 import { useAuth } from '../../context/AuthContext'
+import { getErrorMessage } from '../../utils/error'
 
 export default function CampusView({ language }: { language: Language }) {
   const text = UI_TEXT[language]
@@ -26,7 +27,7 @@ export default function CampusView({ language }: { language: Language }) {
       } catch (error) {
         console.error('Failed to load campus feed', error)
         if (isMounted) {
-          setError('Unable to load the campus feed right now. Please try again.')
+          setError(getErrorMessage(error, 'Unable to load the campus feed right now. Please try again.'))
         }
       } finally {
         if (isMounted) {

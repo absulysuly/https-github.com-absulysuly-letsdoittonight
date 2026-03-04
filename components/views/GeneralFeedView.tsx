@@ -3,6 +3,9 @@ import { postService } from '../../services/postService'
 import type { Post, Language } from '../../types'
 import SimplePostCard from '../SimplePostCard'
 import CreatePostBox from '../CreatePostBox'
+import { getErrorMessage } from '../../utils/error'
+
+const PAGE_SIZE = 20
 
 export default function GeneralFeedView({ language }: { language: Language }) {
   const [posts, setPosts] = useState<Post[]>([])
@@ -10,6 +13,7 @@ export default function GeneralFeedView({ language }: { language: Language }) {
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
     let isMounted = true
@@ -17,15 +21,16 @@ export default function GeneralFeedView({ language }: { language: Language }) {
     const fetchPosts = async () => {
       try {
         setError(null)
-        const data = await postService.getGeneralPosts(20, 0)
+        const data = await postService.getGeneralPosts(PAGE_SIZE, 0)
         if (isMounted) {
           setPosts(data)
           setOffset(0)
+          setHasMore(data.length === PAGE_SIZE)
         }
       } catch (error) {
         console.error('Failed to load general feed', error)
         if (isMounted) {
-          setError('Unable to load the feed right now. Please try again.')
+          setError(getErrorMessage(error, 'Unable to load the feed right now. Please try again.'))
         }
       } finally {
         if (isMounted) {
@@ -42,16 +47,25 @@ export default function GeneralFeedView({ language }: { language: Language }) {
   }, [])
 
   const loadMore = async () => {
+    if (!hasMore || loadingMore) {
+      return
+    }
+
     setLoadingMore(true)
-    const nextOffset = offset + 20
+    const nextOffset = offset + PAGE_SIZE
     try {
       setError(null)
-      const more = await postService.getGeneralPosts(20, nextOffset)
+      const more = await postService.getGeneralPosts(PAGE_SIZE, nextOffset)
       setOffset(nextOffset)
-      setPosts((prev) => [...prev, ...more])
+      setHasMore(more.length === PAGE_SIZE)
+      setPosts((prev) => {
+        const seen = new Set(prev.map((post) => post.id))
+        const unique = more.filter((post) => !seen.has(post.id))
+        return [...prev, ...unique]
+      })
     } catch (error) {
       console.error('Failed to load more posts', error)
-      setError('Unable to load additional posts right now.')
+      setError(getErrorMessage(error, 'Unable to load additional posts right now.'))
     } finally {
       setLoadingMore(false)
     }
@@ -70,9 +84,9 @@ export default function GeneralFeedView({ language }: { language: Language }) {
       <button
         className="rounded bg-primary px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60"
         onClick={loadMore}
-        disabled={loadingMore}
+        disabled={loadingMore || !hasMore}
       >
-        {loadingMore ? 'Loading...' : 'Load more'}
+        {loadingMore ? 'Loading...' : hasMore ? 'Load more' : 'No more posts'}
       </button>
     </div>
   )
