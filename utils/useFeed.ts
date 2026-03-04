@@ -17,6 +17,8 @@ export function useFeed({ fetchPage }: UseFeedOptions) {
   const isFetchingRef = useRef(false)
 
   const loadInitial = useCallback(async () => {
+    if (isFetchingRef.current) return
+
     isFetchingRef.current = true
     setLoading(true)
     try {

@@ -12,8 +12,7 @@ const fetchPosts = async (category: 'general' | 'campus', limit = 20, offset = 0
     .range(offset, offset + limit - 1)
 
   if (error) {
-    console.error('[hamlet:postService]', error)
-    throw error
+    throw new Error(error.message || 'Failed to load posts.')
   }
 
   return (data as Post[]) ?? []
@@ -38,8 +37,7 @@ export const postService = {
       .single()
 
     if (error) {
-      console.error('[hamlet:postService]', error)
-      throw error
+      throw new Error(error.message || 'Failed to create post.')
     }
 
     return data as Post

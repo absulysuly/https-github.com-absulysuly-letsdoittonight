@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { postService } from '../services/postService'
 import { UI_TEXT } from '../translations'
 import { sanitizePostContent } from '../utils/sanitize'
+import { getErrorMessage } from '../utils/error'
 import type { Language, Post } from '../types'
 
 export default function CreatePostBox({ language, category, onCreated }: { language: Language; category: 'general' | 'campus'; onCreated: (post: Post) => void }) {
@@ -23,8 +24,7 @@ export default function CreatePostBox({ language, category, onCreated }: { langu
       setContent('')
       onCreated(post)
     } catch (err) {
-      console.error('[hamlet:createPostBox]', err)
-      setError('Post failed. Please try again.')
+      setError(getErrorMessage(err, 'Post failed. Please try again.'))
     } finally {
       setSubmitting(false)
     }

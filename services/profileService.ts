@@ -10,8 +10,7 @@ export const profileService = {
       .single()
 
     if (error) {
-      console.error('[hamlet:profileService]', error)
-      throw error
+      throw new Error(error.message || 'Failed to load profile.')
     }
 
     return {
