@@ -2,29 +2,46 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { postService } from '../services/postService'
 import { UI_TEXT } from '../translations'
+import { sanitizePostContent } from '../utils/sanitize'
+import { getErrorMessage } from '../utils/error'
 import type { Language, Post } from '../types'
 
 export default function CreatePostBox({ language, category, onCreated }: { language: Language; category: 'general' | 'campus'; onCreated: (post: Post) => void }) {
   const text = UI_TEXT[language]
   const { profile, isAuthenticated, isStudent } = useAuth()
   const [content, setContent] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const submit = async () => {
-    if (!profile || !content.trim()) {
+    const sanitizedContent = sanitizePostContent(content)
+
+    if (!profile || !sanitizedContent || submitting) {
       return
     }
 
     if (category === 'campus' && !isStudent) {
+      setError(text.studentsOnly)
       return
     }
 
-    const post = await postService.createPost({ content, category, user_id: profile.id })
-    if (!post) {
-      return
-    }
+    try {
+      setSubmitting(true)
+      setError(null)
+      const post = await postService.createPost({ content: sanitizedContent, category, user_id: profile.id })
+      if (!post) {
+        setError('Unable to publish post right now. Please try again.')
+        return
+      }
 
-    setContent('')
-    onCreated(post)
+      setContent('')
+      onCreated(post)
+    } catch (err) {
+      console.error('Failed to create post from composer', err)
+      setError(getErrorMessage(err, 'Unable to publish post right now. Please try again.'))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (!isAuthenticated) {
@@ -32,9 +49,23 @@ export default function CreatePostBox({ language, category, onCreated }: { langu
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-3 space-y-2">
-      <textarea className="w-full rounded bg-transparent border border-white/10 p-2" placeholder={text.whatsOnYourMind} value={content} onChange={(e) => setContent(e.target.value)} />
-      <button className="rounded bg-primary px-3 py-2" onClick={submit}>{text.createPost}</button>
+    <div className="space-y-2 rounded-xl border border-white/10 p-3">
+      {error ? <p className="rounded border border-red-400/30 bg-red-500/10 p-2 text-sm text-red-200">{error}</p> : null}
+      <textarea
+        className="w-full rounded border border-white/10 bg-transparent p-2"
+        placeholder={text.whatsOnYourMind}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        maxLength={1000}
+        aria-label={text.whatsOnYourMind}
+      />
+      <button
+        className="rounded bg-primary px-3 py-2 disabled:cursor-not-allowed disabled:opacity-60"
+        onClick={submit}
+        disabled={submitting || !sanitizePostContent(content)}
+      >
+        {submitting ? 'Publishing...' : text.createPost}
+      </button>
     </div>
   )
 }
