@@ -19,7 +19,7 @@ interface MockComment {
 
 const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, user, onClose, requestLogin, language }) => {
     const [mockComments, setMockComments] = useState<MockComment[]>([
-        { id: 1, author: { name: 'Iraqi Voter', avatarUrl: 'https://i.pravatar.cc/150?u=voter1' }, text: 'This is a very important topic, thank you for raising it.'},
+        { id: 1, author: { name: 'Iraqi Supportr', avatarUrl: 'https://i.pravatar.cc/150?u=supportr1' }, text: 'This is a very important topic, thank you for raising it.'},
         { id: 2, author: { name: 'Concerned Citizen', avatarUrl: 'https://i.pravatar.cc/150?u=citizen2' }, text: 'What are the specific steps you will take to address this?'},
     ]);
     const [newComment, setNewComment] = useState('');
@@ -86,7 +86,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, user, onClose, 
                     
                     {/* Content */}
                     {post.type === 'VoiceNote' ? (
-                        <AudioPlayer src={post.mediaUrl || ''} governorate={post.author.governorate} />
+                        <AudioPlayer src={post.mediaUrl || ''} region={post.author.region} />
                     ) : (
                         <div className="my-4">
                             <p className="text-theme-text-base text-base whitespace-pre-line font-arabic">{post.content}</p>

@@ -6,7 +6,7 @@ import { sanitizePostContent } from '../utils/sanitize'
 import { getErrorMessage } from '../utils/error'
 import type { Language, Post } from '../types'
 
-export default function CreatePostBox({ language, category, onCreated }: { language: Language; category: 'general' | 'campus'; onCreated: (post: Post) => void }) {
+export default function CreatePostBox({ language, category, onCreated }: { language: Language; category: 'general' | 'student'; onCreated: (post: Post) => void }) {
   const text = UI_TEXT[language]
   const { profile, isAuthenticated, role } = useAuth()
   const [content, setContent] = useState('')

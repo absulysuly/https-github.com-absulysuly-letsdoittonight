@@ -88,7 +88,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const shareData = {
-            title: `Post by ${post.author.name} on Smart Campaign`,
+            title: `Post by ${post.author.name} on Smart Community`,
             text: post.content,
             // In a real app with routing for individual posts, this would be a direct link.
             url: window.location.href, 
@@ -177,7 +177,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, requestLogin, language,
                 </div>
                 
                 {post.type === 'VoiceNote' ? (
-                    <AudioPlayer src={post.mediaUrl || ''} governorate={post.author.governorate} />
+                    <AudioPlayer src={post.mediaUrl || ''} region={post.author.region} />
                 ) : (
                     <div className="my-4 glass-card rounded-lg p-4 post-content-wrapper">
                         <p className="text-theme-text-base text-sm whitespace-pre-line font-arabic">{displayedContent}</p>

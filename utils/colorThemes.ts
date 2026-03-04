@@ -109,8 +109,8 @@ export const colorThemes = {
     '--color-text-on-primary': '#FFFFFF',
     '--color-primary-glow': 'rgba(161, 98, 7, 0.4)',
   },
-  // New formal theme for Election Mode
-  electionPortal: {
+  // New formal theme for Community Mode
+  communityPortal: {
     '--color-primary': '#2B6CB0', // A strong, official blue
     '--color-primary-rgb': '43, 108, 176',
     '--color-primary-dark': '#2C5282',

@@ -1,6 +1,6 @@
 {
-  "name": "Copy of Copy of Copy of Copy of Smart Campaign",
-  "description": "A safe, engaging space for Iraqis to discuss politics, share concerns, and hold leaders accountable — using voice, text, and community moderation to foster inclusive dialogue before, during, and after elections.",
+  "name": "Iraqi Community Hub",
+  "description": "Iraqi Community Hub — A space for students and the general public to share ideas, stories, and updates.",
   "requestFramePermissions": [
     "microphone",
     "camera",

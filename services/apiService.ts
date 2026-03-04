@@ -1,6 +1,6 @@
-import { User, UserRole, Post, Event, Article, Debate, Governorate, TeaHouseTopic, TeaHouseMessage, Language } from '../types.ts';
-import { MOCK_USERS, MOCK_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES, IRAQI_GOVERNORATES_INFO, MOCK_IHEC_POSTS } from '../constants.ts';
-import { Candidate, NewsArticle, PoliticalParty, DashboardStats, ParticipationData, ApiConfig, DataCollectionStats, ContactValidationItem, EnrichmentData, QualityAnalyticsData } from '../components/election/types.ts';
+import { User, UserRole, Post, Event, Article, Debate, Region, TeaHouseTopic, TeaHouseMessage, Language } from '../types.ts';
+import { MOCK_USERS, MOCK_POSTS, MOCK_EVENTS, MOCK_ARTICLES, MOCK_DEBATES, MOCK_TEA_HOUSE_TOPICS, MOCK_TEA_HOUSE_MESSAGES, IRAQI_REGIONS_INFO, MOCK_IHEC_POSTS } from '../constants.ts';
+import { Member, NewsArticle, PoliticalParty, DashboardStats, ParticipationData, ApiConfig, DataCollectionStats, ContactValidationItem, EnrichmentData, QualityAnalyticsData } from '../components/community/types.ts';
 
 // --- MOCK API Service ---
 // This service simulates API calls by returning mock data after a short delay.
@@ -12,24 +12,24 @@ const simulateDelay = <T>(data: T): Promise<T> => {
 };
 
 export const getParties = (): Promise<string[]> => {
-    const parties = [...new Set(MOCK_USERS.filter(u => u.role === UserRole.Candidate).map(u => u.party))];
+    const parties = [...new Set(MOCK_USERS.filter(u => u.role === UserRole.Member).map(u => u.party))];
     return simulateDelay(parties);
 };
 
-export const getCandidateStats = (): Promise<{ total: number; women: number; men: number; }> => {
-    const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate);
-    const women = candidates.filter(c => c.gender === 'Female').length;
-    const men = candidates.length - women;
-    return simulateDelay({ total: candidates.length, women, men });
+export const getMemberStats = (): Promise<{ total: number; women: number; men: number; }> => {
+    const members = MOCK_USERS.filter(u => u.role === UserRole.Member);
+    const women = members.filter(c => c.gender === 'Female').length;
+    const men = members.length - women;
+    return simulateDelay({ total: members.length, women, men });
 };
 
-export const getUsers = (filters: { role?: UserRole, governorate?: Governorate | 'All', party?: string | 'All', gender?: 'Male' | 'Female' | 'All', authorId?: string, partySlug?: string, governorateSlug?: string }): Promise<User[]> => {
+export const getUsers = (filters: { role?: UserRole, region?: Region | 'All', party?: string | 'All', gender?: 'Male' | 'Female' | 'All', authorId?: string, partySlug?: string, regionSlug?: string }): Promise<User[]> => {
     let users = MOCK_USERS;
     if (filters.role) {
         users = users.filter(u => u.role === filters.role);
     }
-    if (filters.governorate && filters.governorate !== 'All') {
-        users = users.filter(u => u.governorate === filters.governorate);
+    if (filters.region && filters.region !== 'All') {
+        users = users.filter(u => u.region === filters.region);
     }
     if (filters.party && filters.party !== 'All') {
         users = users.filter(u => u.party === filters.party);
@@ -43,13 +43,13 @@ export const getUsers = (filters: { role?: UserRole, governorate?: Governorate |
     if (filters.partySlug) {
         users = users.filter(u => u.partySlug === filters.partySlug);
     }
-    if (filters.governorateSlug) {
-        users = users.filter(u => u.governorateSlug === filters.governorateSlug);
+    if (filters.regionSlug) {
+        users = users.filter(u => u.regionSlug === filters.regionSlug);
     }
     return simulateDelay(users);
 };
 
-export const getPosts = (filters: { type?: 'Post' | 'Reel' | 'VoiceNote', authorId?: string, governorate?: Governorate | 'All', party?: string | 'All' }): Promise<Post[]> => {
+export const getPosts = (filters: { type?: 'Post' | 'Reel' | 'VoiceNote', authorId?: string, region?: Region | 'All', party?: string | 'All' }): Promise<Post[]> => {
     let posts = MOCK_POSTS;
     if (filters.type) {
         posts = posts.filter(p => p.type === filters.type);
@@ -57,8 +57,8 @@ export const getPosts = (filters: { type?: 'Post' | 'Reel' | 'VoiceNote', author
     if (filters.authorId) {
         posts = posts.filter(p => p.author.id === filters.authorId);
     }
-    if (filters.governorate && filters.governorate !== 'All') {
-        posts = posts.filter(p => p.author.governorate === filters.governorate);
+    if (filters.region && filters.region !== 'All') {
+        posts = posts.filter(p => p.author.region === filters.region);
     }
     if (filters.party && filters.party !== 'All') {
         posts = posts.filter(p => p.author.party === filters.party);
@@ -76,10 +76,10 @@ export const getIHECPosts = (): Promise<Post[]> => {
     return simulateDelay(MOCK_IHEC_POSTS);
 };
 
-export const getEvents = (filters: { governorate?: Governorate | 'All', party?: string | 'All' }): Promise<Event[]> => {
+export const getEvents = (filters: { region?: Region | 'All', party?: string | 'All' }): Promise<Event[]> => {
     let events = MOCK_EVENTS;
-    if (filters.governorate && filters.governorate !== 'All') {
-        events = events.filter(e => e.organizer.governorate === filters.governorate);
+    if (filters.region && filters.region !== 'All') {
+        events = events.filter(e => e.organizer.region === filters.region);
     }
     if (filters.party && filters.party !== 'All') {
         events = events.filter(e => e.organizer.party === filters.party);
@@ -87,11 +87,11 @@ export const getEvents = (filters: { governorate?: Governorate | 'All', party?: 
     return simulateDelay(events);
 };
 
-export const getArticles = (filters: { governorate?: Governorate | 'All' }): Promise<Article[]> => {
+export const getArticles = (filters: { region?: Region | 'All' }): Promise<Article[]> => {
     return simulateDelay(MOCK_ARTICLES);
 };
 
-export const getDebates = (filters: { governorate?: Governorate | 'All', party?: string | 'All', participantIds?: string[] }): Promise<Debate[]> => {
+export const getDebates = (filters: { region?: Region | 'All', party?: string | 'All', participantIds?: string[] }): Promise<Debate[]> => {
     let debates = MOCK_DEBATES;
     // Apply filters if needed
     return simulateDelay(debates);
@@ -170,8 +170,8 @@ export const createEvent = (details: { title: string, date: string, location: st
 };
 
 export const socialLogin = (provider: 'google' | 'facebook'): Promise<User> => {
-    // Return a mock voter user that is already verified
-    const user = { ...MOCK_USERS.find(u => u.role === UserRole.Voter)! };
+    // Return a mock supportr user that is already verified
+    const user = { ...MOCK_USERS.find(u => u.role === UserRole.Supportr)! };
     user.emailVerified = true;
     return simulateDelay(user);
 };
@@ -183,9 +183,9 @@ export const registerUser = (details: { name: string; email: string; role: UserR
         name: details.name,
         role: details.role,
         avatarUrl: `https://i.pravatar.cc/150?u=${Date.now()}`,
-        verified: details.role === UserRole.Candidate,
+        verified: details.role === UserRole.Member,
         party: 'Independent',
-        governorate: 'Baghdad',
+        region: 'Baghdad',
         email: details.email,
         emailVerified: false,
         verificationCode,
@@ -217,7 +217,7 @@ export const updateUser = (userId: string, updates: Partial<User>): Promise<User
     return simulateDelay(null);
 };
 
-export const followCandidate = (candidateId: string): Promise<{ success: boolean }> => {
+export const followMember = (memberId: string): Promise<{ success: boolean }> => {
     return simulateDelay({ success: true });
 };
 
@@ -252,7 +252,7 @@ export const createTeaHouseTopic = (data: { title: string; firstMessage: string;
     return simulateDelay(newTopic);
 };
 
-// --- Election Portal API ---
+// --- Community Portal API ---
 export const submitIntegrityReport = async (formData: FormData): Promise<{ success: boolean; trackingId: string }> => {
     console.log("Submitting integrity report with data:", Object.fromEntries(formData));
     return simulateDelay({ success: true, trackingId: `IQ-REP-${Date.now()}` });
@@ -260,42 +260,42 @@ export const submitIntegrityReport = async (formData: FormData): Promise<{ succe
 
 export const getDashboardStats = (): Promise<{ stats: DashboardStats; participation: ParticipationData[] }> => {
     return simulateDelay({
-        stats: { totalRegisteredVoters: 12500000, approvedCandidatesCount: 7769, expectedTurnoutPercentage: 65 },
-        participation: IRAQI_GOVERNORATES_INFO.map(g => ({
-            governorateId: g.id,
-            governorateName: g.name,
+        stats: { totalRegisteredSupportrs: 12500000, approvedMembersCount: 7769, expectedTurnoutPercentage: 65 },
+        participation: IRAQI_REGIONS_INFO.map(g => ({
+            regionId: g.id,
+            regionName: g.name,
             estimatedTurnout: parseFloat((40 + Math.random() * 30).toFixed(2))
         }))
     });
 };
 
-export const getGovernorateDataByName = (name: string): Promise<{ governorate: any; candidates: Candidate[]; news: NewsArticle[] }> => {
-    const governorate = IRAQI_GOVERNORATES_INFO.find(g => g.enName === name);
-    const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate && u.governorate === name).slice(0, 12).map(c => ({
+export const getRegionDataByName = (name: string): Promise<{ region: any; members: Member[]; news: NewsArticle[] }> => {
+    const region = IRAQI_REGIONS_INFO.find(g => g.enName === name);
+    const members = MOCK_USERS.filter(u => u.role === UserRole.Member && u.region === name).slice(0, 12).map(c => ({
         id: c.id, name: c.name, party: c.party, imageUrl: c.avatarUrl, verified: c.verified
     }));
     const news = MOCK_ARTICLES.slice(0, 4).map(a => ({
         id: a.id, title: a.title, summary: a.contentSnippet, date: a.timestamp
     }));
-    return simulateDelay({ governorate, candidates, news });
+    return simulateDelay({ region, members, news });
 };
 
-export const getPartyById = (id: string): Promise<{ party: PoliticalParty; candidates: Candidate[] }> => {
+export const getPartyById = (id: string): Promise<{ party: PoliticalParty; members: Member[] }> => {
     // This is a mock; in a real app, you'd fetch the party by its ID.
-    const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate).slice(0, 8).map(c => ({
+    const members = MOCK_USERS.filter(u => u.role === UserRole.Member).slice(0, 8).map(c => ({
         id: c.id, name: c.name, party: c.party, imageUrl: c.avatarUrl, verified: c.verified
     }));
     return simulateDelay({
         party: { id, name: 'Future Alliance', description: 'A forward-thinking party...', leader: 'Dr. Ahmad Al-Jubouri', founded: 2020, logoUrl: '' },
-        candidates
+        members
     });
 };
 
-export const getAllElectionCandidates = (): Promise<Candidate[]> => {
-    const candidates = MOCK_USERS.filter(u => u.role === UserRole.Candidate).map(c => ({
+export const getAllCommunityMembers = (): Promise<Member[]> => {
+    const members = MOCK_USERS.filter(u => u.role === UserRole.Member).map(c => ({
         id: c.id, name: c.name, party: c.party, imageUrl: c.avatarUrl, verified: c.verified
     }));
-    return simulateDelay(candidates);
+    return simulateDelay(members);
 };
 
 export const getApiConfig = (): Promise<ApiConfig[]> => {
@@ -309,7 +309,7 @@ export const getApiConfig = (): Promise<ApiConfig[]> => {
 export const getDataCollectionStats = (): Promise<DataCollectionStats> => {
     return simulateDelay({
         status: 'Running',
-        candidatesFound: 1289,
+        membersFound: 1289,
         profilesScraped: 980,
         contactsCollected: 450,
         progress: 76.0,
@@ -329,15 +329,15 @@ export const getContactValidationData = (): Promise<ContactValidationItem[]> => 
         id: u.id,
         contact: `+964 78********${Math.floor(10 + Math.random() * 89)}`,
         type: 'Phone',
-        candidate: u.name,
+        member: u.name,
         quality: parseFloat((60 + Math.random() * 40).toFixed(1)),
         status: getRandom(['Verified', 'Pending', 'Invalid'])
     })));
 };
 
-export const getEnrichmentData = (candidateId: string): Promise<EnrichmentData> => {
+export const getEnrichmentData = (memberId: string): Promise<EnrichmentData> => {
     return simulateDelay({
-        politicalProfile: 'Leans socially conservative with a focus on economic liberalization. Strong proponent of foreign investment and developing the private sector. Has voted consistently for measures that reduce government spending.',
+        politicalProfile: 'Leans socially conservative with a focus on economic liberalization. Strong proponent of foreign investment and developing the private sector. Has supportd consistently for measures that reduce government spending.',
         influence: { socialReach: 120500, engagementRate: 4.5, sentiment: 'Positive' },
     });
 };
@@ -345,6 +345,6 @@ export const getEnrichmentData = (candidateId: string): Promise<EnrichmentData> 
 export const getQualityAnalyticsData = (): Promise<QualityAnalyticsData> => {
     return simulateDelay({
         overallQuality: { verified: 78, pending: 15, invalid: 7 },
-        qualityByGov: IRAQI_GOVERNORATES_INFO.map(g => ({ name: g.name.substring(0, 3), quality: 50 + Math.random() * 50 })).slice(0, 6),
+        qualityByGov: IRAQI_REGIONS_INFO.map(g => ({ name: g.name.substring(0, 3), quality: 50 + Math.random() * 50 })).slice(0, 6),
     });
 };

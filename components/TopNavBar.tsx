@@ -15,8 +15,7 @@ export default function TopNavBar<T extends string>({ tabs, activeTab, onTabChan
 
   const labels: Partial<Record<T, string>> = {
     General: text.home,
-    Campus: text.campus,
-    Community: text.community,
+    Students: text.students,
   } as Partial<Record<T, string>>
 
   const handleKeyDown = (index: number, event: KeyboardEvent<HTMLButtonElement>) => {
