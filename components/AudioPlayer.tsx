@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Governorate } from '../types.ts';
+import { Region } from '../types.ts';
 import { PlayButtonIcon, PauseIcon } from './icons/Icons.tsx';
 import { getWaveformData, drawWaveform } from '../utils/waveform.ts';
-import { GOVERNORATE_AR_MAP } from '../constants.ts';
+import { REGION_AR_MAP } from '../constants.ts';
 
 interface AudioPlayerProps {
     src: string;
-    governorate: Governorate;
+    region: Region;
     compact?: boolean;
 }
 
@@ -35,7 +35,7 @@ const drawFallbackWaveform = (canvas: HTMLCanvasElement, color: string) => {
 };
 
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, governorate, compact = false }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, region, compact = false }) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -164,7 +164,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, governorate, compact = f
                 </div>
                  <div className="flex justify-between items-center mt-1 text-xs text-theme-text-muted">
                     <span>{formatTime(currentTime)}</span>
-                     <span className="font-arabic font-bold">{GOVERNORATE_AR_MAP[governorate] || governorate}</span>
+                     <span className="font-arabic font-bold">{REGION_AR_MAP[region] || region}</span>
                     <span>{formatTime(duration)}</span>
                 </div>
             </div>

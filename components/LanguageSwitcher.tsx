@@ -1,8 +1,8 @@
 import React from 'react';
 import { Language } from '../types.ts';
-import IraqFlagIcon from './election/icons/IraqFlagIcon.tsx';
-import UsaFlagIcon from './election/icons/UsaFlagIcon.tsx';
-import KurdistanFlagIcon from './election/icons/KurdistanFlagIcon.tsx';
+import IraqFlagIcon from './community/icons/IraqFlagIcon.tsx';
+import UsaFlagIcon from './community/icons/UsaFlagIcon.tsx';
+import KurdistanFlagIcon from './community/icons/KurdistanFlagIcon.tsx';
 
 interface LanguageSwitcherProps {
   language: Language;

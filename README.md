@@ -1,8 +1,11 @@
-# Community Hub (Vite + React + Supabase)
+# Iraqi Community Hub (Vite + React + Supabase)
 
-Community Hub is a role-aware social platform with:
+Iraqi Community Hub — A space for students and the general public to share ideas, stories, and updates.
+
+## Platform Structure
+
 - General feed (`/`) for everyone
-- Campus feed (`/campus`) with student-only posting
+- Student feed (`/students`) for student-focused posts
 - Protected profile (`/profile`)
 
 The app uses a centralized Supabase service layer (`services/postService.ts`, `services/profileService.ts`) and Vite for development and production builds.
@@ -36,7 +39,7 @@ npm run preview  # Preview production build
 ## Routing
 
 - `/` → `GeneralFeedView`
-- `/campus` → `CampusView`
+- `/students` → `StudentFeedView`
 - `/profile` → `ProtectedRoute(ProfileView)`
 
 ## Deployment

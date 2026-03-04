@@ -28,7 +28,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, title, onClose }) => {
                     <img src={qrCodeApiUrl} alt="QR Code" width="200" height="200" />
                 </div>
                 <p className="text-xs text-slate-400 mt-4">
-                    Scan this code to see all candidates from this party in this governorate.
+                    Scan this code to see all members from this party in this region.
                 </p>
             </div>
         </div>

@@ -16,11 +16,11 @@ interface LoginModalProps {
     authLogout?: () => Promise<void>;
 }
 
-type ModalView = 'selection' | 'voter' | 'candidate' | 'verify';
+type ModalView = 'scommunity' | 'supportr' | 'member' | 'verify';
 type AuthProvider = 'google' | 'facebook';
 
 const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onLanguageChange, authLogin, authSignup }) => {
-    const [view, setView] = useState<ModalView>('selection');
+    const [view, setView] = useState<ModalView>('scommunity');
     const [pendingUser, setPendingUser] = useState<User | null>(null);
     const [verificationCode, setVerificationCode] = useState('');
     const [password, setPassword] = useState('password123');
@@ -104,12 +104,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
 
         return (
             <div>
-                <button onClick={() => setView('selection')} className="flex items-center space-x-2 text-sm text-theme-text-muted hover:text-theme-text-base mb-4">
+                <button onClick={() => setView('scommunity')} className="flex items-center space-x-2 text-sm text-theme-text-muted hover:text-theme-text-base mb-4">
                     <ArrowLeftIcon className="w-4 h-4" />
                     <span>{texts.back}</span>
                 </button>
                 <h2 className="text-xl font-bold mb-4 text-theme-text-base font-arabic">
-                    {role === UserRole.Voter ? texts.registerAsVoter : texts.registerAsCandidate}
+                    {role === UserRole.Supportr ? texts.registerAsSupportr : texts.registerAsMember}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4 text-left">
                     <div>
@@ -152,10 +152,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
 
     const renderContent = () => {
         switch (view) {
-            case 'voter':
-                return <RegistrationForm role={UserRole.Voter} />;
-            case 'candidate':
-                return <RegistrationForm role={UserRole.Candidate} />;
+            case 'supportr':
+                return <RegistrationForm role={UserRole.Supportr} />;
+            case 'member':
+                return <RegistrationForm role={UserRole.Member} />;
             case 'verify':
                 return (
                      <div className="text-center">
@@ -188,7 +188,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
                         </div>
                     </div>
                 );
-            case 'selection':
+            case 'scommunity':
             default:
                 return (
                     <>
@@ -209,13 +209,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin, onClose, language, onL
                             <hr className="flex-grow border-t border-[var(--color-glass-border)]" />
                         </div>
                         <div className="space-y-4">
-                            <button onClick={() => setView('voter')} className="w-full text-left p-4 border border-[var(--color-glass-border)] rounded-lg hover:bg-primary/10 transition-colors">
-                                <h3 className="font-bold text-md text-theme-text-base font-arabic">{texts.iAmVoter}</h3>
-                                <p className="text-sm text-theme-text-muted font-arabic">{texts.voterDescription}</p>
+                            <button onClick={() => setView('supportr')} className="w-full text-left p-4 border border-[var(--color-glass-border)] rounded-lg hover:bg-primary/10 transition-colors">
+                                <h3 className="font-bold text-md text-theme-text-base font-arabic">{texts.iAmSupportr}</h3>
+                                <p className="text-sm text-theme-text-muted font-arabic">{texts.supportrDescription}</p>
                             </button>
-                            <button onClick={() => setView('candidate')} className="w-full text-left p-4 border border-[var(--color-glass-border)] rounded-lg hover:bg-primary/10 transition-colors">
-                                <h3 className="font-bold text-md text-theme-text-base font-arabic">{texts.iAmCandidate}</h3>
-                                <p className="text-sm text-theme-text-muted font-arabic">{texts.candidateDescription}</p>
+                            <button onClick={() => setView('member')} className="w-full text-left p-4 border border-[var(--color-glass-border)] rounded-lg hover:bg-primary/10 transition-colors">
+                                <h3 className="font-bold text-md text-theme-text-base font-arabic">{texts.iAmMember}</h3>
+                                <p className="text-sm text-theme-text-muted font-arabic">{texts.memberDescription}</p>
                             </button>
                         </div>
                     </>

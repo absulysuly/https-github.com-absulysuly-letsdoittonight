@@ -16,7 +16,7 @@ export interface Post {
   content: string
   user_id: string
   created_at: string
-  category: 'general' | 'campus'
+  category: 'general' | 'student'
   likes_count?: number
   comments_count?: number
   shares_count?: number

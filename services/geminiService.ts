@@ -37,7 +37,7 @@ export const generatePostSuggestion = async (topic: string): Promise<string> => 
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: `Generate a short, engaging social media post for an Iraqi political candidate about the topic: "${topic}". The post should be in Arabic.`,
+            contents: `Generate a short, engaging social media post for an Iraqi political member about the topic: "${topic}". The post should be in Arabic.`,
         });
         return response.text;
     } catch (error) {
@@ -52,7 +52,7 @@ export const generateReelCaption = async (topic: string): Promise<string> => {
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: `Generate a short, engaging, and trendy social media caption for a video reel for an Iraqi political candidate. The topic is: "${topic}". The caption should be in Arabic and include relevant hashtags.`,
+            contents: `Generate a short, engaging, and trendy social media caption for a video reel for an Iraqi political member. The topic is: "${topic}". The caption should be in Arabic and include relevant hashtags.`,
         });
         return response.text;
     } catch (error) {
@@ -106,7 +106,7 @@ export const generateTextWithGoogleSearch = async (prompt: string): Promise<{tex
              tools: [{googleSearch: {}}],
            },
         });
-        const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+        const groundingChunks = response.members?.[0]?.groundingMetadata?.groundingChunks || [];
         return { text: response.text, chunks: groundingChunks };
     } catch (error) {
         console.error("Error with Google Search grounding:", error);
@@ -133,7 +133,7 @@ export const generateTextWithGoogleMaps = async (prompt: string, location: { lat
                 }
             },
         });
-        const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+        const groundingChunks = response.members?.[0]?.groundingMetadata?.groundingChunks || [];
         return { text: response.text, chunks: groundingChunks };
     } catch (error) {
         console.error("Error with Google Maps grounding:", error);
@@ -178,7 +178,7 @@ export const editImage = async (imageBase64: string, mimeType: string, prompt: s
             },
             config: { responseModalities: [Modality.IMAGE] },
         });
-        for (const part of response.candidates[0].content.parts) {
+        for (const part of response.members[0].content.parts) {
             if (part.inlineData) {
                 return part.inlineData.data;
             }
@@ -359,7 +359,7 @@ export const startLiveConversation = (callbacks: {
             speechConfig: {
                 voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } },
             },
-            systemInstruction: 'You are a friendly and helpful assistant for the Smart Campaign app. Keep your responses concise and conversational.',
+            systemInstruction: 'You are a friendly and helpful assistant for the Smart Community app. Keep your responses concise and conversational.',
         },
     });
 };
