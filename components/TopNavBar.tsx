@@ -2,14 +2,14 @@ import { useRef, type KeyboardEvent } from 'react'
 import { UI_TEXT } from '../translations'
 import type { Language } from '../types'
 
-interface TopNavBarProps<T extends string> {
+export interface TopNavBarProps<T extends string> {
   tabs: T[]
   activeTab: T
   onTabChange: (tab: T) => void
   language: Language
 }
 
-export default function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
   const text = UI_TEXT[language]
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
@@ -61,3 +61,5 @@ export default function TopNavBar<T extends string>({ tabs, activeTab, onTabChan
     </div>
   )
 }
+
+export default TopNavBar
