@@ -1,6 +1,6 @@
 export type Language = 'en' | 'ar' | 'ku'
 
-export type UserRole = 'general' | 'student'
+export type UserRole = 'general' | 'student' | 'admin'
 
 export interface Profile {
   id: string

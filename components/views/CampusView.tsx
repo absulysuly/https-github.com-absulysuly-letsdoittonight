@@ -1,63 +1,37 @@
-import { useEffect, useState } from 'react'
-import { postService } from '../../services/postService'
-import type { Language, Post } from '../../types'
-import SimplePostCard from '../SimplePostCard'
+import type { Language } from '../../types'
+import SimplePostCard, { SimplePostCardSkeleton } from '../SimplePostCard'
 import { UI_TEXT } from '../../translations'
 import CreatePostBox from '../CreatePostBox'
 import { useAuth } from '../../context/AuthContext'
-import { getErrorMessage } from '../../utils/error'
+import { postService } from '../../services/postService'
+import { useFeed } from '../../utils/useFeed'
 
 export default function CampusView({ language }: { language: Language }) {
   const text = UI_TEXT[language]
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const { isStudent } = useAuth()
-
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchPosts = async () => {
-      try {
-        setError(null)
-        const data = await postService.getCampusPosts()
-        if (isMounted) {
-          setPosts(data)
-        }
-      } catch (error) {
-        console.error('Failed to load campus feed', error)
-        if (isMounted) {
-          setError(getErrorMessage(error, 'Unable to load the campus feed right now. Please try again.'))
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
-      }
-    }
-
-    void fetchPosts()
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  if (loading) return <div className="p-4">Loading...</div>
+  const { posts, loading, error, retry, setPosts } = useFeed({ fetchPage: postService.getCampusPosts })
 
   return (
     <div className="space-y-4 p-4">
       <h2 className="text-xl font-bold">{text.campus}</h2>
-      {error ? <p className="rounded border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
-      {isStudent ? (
-        <CreatePostBox language={language} category="campus" onCreated={(post) => setPosts((prev) => [post, ...prev])} />
+      {!isStudent ? <p className="rounded border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-100">{text.studentsOnly}</p> : null}
+      {error ? (
+        <div className="rounded border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
+          <p>{error}</p>
+          <button className="mt-2 rounded bg-red-900/30 px-3 py-1" onClick={retry}>Retry</button>
+        </div>
+      ) : null}
+      {isStudent ? <CreatePostBox language={language} category="campus" onCreated={(post) => setPosts((prev) => [post, ...prev])} /> : null}
+
+      {loading ? (
+        <>
+          <SimplePostCardSkeleton />
+          <SimplePostCardSkeleton />
+        </>
       ) : (
-        <p className="text-sm text-theme-text-muted">{text.studentsOnly}</p>
+        posts.map((post) => <SimplePostCard key={post.id} post={post} language={language} />)
       )}
-      {posts.map((post) => (
-        <SimplePostCard key={post.id} post={post} language={language} />
-      ))}
-      {posts.length === 0 ? <p className="text-sm text-theme-text-muted">No campus posts yet.</p> : null}
+      {!loading && !error && posts.length === 0 ? <p className="text-sm text-theme-text-muted">No campus posts yet.</p> : null}
     </div>
   )
 }

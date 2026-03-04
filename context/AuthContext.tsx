@@ -21,29 +21,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   const hydrateProfile = async (userId: string, email?: string, full_name?: string) => {
-    const p = await profileService.getProfile(userId)
-    setProfile(p || { id: userId, email, full_name, role: 'general' })
+    try {
+      const p = await profileService.getProfile(userId)
+      setProfile(p || { id: userId, email, full_name, role: 'general' })
+    } catch (error) {
+      console.error('[hamlet:authContext]', error)
+      setProfile({ id: userId, email, full_name, role: 'general' })
+    }
   }
 
   useEffect(() => {
     let isMounted = true
 
     const bootstrapAuth = async () => {
-      if (!supabase) {
-        if (isMounted) {
-          setLoading(false)
-        }
-        return
-      }
-
       try {
         const { data } = await supabase.auth.getSession()
         const sessionUser = data.session?.user
         if (sessionUser && isMounted) {
           await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
         }
+        if (!sessionUser && isMounted) {
+          setProfile(null)
+        }
       } catch (error) {
-        console.error('Failed to bootstrap auth session', error)
+        console.error('[hamlet:authContext]', error)
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -52,12 +53,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     void bootstrapAuth()
-
-    if (!supabase) {
-      return () => {
-        isMounted = false
-      }
-    }
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const sessionUser = session?.user
@@ -77,10 +72,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true)
-      if (!supabase) {
-        setProfile({ id: 'mock-user', email, full_name: 'Mock User', role: 'student' })
-        return
-      }
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
     } finally {
@@ -91,11 +82,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signup = async (email: string, password: string, name: string) => {
     try {
       setLoading(true)
-      if (!supabase) {
-        setProfile({ id: 'mock-user', email, full_name: name, role: 'general' })
-        return
-      }
-
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -110,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       setLoading(true)
-      if (supabase) await supabase.auth.signOut()
+      await supabase.auth.signOut()
       setProfile(null)
     } finally {
       setLoading(false)
@@ -128,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         signup,
         logout,
-        isStudent: role === 'student',
+        isStudent: role === 'student' || role === 'admin',
         role,
       }}
     >

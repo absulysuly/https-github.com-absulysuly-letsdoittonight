@@ -1,12 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const url = import.meta.env.VITE_SUPABASE_URL
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase env vars not set — running in mock mode')
+if (!url || !key) {
+  throw new Error('[hamlet] Missing Supabase env vars. Check .env')
 }
 
-export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null
+export const supabase = createClient(url, key)
