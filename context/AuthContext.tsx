@@ -56,10 +56,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const sessionUser = session?.user
-      if (sessionUser) {
-        await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
-      } else {
-        setProfile(null)
+      setLoading(true)
+      try {
+        if (sessionUser) {
+          await hydrateProfile(sessionUser.id, sessionUser.email, sessionUser.user_metadata?.name)
+        } else {
+          setProfile(null)
+        }
+      } finally {
+        setLoading(false)
       }
     })
 
