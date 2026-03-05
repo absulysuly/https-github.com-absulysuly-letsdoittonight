@@ -34,6 +34,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let isMounted = true
 
     const bootstrapAuth = async () => {
+      if (!supabase) {
+        if (isMounted) {
+          setProfile(null)
+          setLoading(false)
+        }
+        return
+      }
+
       try {
         const { data } = await supabase.auth.getSession()
         const sessionUser = data.session?.user
@@ -53,6 +61,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     void bootstrapAuth()
+
+    if (!supabase) {
+      return () => {
+        isMounted = false
+      }
+    }
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const sessionUser = session?.user
@@ -75,6 +89,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const login = async (email: string, password: string) => {
+    if (!supabase) {
+      throw new Error('Supabase is not configured. Login is unavailable.')
+    }
+
     try {
       setLoading(true)
       const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -85,6 +103,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const signup = async (email: string, password: string, name: string) => {
+    if (!supabase) {
+      throw new Error('Supabase is not configured. Signup is unavailable.')
+    }
+
     try {
       setLoading(true)
       const { error } = await supabase.auth.signUp({
@@ -99,6 +121,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const logout = async () => {
+    if (!supabase) {
+      setProfile(null)
+      return
+    }
+
     try {
       setLoading(true)
       await supabase.auth.signOut()

@@ -3,6 +3,10 @@ import type { Profile, UserRole } from '../types'
 
 export const profileService = {
   async getProfile(userId: string): Promise<Profile | null> {
+    if (!supabase) {
+      return null
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, email, full_name, avatar_url, role')
@@ -10,7 +14,8 @@ export const profileService = {
       .single()
 
     if (error) {
-      throw new Error(error.message || 'Failed to load profile.')
+      console.warn('[hamlet:profileService] Failed to load profile', error)
+      return null
     }
 
     return {
