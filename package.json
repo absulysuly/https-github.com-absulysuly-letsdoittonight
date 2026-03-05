@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "diagnose:react-imports": "node ./scripts/diagnose-react-imports.mjs"
+    "diagnose:react-imports": "node ./scripts/diagnose-react-imports.mjs",
+    "audit:frontend": "node ./scripts/audit-frontend.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
