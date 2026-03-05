@@ -9,7 +9,7 @@ export interface TopNavBarProps<T extends string> {
   language: Language
 }
 
-function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
+export function TopNavBar<T extends string>({ tabs, activeTab, onTabChange, language }: TopNavBarProps<T>) {
   const text = UI_TEXT[language]
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
