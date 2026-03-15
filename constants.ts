@@ -1,6 +1,8 @@
 import { User, UserRole, Post, Event, Article, Debate, GovernorateInfo, Governorate, TeaHouseTopic, TeaHouseMessage, Language, MessageType } from './types.ts';
 
 // --- GOVERNORATE DATA (Single Source of Truth) ---
+const EXPECTED_GOVERNORATE_COUNT = 18;
+
 export const IRAQI_GOVERNORATES_INFO: GovernorateInfo[] = [
   { id: 1, name: 'بغداد', enName: 'Baghdad', slug: 'baghdad', region: 'central' },
   { id: 2, name: 'البصرة', enName: 'Basra', slug: 'basra', region: 'south' },
@@ -21,6 +23,10 @@ export const IRAQI_GOVERNORATES_INFO: GovernorateInfo[] = [
   { id: 17, name: 'كربلاء', enName: 'Karbala', slug: 'karbala', region: 'central' },
   { id: 18, name: 'دهوك', enName: 'Dohuk', slug: 'duhok', region: 'north' }
 ];
+
+if (IRAQI_GOVERNORATES_INFO.length !== EXPECTED_GOVERNORATE_COUNT) {
+  console.warn(`[hamlet] Expected ${EXPECTED_GOVERNORATE_COUNT} Iraqi governorates but found ${IRAQI_GOVERNORATES_INFO.length}.`)
+}
 
 // --- Derived Governorate Constants ---
 export const GOVERNORATES = IRAQI_GOVERNORATES_INFO.map(g => g.enName);
